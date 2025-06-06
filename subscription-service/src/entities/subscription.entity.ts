@@ -1,25 +1,30 @@
-import {Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn} from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+} from 'typeorm';
 
 @Entity('subscriptions')
 export class Subscription {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column()
-    email: string;
+  @Column()
+  email: string;
 
-    @Column()
-    city: string;
+  @Column()
+  city: string;
 
-    @Column()
-    frequency: 'daily' | 'hourly';
+  @Column()
+  frequency: 'daily' | 'hourly';
 
-    @Column({ default: false })
-    confirmed: boolean;
+  @Column({ default: false })
+  confirmed: boolean;
 
-    @Column()
-    token: string;
+  @Column()
+  token: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 }

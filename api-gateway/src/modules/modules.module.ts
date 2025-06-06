@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
-import {WeatherModule} from "./weather/weather.module";
+import { WeatherModule } from './weather/weather.module';
 import { SubscriptionModule } from './subscription/subscription.module';
 
 @Module({
-    imports: [WeatherModule, SubscriptionModule],
+  imports: [WeatherModule, SubscriptionModule],
 })
 export class ModulesModule {}

@@ -1,5 +1,5 @@
-export class WeatherShortDto {
-    temperature: number;
-    humidity: number;
-    description: string;
+export interface WeatherShortDto {
+  temperature: number;
+  humidity: number;
+  description: string;
 }
