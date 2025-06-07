@@ -20,4 +20,7 @@ async function bootstrap() {
 
   await app.listen(configService.getPort());
 }
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('Error starting the application:', err);
+  process.exit(1);
+});
