@@ -3,28 +3,33 @@ import {
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
+import { Frequency } from '../common/enums/frequency.enum';
 
 @Entity('subscriptions')
 export class Subscription {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ type: 'varchar', name: 'email' })
   email: string;
 
-  @Column()
+  @Column({ type: 'varchar', name: 'city' })
   city: string;
 
-  @Column()
-  frequency: 'daily' | 'hourly';
+  @Column({ type: 'enum', enum: Frequency })
+  frequency: Frequency;
 
-  @Column({ default: false })
+  @Column({ type: 'boolean', default: false, name: 'confirmed' })
   confirmed: boolean;
 
-  @Column()
+  @Column({ type: 'varchar', name: 'token' })
   token: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
+  @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
+  updated_at: Date;
 }
