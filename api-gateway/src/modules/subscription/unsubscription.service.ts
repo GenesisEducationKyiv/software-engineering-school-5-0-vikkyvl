@@ -12,7 +12,7 @@ export class UnsubscriptionService extends MicroserviceClient {
     super(client);
   }
 
-  async unsubscribe(token: string): Promise<{ message: string }> {
+  async unsubscribe(token: string): Promise<UnsubscriptionService> {
     return this.send(patterns.UNSUBSCRIPTION.GET_TOKEN, token);
   }
 }

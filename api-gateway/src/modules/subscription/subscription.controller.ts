@@ -8,13 +8,14 @@ import {
 import { SubscriptionService } from './subscription.service';
 import { SubscriptionDto } from './dto/subscription.dto';
 import { Errors } from '../../common/errors';
+import { UnsubscriptionService } from './unsubscription.service';
 
 @Controller('subscribe')
 export class SubscriptionController {
   constructor(private readonly subscriptionService: SubscriptionService) {}
 
   @Post()
-  async create(@Body() dto: SubscriptionDto): Promise<{ message: string }> {
+  async create(@Body() dto: SubscriptionDto): Promise<UnsubscriptionService> {
     try {
       return await this.subscriptionService.createSubscription(dto);
     } catch (error: unknown) {

@@ -14,7 +14,7 @@ export class WeatherController {
   constructor(private readonly weatherService: WeatherService) {}
 
   @Get()
-  async get(@Query('city') city: string) {
+  async get(@Query('city') city: string): Promise<WeatherService> {
     try {
       return await this.weatherService.getWeather(city);
     } catch (error: any) {

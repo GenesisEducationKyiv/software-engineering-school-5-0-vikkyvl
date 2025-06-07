@@ -4,6 +4,7 @@ import { Subscription } from '../../entities/subscription.entity';
 import { Repository } from 'typeorm';
 import { RpcException } from '@nestjs/microservices';
 import { subscriptionErrors } from '../errors';
+import { MessageResponseDto } from '../common/dto/message-response.dto';
 
 @Injectable()
 export class UnsubscriptionService {
@@ -12,7 +13,7 @@ export class UnsubscriptionService {
     private readonly subscriptionRepository: Repository<Subscription>,
   ) {}
 
-  async unsubscribe(token: string): Promise<{ message: string }> {
+  async unsubscribe(token: string): Promise<MessageResponseDto> {
     const subscription = await this.subscriptionRepository.findOne({
       where: { token },
     });

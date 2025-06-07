@@ -1,13 +1,14 @@
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { ConfirmationService } from './confirmation.service';
 import { Errors } from '../../common/errors';
+import { UnsubscriptionService } from './unsubscription.service';
 
 @Controller('confirm')
 export class ConfirmationController {
   constructor(private readonly confirmationService: ConfirmationService) {}
 
   @Get(':token')
-  async confirm(@Param('token') token: string): Promise<{ message: string }> {
+  async confirm(@Param('token') token: string): Promise<UnsubscriptionService> {
     try {
       return await this.confirmationService.confirmSubscription(token);
     } catch (error: unknown) {

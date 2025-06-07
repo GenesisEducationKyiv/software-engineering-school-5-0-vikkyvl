@@ -7,7 +7,7 @@ export class UnsubscriptionController {
   constructor(private readonly unsubscriptionService: UnsubscriptionService) {}
 
   @Get(':token')
-  async remove(@Param('token') token: string): Promise<{ message: string }> {
+  async remove(@Param('token') token: string): Promise<UnsubscriptionService> {
     try {
       return await this.unsubscriptionService.unsubscribe(token);
     } catch (error: any) {

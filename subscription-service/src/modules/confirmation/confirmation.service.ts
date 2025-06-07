@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { Subscription } from '../../entities/subscription.entity';
 import { RpcException } from '@nestjs/microservices';
 import { subscriptionErrors } from '../errors';
+import { MessageResponseDto } from '../common/dto/message-response.dto';
 
 @Injectable()
 export class ConfirmationService {
@@ -12,7 +13,7 @@ export class ConfirmationService {
     private readonly subscriptionRepository: Repository<Subscription>,
   ) {}
 
-  async confirmSubscription(token: string): Promise<{ message: string }> {
+  async confirmSubscription(token: string): Promise<MessageResponseDto> {
     const subscription = await this.subscriptionRepository.findOne({
       where: { token },
     });
@@ -22,7 +23,7 @@ export class ConfirmationService {
     }
 
     if (subscription.confirmed) {
-      return { message: 'Subscription already successfully' };
+      return { message: 'Subscription already confirmed' };
     }
 
     subscription.confirmed = true;

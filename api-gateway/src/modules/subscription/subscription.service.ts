@@ -3,6 +3,7 @@ import { ClientProxy } from '@nestjs/microservices';
 import { SubscriptionDto } from './dto/subscription.dto';
 import { patterns } from '../patterns';
 import { MicroserviceClient } from '../../common/microservice-client';
+import { UnsubscriptionService } from './unsubscription.service';
 
 @Injectable()
 export class SubscriptionService extends MicroserviceClient {
@@ -13,7 +14,9 @@ export class SubscriptionService extends MicroserviceClient {
     super(client);
   }
 
-  async createSubscription(dto: SubscriptionDto): Promise<{ message: string }> {
+  async createSubscription(
+    dto: SubscriptionDto,
+  ): Promise<UnsubscriptionService> {
     return this.send(patterns.SUBSCRIPTION.CREATE_SUBSCRIPTION, dto);
   }
 }

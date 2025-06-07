@@ -7,6 +7,7 @@ import { RpcException } from '@nestjs/microservices';
 import { v4 as uuidv4 } from 'uuid';
 import { subscriptionErrors } from '../errors';
 import { transporter } from '../../utils/transporter';
+import { MessageResponseDto } from '../common/dto/message-response.dto';
 
 @Injectable()
 export class SubscriptionService {
@@ -15,7 +16,7 @@ export class SubscriptionService {
     private readonly subscriptionRepository: Repository<Subscription>,
   ) {}
 
-  async formSubscription(dto: SubscriptionDto): Promise<{ status: string }> {
+  async formSubscription(dto: SubscriptionDto): Promise<MessageResponseDto> {
     const isEmail = await this.subscriptionRepository.findOne({
       where: { email: dto.email },
     });
@@ -54,7 +55,7 @@ export class SubscriptionService {
     });
 
     return {
-      status: 'Confirmation email sent.',
+      message: 'Confirmation email sent.',
     };
   }
 }

@@ -1,5 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ClientProxyFactory, Transport } from '@nestjs/microservices';
+import {
+  ClientOptions,
+  ClientProxyFactory,
+  Transport,
+} from '@nestjs/microservices';
 import { SubscriptionController } from './subscription.controller';
 import { SubscriptionService } from './subscription.service';
 import { ConfirmationService } from './confirmation.service';
@@ -27,7 +31,7 @@ import { UnsubscriptionService } from './unsubscription.service';
             queue: 'subscription-service',
             queueOptions: { durable: false },
           },
-        } as any),
+        } as ClientOptions),
     },
   ],
 })

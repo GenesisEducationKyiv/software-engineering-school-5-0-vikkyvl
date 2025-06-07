@@ -1,5 +1,9 @@
 import { Module } from '@nestjs/common';
-import { ClientProxyFactory, Transport } from '@nestjs/microservices';
+import {
+  ClientOptions,
+  ClientProxyFactory,
+  Transport,
+} from '@nestjs/microservices';
 import { WeatherController } from './weather.controller';
 import { WeatherService } from './weather.service';
 
@@ -17,7 +21,7 @@ import { WeatherService } from './weather.service';
             queue: 'weather-service',
             queueOptions: { durable: false },
           },
-        } as any),
+        } as ClientOptions),
     },
   ],
 })

@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { patterns } from '../patterns';
 import { MicroserviceClient } from '../../common/microservice-client';
+import { UnsubscriptionService } from './unsubscription.service';
 
 @Injectable()
 export class ConfirmationService extends MicroserviceClient {
@@ -12,7 +13,7 @@ export class ConfirmationService extends MicroserviceClient {
     super(client);
   }
 
-  async confirmSubscription(token: string): Promise<{ message: string }> {
+  async confirmSubscription(token: string): Promise<UnsubscriptionService> {
     return this.send(patterns.CONFIRMATION.GET_TOKEN, token);
   }
 }
