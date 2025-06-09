@@ -12,24 +12,24 @@ export class Subscription {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column({ type: 'varchar', name: 'email' })
+  @Column({ type: 'varchar' })
   email: string;
 
-  @Column({ type: 'varchar', name: 'city' })
+  @Column({ type: 'varchar' })
   city: string;
 
   @Column({ type: 'enum', enum: Frequency })
   frequency: Frequency;
 
-  @Column({ type: 'boolean', default: false, name: 'confirmed' })
+  @Column({ type: 'boolean', default: false })
   confirmed: boolean;
 
-  @Column({ type: 'varchar', name: 'token' })
+  @Column({ type: 'varchar' })
   token: string;
 
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
-  created_at: Date;
+  createdAt: Date;
 
   @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
-  updated_at: Date;
+  updatedAt: Date;
 }

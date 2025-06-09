@@ -17,7 +17,7 @@ export class WeatherController {
   async get(@Query('city') city: string): Promise<WeatherService> {
     try {
       return await this.weatherService.getWeather(city);
-    } catch (error: any) {
+    } catch (error: unknown) {
       const err = error as Errors;
       const status = err?.status || err?.statusCode;
       const message = err.message || err?.response?.message;

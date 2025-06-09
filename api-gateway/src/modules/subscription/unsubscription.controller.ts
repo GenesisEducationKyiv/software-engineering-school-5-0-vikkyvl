@@ -10,7 +10,7 @@ export class UnsubscriptionController {
   async remove(@Param('token') token: string): Promise<UnsubscriptionService> {
     try {
       return await this.unsubscriptionService.unsubscribe(token);
-    } catch (error: any) {
+    } catch (error: unknown) {
       const err = error as Errors;
       if (err?.status === 404) {
         throw new NotFoundException(err.message);

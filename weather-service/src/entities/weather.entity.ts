@@ -7,21 +7,21 @@ import {
 
 @Entity('weather')
 export class Weather {
-  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
+  @PrimaryGeneratedColumn({ type: 'int' })
   id: number;
 
-  @Column({ type: 'varchar', name: 'city' })
+  @Column({ type: 'varchar' })
   city: string;
 
-  @Column({ type: 'float', name: 'temperature' })
+  @Column({ type: 'float' })
   temperature: number;
 
-  @Column({ type: 'float', name: 'humidity' })
+  @Column({ type: 'float' })
   humidity: number;
 
-  @Column({ type: 'varchar', name: 'description' })
+  @Column({ type: 'varchar' })
   description: string;
 
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
-  created_at: Date;
+  createdAt: Date;
 }
