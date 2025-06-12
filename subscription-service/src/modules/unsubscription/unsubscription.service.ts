@@ -23,6 +23,7 @@ export class UnsubscriptionService {
     }
 
     await this.subscriptionRepository.remove(subscription);
+
     return { message: 'Unsubscribed successfully' };
   }
 }

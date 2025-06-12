@@ -9,12 +9,14 @@ export abstract class MicroserviceClient {
 
   protected send<T = any, R = any>(pattern: T, data: any): Promise<R> {
     const res$ = this.client.send(pattern, data).pipe(
-      timeout(30000),
+      timeout(3000),
       catchError((e: Error) => {
         this.logger.error(e.message);
+
         return throwError(() => e);
       }),
     );
+
     return firstValueFrom(res$);
   }
 }
