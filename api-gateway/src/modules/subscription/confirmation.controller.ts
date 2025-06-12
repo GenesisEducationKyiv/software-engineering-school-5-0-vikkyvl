@@ -1,14 +1,14 @@
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { ConfirmationService } from './confirmation.service';
 import { Errors } from '../../common/errors';
-import { UnsubscriptionService } from './unsubscription.service';
+import { MessageResponseDto } from './dto/message-response.dto';
 
 @Controller('confirm')
 export class ConfirmationController {
   constructor(private readonly confirmationService: ConfirmationService) {}
 
   @Get(':token')
-  async confirm(@Param('token') token: string): Promise<UnsubscriptionService> {
+  async confirm(@Param('token') token: string): Promise<MessageResponseDto> {
     try {
       return await this.confirmationService.confirmSubscription(token);
     } catch (error: unknown) {
@@ -17,6 +17,7 @@ export class ConfirmationController {
       if (err?.status === 404) {
         throw new NotFoundException(err.message);
       }
+
       throw new Error('Failed to confirm subscription');
     }
   }

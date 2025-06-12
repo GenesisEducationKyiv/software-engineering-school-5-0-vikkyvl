@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { patterns } from '../patterns';
 import { MicroserviceClient } from '../../common/microservice-client';
+import { WeatherDto } from './dto/weather.dto';
 
 @Injectable()
 export class WeatherService extends MicroserviceClient {
@@ -12,7 +13,7 @@ export class WeatherService extends MicroserviceClient {
     super(client);
   }
 
-  async getWeather(city: string): Promise<WeatherService> {
-    return this.send(patterns.WEATHER.GET_WEATHER, { city });
+  async getWeather(city: string): Promise<WeatherDto> {
+    return this.send(patterns.WEATHER.GET_WEATHER, city);
   }
 }

@@ -1,4 +1,4 @@
-export interface WeatherShortDto {
+export interface WeatherDto {
   temperature: number;
   humidity: number;
   description: string;

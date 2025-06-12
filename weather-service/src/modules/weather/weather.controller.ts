@@ -1,15 +1,22 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern } from '@nestjs/microservices';
+import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { WeatherService } from './weather.service';
 import { patterns } from '../patterns';
-import { WeatherShortDto } from './dto/weather-short.dto';
+import { WeatherDto } from './dto/weather.dto';
+import { weatherErrors } from '../errors';
 
 @Controller('weather')
 export class WeatherController {
   constructor(private weatherService: WeatherService) {}
 
   @MessagePattern(patterns.WEATHER.GET_WEATHER)
-  async getWeather(data: { city: string }): Promise<WeatherShortDto> {
-    return this.weatherService.getWeatherFromAPI(data.city);
+  async getWeather(city: string): Promise<WeatherDto> {
+    const hasNonAlphabetChars = /[^\p{L}\s-]/u.test(city);
+
+    if (hasNonAlphabetChars) {
+      throw new RpcException(weatherErrors.INVALID_REQUEST);
+    }
+
+    return this.weatherService.getWeatherFromAPI(city);
   }
 }

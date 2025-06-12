@@ -8,13 +8,14 @@ import {
 } from '@nestjs/common';
 import { WeatherService } from './weather.service';
 import { Errors } from '../../common/errors';
+import { WeatherDto } from './dto/weather.dto';
 
 @Controller('weather')
 export class WeatherController {
   constructor(private readonly weatherService: WeatherService) {}
 
   @Get()
-  async get(@Query('city') city: string): Promise<WeatherService> {
+  async get(@Query('city') city: string): Promise<WeatherDto> {
     try {
       return await this.weatherService.getWeather(city);
     } catch (error: unknown) {
