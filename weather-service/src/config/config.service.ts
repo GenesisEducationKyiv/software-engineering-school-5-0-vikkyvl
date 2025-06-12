@@ -12,6 +12,14 @@ class ConfigService {
   public getQueueName() {
     return process.env.QUEUE_NAME ?? 'weather-service';
   }
+
+  public getWeatherApiUrl() {
+    return process.env.WEATHER_API_URL || '';
+  }
+
+  public getWeatherApiKey() {
+    return process.env.WEATHER_API_KEY;
+  }
 }
 
 const configService = new ConfigService();

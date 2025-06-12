@@ -12,6 +12,14 @@ class ConfigService {
   public getQueueName() {
     return process.env.QUEUE_NAME ?? 'subscription-service';
   }
+
+  public getReactAppApiUrl() {
+    return process.env.REACT_APP_API_URL;
+  }
+
+  public getEmailUser() {
+    return process.env.EMAIL_USER;
+  }
 }
 
 const configService = new ConfigService();

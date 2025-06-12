@@ -6,14 +6,16 @@ import { SubscriptionDto } from './dto/subscription.dto';
 import { RpcException } from '@nestjs/microservices';
 import { v4 as uuidv4 } from 'uuid';
 import { subscriptionErrors } from '../errors';
-import { transporter } from '../../utils/transporter';
 import { MessageResponseDto } from '../common/dto/message-response.dto';
+import { configService } from '../../config/config.service';
+import { EmailSenderService } from '../email/email-sender.service';
 
 @Injectable()
 export class SubscriptionService {
   constructor(
     @InjectRepository(Subscription)
     private readonly subscriptionRepository: Repository<Subscription>,
+    private readonly emailSenderService: EmailSenderService,
   ) {}
 
   async formSubscription(dto: SubscriptionDto): Promise<MessageResponseDto> {
@@ -27,6 +29,17 @@ export class SubscriptionService {
 
     const token = uuidv4();
 
+    const baseUrl = configService.getReactAppApiUrl();
+
+    const confirmLink = `${baseUrl}/confirm/${token}`;
+    const unsubscribeLink = `${baseUrl}/unsubscribe/${token}`;
+
+    await this.emailSenderService.sendSubscriptionEmail(
+      dto.email,
+      confirmLink,
+      unsubscribeLink,
+    );
+
     const subscription = this.subscriptionRepository.create({
       ...dto,
       confirmed: false,
@@ -34,25 +47,6 @@ export class SubscriptionService {
     });
 
     await this.subscriptionRepository.save(subscription);
-
-    const baseUrl = process.env.REACT_APP_API_URL;
-
-    const confirmLink = `${baseUrl}/confirm/${token}`;
-    const unsubscribeLink = `${baseUrl}/unsubscribe/${token}`;
-
-    await transporter.sendMail({
-      from: `Weather API Application <${process.env.EMAIL_USER}>`,
-      to: dto.email,
-      subject: 'Confirm your weather subscription',
-      html: `
-                <h2>Confirm Your Subscription</h2>
-                <p>Click the link below to confirm your subscription:</p>
-                <a href="${confirmLink}">Confirm</a>
-            
-                <p>If you did not request this or want to unsubscribe, click here:</p>
-                <a href="${unsubscribeLink}">Unsubscribe</a>
-            `,
-    });
 
     return {
       message: 'Confirmation email sent.',
