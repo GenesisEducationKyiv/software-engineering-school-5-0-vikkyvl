@@ -1,4 +1,4 @@
-import {Frequency} from "../../../common/frequency.enum";
+import { Frequency } from '../../../common/frequency.enum';
 
 export interface SubscriptionDto {
   email: string;
