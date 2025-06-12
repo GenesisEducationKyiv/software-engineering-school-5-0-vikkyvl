@@ -9,22 +9,22 @@ import { Frequency } from '../common/enums/frequency.enum';
 
 @Entity('subscriptions')
 export class Subscription {
-  @PrimaryGeneratedColumn('uuid')
+  @PrimaryGeneratedColumn('uuid', { name: 'id' })
   id: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', name: 'email' })
   email: string;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', name: 'city' })
   city: string;
 
-  @Column({ type: 'enum', enum: Frequency })
+  @Column({ type: 'enum', enum: Frequency, name: 'frequency' })
   frequency: Frequency;
 
-  @Column({ type: 'boolean', default: false })
+  @Column({ type: 'boolean', default: false, name: 'confirmed' })
   confirmed: boolean;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', name: 'token' })
   token: string;
 
   @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
