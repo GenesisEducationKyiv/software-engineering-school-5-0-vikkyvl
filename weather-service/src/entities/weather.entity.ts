@@ -1,22 +1,31 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 
 @Entity('weather')
 export class Weather {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn({ type: 'int', name: 'id' })
+  id: number;
 
-    @Column()
-    city: string;
+  @Column({ type: 'varchar', name: 'city' })
+  city: string;
 
-    @Column('float')
-    temperature: number;
+  @Column({ type: 'float', name: 'temperature' })
+  temperature: number;
 
-    @Column('float')
-    humidity: number;
+  @Column({ type: 'float', name: 'humidity' })
+  humidity: number;
 
-    @Column()
-    description: string;
+  @Column({ type: 'varchar', name: 'description' })
+  description: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn({ type: 'timestamp', name: 'created_at' })
+  createdAt: Date;
+
+  @UpdateDateColumn({ type: 'timestamp', name: 'updated_at' })
+  updatedAt: Date;
 }

@@ -1,22 +1,26 @@
-class ConfigService{
-    constructor(private env: string | undefined) {}
+class ConfigService {
+  constructor() {}
 
-    public isProduction(): boolean {
-        return this.env === 'production';
-    }
+  public getBrokerUrl() {
+    return process.env.BROKER_URL ?? 'amqps://...';
+  }
 
-    public getEnv() {
-        return this.env || 'development';
-    }
+  public getPort() {
+    return process.env.PORT ?? 3001;
+  }
 
-    public getBrockerUri() {
-        return process.env.BROKER_URL ?? 'amqps://...';
-    }
+  public getQueueName() {
+    return process.env.QUEUE_NAME ?? 'subscription-service';
+  }
 
-    public getPort(){
-        return process.env.PORT ?? 3001;
-    }
+  public getReactAppApiUrl() {
+    return process.env.REACT_APP_API_URL;
+  }
+
+  public getEmailUser() {
+    return process.env.EMAIL_USER;
+  }
 }
 
-const configService = new ConfigService(process.env.NODE_ENV);
+const configService = new ConfigService();
 export { configService };

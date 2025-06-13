@@ -1,22 +1,26 @@
-class ConfigService{
-    constructor(private env: string | undefined) {}
+class ConfigService {
+  constructor() {}
 
-    public isProduction(): boolean {
-      return this.env === 'production';
-    }
+  public getBrokerUrl() {
+    return process.env.BROKER_URL ?? 'amqps://...';
+  }
 
-    public getEnv() {
-      return this.env || 'development';
-    }
+  public getPort() {
+    return process.env.PORT ?? 3001;
+  }
 
-    public getBrockerUri() {
-        return process.env.BROKER_URL ?? 'amqps://...';
-    }
+  public getQueueName() {
+    return process.env.QUEUE_NAME ?? 'weather-service';
+  }
 
-    public getPort(){
-        return process.env.PORT ?? 3001;
-    }
+  public getWeatherApiUrl() {
+    return process.env.WEATHER_API_URL || '';
+  }
+
+  public getWeatherApiKey() {
+    return process.env.WEATHER_API_KEY;
+  }
 }
 
-const configService = new ConfigService(process.env.NODE_ENV);
+const configService = new ConfigService();
 export { configService };
