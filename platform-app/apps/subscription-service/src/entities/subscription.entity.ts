@@ -5,7 +5,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Frequency } from '../common/enums/frequency.enum';
+import { Frequency } from '../../../../common/shared/enums/frequency.enum';
 
 @Entity('subscriptions')
 export class Subscription {
