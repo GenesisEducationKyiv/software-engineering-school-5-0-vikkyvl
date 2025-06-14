@@ -6,9 +6,9 @@ import {
   Post,
 } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
-import { SubscriptionDto } from './dto/subscription.dto';
+import { SubscriptionDto } from '../../../../../common/shared/dtos/subscription/subscription.dto';
 import { Errors } from '../../common/errors';
-import { MessageResponseDto } from './dto/message-response.dto';
+import { MessageResponseDto } from '../../../../../common/shared/dtos/subscription/message-response.dto';
 
 @Controller('subscribe')
 export class SubscriptionController {

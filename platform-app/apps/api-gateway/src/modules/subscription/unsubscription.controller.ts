@@ -1,7 +1,7 @@
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { UnsubscriptionService } from './unsubscription.service';
 import { Errors } from '../../common/errors';
-import { MessageResponseDto } from './dto/message-response.dto';
+import { MessageResponseDto } from '../../../../../common/shared/dtos/subscription/message-response.dto';
 
 @Controller('unsubscribe')
 export class UnsubscriptionController {

@@ -1,8 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { ConfirmationService } from './confirmation.service';
 import { MessagePattern } from '@nestjs/microservices';
-import { patterns } from '../patterns';
-import { MessageResponseDto } from '../common/dto/message-response.dto';
+import { patterns } from '../../../../../common/shared/constants/patterns';
+import { MessageResponseDto } from '../../../../../common/shared/dtos/subscription/message-response.dto';
 
 @Controller('confirm')
 export class ConfirmationController {

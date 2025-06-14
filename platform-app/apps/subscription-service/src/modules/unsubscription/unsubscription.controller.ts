@@ -1,8 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { patterns } from '../patterns';
+import { patterns } from '../../../../../common/shared/constants/patterns';
 import { UnsubscriptionService } from './unsubscription.service';
-import { MessageResponseDto } from '../common/dto/message-response.dto';
+import { MessageResponseDto } from '../../../../../common/shared/dtos/subscription/message-response.dto';
 
 @Controller('unsubscribe')
 export class UnsubscriptionController {

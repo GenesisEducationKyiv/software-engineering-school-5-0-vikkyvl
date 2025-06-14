@@ -1,8 +1,16 @@
-import { transporter } from '../../utils/transporter';
+import { transporter } from './utils/transporter';
 import { subscriptionHtml } from './templates/subscription-confirmation';
-import { configService } from '../../config/config.service';
+import { configService } from '../../../../../../common/config/subscription-config.service';
 
-export class EmailSenderService {
+export interface EmailSenderServiceInterface {
+  sendSubscriptionEmail(
+    email: string,
+    confirmLink: string,
+    unsubscribeLink: string,
+  ): Promise<void>;
+}
+
+export class EmailSenderService implements EmailSenderServiceInterface {
   async sendSubscriptionEmail(
     email: string,
     confirmLink: string,

@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { WeatherService } from './weather.service';
 import { Errors } from '../../common/errors';
-import { WeatherDto } from './dto/weather.dto';
+import { WeatherDto } from '../../../../../common/shared/dtos/weather/weather.dto';
 
 @Controller('weather')
 export class WeatherController {

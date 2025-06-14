@@ -15,4 +15,8 @@ export const subscriptionErrors = {
     status: 404,
     message: 'Token not found',
   },
+  EMAIL_SENDING_FAILED: {
+    status: 500,
+    message: 'Failed to send email',
+  },
 };

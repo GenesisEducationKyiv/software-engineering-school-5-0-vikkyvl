@@ -1,7 +1,7 @@
 import { Controller, Get, NotFoundException, Param } from '@nestjs/common';
 import { ConfirmationService } from './confirmation.service';
 import { Errors } from '../../common/errors';
-import { MessageResponseDto } from './dto/message-response.dto';
+import { MessageResponseDto } from '../../../../../common/shared/dtos/subscription/message-response.dto';
 
 @Controller('confirm')
 export class ConfirmationController {
@@ -15,6 +15,10 @@ export class ConfirmationController {
       const err = error as Errors;
 
       if (err?.status === 404) {
+        throw new NotFoundException(err.message);
+      }
+
+      if (err?.status === 400) {
         throw new NotFoundException(err.message);
       }
 

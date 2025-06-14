@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { patterns } from '../patterns';
+import { patterns } from '../../../../../common/shared/constants/patterns';
 import { MicroserviceClient } from '../../common/microservice-client';
-import { WeatherDto } from './dto/weather.dto';
+import { WeatherDto } from '../../../../../common/shared/dtos/weather/weather.dto';
 
 @Injectable()
 export class WeatherService extends MicroserviceClient {

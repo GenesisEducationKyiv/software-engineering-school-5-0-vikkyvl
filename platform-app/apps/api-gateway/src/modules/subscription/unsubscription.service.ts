@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { patterns } from '../patterns';
+import { patterns } from '../../../../../common/shared/constants/patterns';
 import { MicroserviceClient } from '../../common/microservice-client';
-import { MessageResponseDto } from './dto/message-response.dto';
+import { MessageResponseDto } from '../../../../../common/shared/dtos/subscription/message-response.dto';
 
 @Injectable()
 export class UnsubscriptionService extends MicroserviceClient {
