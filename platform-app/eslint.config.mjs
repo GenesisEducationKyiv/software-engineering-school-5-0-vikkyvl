@@ -28,7 +28,7 @@ export default tseslint.config(
   {
     rules: {
       'padding-line-between-statements': [
-          'error',
+        'error',
         { blankLine: 'always', prev: '*', next: 'return' },
         { blankLine: 'always', prev: '*', next: 'throw' }],
       '@typescript-eslint/no-explicit-any': 'off',
