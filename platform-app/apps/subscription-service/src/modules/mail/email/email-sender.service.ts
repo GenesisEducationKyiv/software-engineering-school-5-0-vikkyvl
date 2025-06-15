@@ -1,6 +1,7 @@
 import { transporter } from './utils/transporter';
 import { subscriptionHtml } from './templates/subscription-confirmation';
 import { configService } from '../../../../../../common/config/subscription-config.service';
+import { Injectable } from '@nestjs/common';
 
 export interface EmailSenderServiceInterface {
   sendSubscriptionEmail(
@@ -10,6 +11,7 @@ export interface EmailSenderServiceInterface {
   ): Promise<void>;
 }
 
+@Injectable()
 export class EmailSenderService implements EmailSenderServiceInterface {
   async sendSubscriptionEmail(
     email: string,

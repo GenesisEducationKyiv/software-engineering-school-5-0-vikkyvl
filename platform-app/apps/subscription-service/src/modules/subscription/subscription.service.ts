@@ -4,9 +4,9 @@ import { RpcException } from '@nestjs/microservices';
 import { v4 as uuidv4 } from 'uuid';
 import { subscriptionErrors } from '../errors';
 import { MessageResponseDto } from '../../../../../common/shared/dtos/subscription/message-response.dto';
-import { configService } from '../../../../../common/config/subscription-config.service';
 import { EmailSenderServiceInterface } from '../mail/email/email-sender.service';
 import { SubscriptionRepositoryInterface } from '../repository/subscription.repository.interface';
+import { LinkServiceInterface } from '../link/link.service';
 
 interface SubscriptionServiceInterface {
   formSubscription(dto: SubscriptionDto): Promise<MessageResponseDto>;
@@ -19,6 +19,8 @@ export class SubscriptionService implements SubscriptionServiceInterface {
     private readonly subscriptionRepository: SubscriptionRepositoryInterface,
     @Inject('EmailSenderServiceInterface')
     private readonly emailSenderService: EmailSenderServiceInterface,
+    @Inject('LinkServiceInterface')
+    private readonly linkService: LinkServiceInterface,
   ) {}
 
   async formSubscription(dto: SubscriptionDto): Promise<MessageResponseDto> {
@@ -30,10 +32,7 @@ export class SubscriptionService implements SubscriptionServiceInterface {
 
     const token = uuidv4();
 
-    const baseUrl = configService.getReactAppApiUrl();
-
-    const confirmLink = `${baseUrl}/confirm/${token}`;
-    const unsubscribeLink = `${baseUrl}/unsubscribe/${token}`;
+    const { confirmLink, unsubscribeLink } = this.linkService.getLinks(token);
 
     await this.emailSenderService.sendSubscriptionEmail(
       dto.email,
