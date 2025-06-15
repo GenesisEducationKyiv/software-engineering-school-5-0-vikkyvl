@@ -15,24 +15,20 @@ const SubscriptionForm = () => {
         setMessage('');
 
         try {
-            if (!email.includes('@')) {
-                setMessage('Please enter a valid email.');
-                return;
-            }
-
             await getWeatherByCity(city);
 
             const subscriptionResult = await subscibeWeather({email, city, frequency});
-            setMessage(subscriptionResult.status || 'Subscription successful. Confirmation email sent.');
+            setMessage(subscriptionResult.status || 'Confirmation email sent.');
         } catch (err: any) {
             const status = err?.response?.status;
+            const message = err?.response?.data?.message || err.message;
 
             if (status === 409) {
                 setMessage('Email already subscribed.');
             } else if (status === 404) {
                 setMessage('City not found');
             } else {
-                setMessage('Something went wrong.');
+                setMessage(message);
             }
         } finally {
             setLoading(false);

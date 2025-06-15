@@ -13,14 +13,14 @@ const UnsubscribePage = () => {
                 const data = await unsubscribeWeather(token!);
                 setMessage(data.message || 'Unsubscribed successfully.');
             } catch (err: any) {
-                // const errorMessage =
-                //     err?.response?.data?.message ||
-                //     err?.message ||
-                //     'Invalid or expired token.';
-                // setMessage(errorMessage);
+                const errorMessage =
+                    err?.response?.data?.message ||
+                    err?.message ||
+                    'Invalid or expired token.';
+                setMessage(errorMessage);
             }
         };
-        unsubscribe();
+        void unsubscribe();
     }, [token]);
 
     return (

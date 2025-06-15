@@ -1,5 +1,4 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
 import SubscriptionForm from "./pages/SubscriptionForm";
 import ConfirmPage from "./pages/ConfirmPage";
