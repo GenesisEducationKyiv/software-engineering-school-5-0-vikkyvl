@@ -1,6 +1,9 @@
 import { BrokerConfigInterface } from './interfaces/broker-config.interface';
+import { ClientConfigInterface } from './interfaces/client-config.interface';
 
-class ApiGatewayConfigService implements BrokerConfigInterface {
+class ApiGatewayConfigService
+  implements BrokerConfigInterface, ClientConfigInterface
+{
   constructor() {}
 
   public getBrokerUrl() {
@@ -13,6 +16,10 @@ class ApiGatewayConfigService implements BrokerConfigInterface {
 
   public getQueueName() {
     return process.env.API_GATEWAY ?? 'api-gateway';
+  }
+
+  public getReactAppApiUrl() {
+    return process.env.REACT_APP_API_URL;
   }
 }
 

@@ -1,5 +1,5 @@
 import * as nodemailer from 'nodemailer';
-import { configService } from '../../../../../../../common/config/subscription-config.service';
+import { configService } from '../../../../../../../../common/config/subscription-config.service';
 
 export const transporter = nodemailer.createTransport({
   host: 'smtp.ukr.net',

@@ -3,7 +3,7 @@ import { SubscriptionController } from './subscription.controller';
 import { SubscriptionService } from './subscription.service';
 import { Subscription } from '../../entities/subscription.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EmailSenderService } from '../mail/email/email-sender.service';
+import { EmailSenderService } from '../external/mail/email/email-sender.service';
 import { SubscriptionRepository } from '../repository/subscription.repository';
 import { LinkService } from '../link/link.service';
 

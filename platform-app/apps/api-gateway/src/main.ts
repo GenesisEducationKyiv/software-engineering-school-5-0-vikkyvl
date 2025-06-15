@@ -9,7 +9,7 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
 
   app.setGlobalPrefix('api');
-  app.enableCors();
+  app.enableCors({ origin: configService.getReactAppApiUrl() });
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,

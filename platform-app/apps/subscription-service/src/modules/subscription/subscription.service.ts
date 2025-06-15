@@ -4,9 +4,10 @@ import { RpcException } from '@nestjs/microservices';
 import { v4 as uuidv4 } from 'uuid';
 import { subscriptionErrors } from '../errors';
 import { MessageResponseDto } from '../../../../../common/shared/dtos/subscription/message-response.dto';
-import { EmailSenderServiceInterface } from '../mail/email/email-sender.service';
+import { EmailSenderServiceInterface } from '../external/mail/email/email-sender.service';
 import { SubscriptionRepositoryInterface } from '../repository/subscription.repository.interface';
 import { LinkServiceInterface } from '../link/link.service';
+import { MailConnectionResultDto } from '../external/mail/email/dto/mail-connection-result.dto';
 
 interface SubscriptionServiceInterface {
   formSubscription(dto: SubscriptionDto): Promise<MessageResponseDto>;
@@ -34,11 +35,16 @@ export class SubscriptionService implements SubscriptionServiceInterface {
 
     const { confirmLink, unsubscribeLink } = this.linkService.getLinks(token);
 
-    await this.emailSenderService.sendSubscriptionEmail(
-      dto.email,
-      confirmLink,
-      unsubscribeLink,
-    );
+    const resultConnection: MailConnectionResultDto =
+      await this.emailSenderService.sendSubscriptionEmail(
+        dto.email,
+        confirmLink,
+        unsubscribeLink,
+      );
+
+    if (!resultConnection.isDelivered) {
+      throw new RpcException(subscriptionErrors.EMAIL_SENDING_FAILED);
+    }
 
     const subscription = this.subscriptionRepository.createSubscription({
       ...dto,
