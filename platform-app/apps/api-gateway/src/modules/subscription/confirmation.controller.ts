@@ -18,10 +18,6 @@ export class ConfirmationController {
         throw new NotFoundException(err.message);
       }
 
-      if (err?.status === 400) {
-        throw new NotFoundException(err.message);
-      }
-
       throw new Error('Failed to confirm subscription');
     }
   }
