@@ -5,14 +5,17 @@ import { Subscription } from '../../entities/subscription.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EmailSenderService } from '../external/mail/email/email-sender.service';
 import { SubscriptionRepository } from '../repository/subscription.repository';
-import { LinkService } from '../link/link.service';
+import { LinkService } from '../external/link/link.service';
+import { ConfirmationService } from './confirmation.service';
+import { UnsubscriptionService } from './unsubscription.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Subscription])],
   controllers: [SubscriptionController],
   providers: [
     SubscriptionService,
-    LinkService,
+    ConfirmationService,
+    UnsubscriptionService,
     {
       provide: 'EmailSenderServiceInterface',
       useClass: EmailSenderService,

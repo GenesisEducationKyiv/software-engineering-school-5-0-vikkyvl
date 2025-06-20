@@ -6,28 +6,19 @@ import {
 } from '@nestjs/microservices';
 import { SubscriptionController } from './subscription.controller';
 import { SubscriptionService } from './subscription.service';
-import { ConfirmationService } from './confirmation.service';
-import { ConfirmationController } from './confirmation.controller';
-import { UnsubscriptionController } from './unsubscription.controller';
-import { UnsubscriptionService } from './unsubscription.service';
+import { configService } from '../../../../../common/config/api-gateway-config.service';
 
 @Module({
-  controllers: [
-    SubscriptionController,
-    ConfirmationController,
-    UnsubscriptionController,
-  ],
+  controllers: [SubscriptionController],
   providers: [
     SubscriptionService,
-    ConfirmationService,
-    UnsubscriptionService,
     {
       provide: 'SUBSCRIPTION_SERVICE',
       useFactory: () =>
         ClientProxyFactory.create({
           transport: Transport.RMQ,
           options: {
-            urls: [process.env.BROKER_URL],
+            urls: [configService.getBrokerUrl()],
             queue: 'subscription-service',
             queueOptions: { durable: false },
           },

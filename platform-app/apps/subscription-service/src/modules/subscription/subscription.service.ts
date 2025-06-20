@@ -1,12 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SubscriptionDto } from '../../../../../common/shared/dtos/subscription/subscription.dto';
+import { SubscriptionDto } from '../../../../../common/shared';
 import { RpcException } from '@nestjs/microservices';
 import { v4 as uuidv4 } from 'uuid';
 import { subscriptionErrors } from '../errors';
-import { MessageResponseDto } from '../../../../../common/shared/dtos/subscription/message-response.dto';
+import { MessageResponseDto } from '../../../../../common/shared';
 import { EmailSenderServiceInterface } from '../external/mail/email/email-sender.service';
 import { SubscriptionRepositoryInterface } from '../repository/subscription.repository.interface';
-import { LinkServiceInterface } from '../link/link.service';
 import { MailConnectionResultDto } from '../external/mail/email/dto/mail-connection-result.dto';
 
 interface SubscriptionServiceInterface {
@@ -20,8 +19,6 @@ export class SubscriptionService implements SubscriptionServiceInterface {
     private readonly subscriptionRepository: SubscriptionRepositoryInterface,
     @Inject('EmailSenderServiceInterface')
     private readonly emailSenderService: EmailSenderServiceInterface,
-    @Inject('LinkServiceInterface')
-    private readonly linkService: LinkServiceInterface,
   ) {}
 
   async formSubscription(dto: SubscriptionDto): Promise<MessageResponseDto> {
@@ -33,14 +30,8 @@ export class SubscriptionService implements SubscriptionServiceInterface {
 
     const token = uuidv4();
 
-    const { confirmLink, unsubscribeLink } = this.linkService.getLinks(token);
-
     const resultConnection: MailConnectionResultDto =
-      await this.emailSenderService.sendSubscriptionEmail(
-        dto.email,
-        confirmLink,
-        unsubscribeLink,
-      );
+      await this.emailSenderService.sendSubscriptionEmail(dto.email, token);
 
     if (!resultConnection.isDelivered) {
       throw new RpcException(subscriptionErrors.EMAIL_SENDING_FAILED);

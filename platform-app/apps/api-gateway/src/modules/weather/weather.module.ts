@@ -6,6 +6,7 @@ import {
 } from '@nestjs/microservices';
 import { WeatherController } from './weather.controller';
 import { WeatherService } from './weather.service';
+import { configService } from '../../../../../common/config/api-gateway-config.service';
 
 @Module({
   controllers: [WeatherController],
@@ -17,7 +18,7 @@ import { WeatherService } from './weather.service';
         ClientProxyFactory.create({
           transport: Transport.RMQ,
           options: {
-            urls: [process.env.BROKER_URL],
+            urls: [configService.getBrokerUrl()],
             queue: 'weather-service',
             queueOptions: { durable: false },
           },

@@ -1,8 +1,8 @@
 import { Controller } from '@nestjs/common';
 import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { WeatherService } from './weather.service';
-import { patterns } from '../../../../../common/shared/constants/patterns';
-import { WeatherDto } from '../../../../../common/shared/dtos/weather/weather.dto';
+import { patterns } from '../../../../../common/shared';
+import { WeatherDto } from '../../../../../common/shared';
 import { weatherErrors } from '../errors';
 
 @Controller('weather')

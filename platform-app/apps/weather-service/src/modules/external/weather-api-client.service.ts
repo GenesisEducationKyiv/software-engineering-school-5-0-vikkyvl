@@ -10,7 +10,9 @@ export interface WeatherApiClientServiceInterface {
 }
 
 @Injectable()
-export class WeatherApiClientService {
+export class WeatherApiClientService
+  implements WeatherApiClientServiceInterface
+{
   private readonly apiKey = configService.getWeatherApiKey();
 
   async fetchWeather(city: string): Promise<WeatherApiResponse> {

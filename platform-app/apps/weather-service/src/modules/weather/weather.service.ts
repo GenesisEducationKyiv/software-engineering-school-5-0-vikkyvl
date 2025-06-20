@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Weather } from '../../entities/weather.entity';
-import { WeatherDto } from '../../../../../common/shared/dtos/weather/weather.dto';
+import { WeatherDto } from '../../../../../common/shared';
 import { WeatherApiClientServiceInterface } from '../external/weather-api-client.service';
 
 interface WeatherServiceInterface {
