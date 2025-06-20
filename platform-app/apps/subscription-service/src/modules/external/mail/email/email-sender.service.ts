@@ -1,41 +1,35 @@
 import { transporter } from './utils/transporter';
 import { subscriptionHtml } from './templates/subscription-confirmation';
-import { configService } from '../../../../../../../common/config/subscription-config.service';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { MailConnectionResultDto } from './dto/mail-connection-result.dto';
+import { LinkServiceInterface } from '../../link/link.service';
 
 export interface EmailSenderServiceInterface {
   sendSubscriptionEmail(
     email: string,
-    confirmLink: string,
-    unsubscribeLink: string,
+    token: string,
   ): Promise<MailConnectionResultDto>;
 }
 
 @Injectable()
 export class EmailSenderService implements EmailSenderServiceInterface {
+  constructor(
+    @Inject('LinkServiceInterface')
+    private readonly linkService: LinkServiceInterface,
+  ) {}
+
   async sendSubscriptionEmail(
     email: string,
-    confirmLink: string,
-    unsubscribeLink: string,
+    token: string,
   ): Promise<MailConnectionResultDto> {
-    const resultConnection = await transporter.verify();
-
-    if (!resultConnection) {
-      return { isDelivered: false };
-    }
+    const { confirmLink, unsubscribeLink } = this.linkService.getLinks(token);
 
     const html = subscriptionHtml
       .replace('{{confirmLink}}', confirmLink)
       .replace('{{unsubscribeLink}}', unsubscribeLink);
 
-    await transporter.sendMail({
-      from: `Weather API Application <${configService.getEmailUser()}>`,
-      to: email,
-      subject: 'Confirm your weather subscription',
-      html,
-    });
+    const response = await transporter.sendMail(email, html);
 
-    return { isDelivered: true };
+    return { isDelivered: response };
   }
 }

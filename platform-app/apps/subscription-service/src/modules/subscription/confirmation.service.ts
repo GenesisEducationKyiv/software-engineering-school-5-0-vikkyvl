@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { subscriptionErrors } from '../errors';
-import { MessageResponseDto } from '../../../../../common/shared/dtos/subscription/message-response.dto';
+import { MessageResponseDto } from '../../../../../common/shared';
 import { SubscriptionRepositoryInterface } from '../repository/subscription.repository.interface';
 
 interface ConfirmationServiceInterface {

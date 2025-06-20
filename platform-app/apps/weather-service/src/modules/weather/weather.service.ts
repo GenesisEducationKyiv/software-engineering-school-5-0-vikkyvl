@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Weather } from '../../entities/weather.entity';
-import { WeatherDto } from '../../../../../common/shared/dtos/weather/weather.dto';
-import { WeatherApiClientService } from '../external/weather-api-client.service';
+import { WeatherDto } from '../../../../../common/shared';
+import { WeatherApiClientServiceInterface } from '../external/weather-api-client.service';
 
 interface WeatherServiceInterface {
   getWeatherFromAPI(city: string): Promise<WeatherDto>;
@@ -18,7 +18,7 @@ export class WeatherService implements WeatherServiceInterface {
     @Inject('WeatherRepositoryInterface')
     private readonly weatherRepository: WeatherRepositoryInterface,
     @Inject('WeatherApiClientServiceInterface')
-    private readonly weatherApiClient: WeatherApiClientService,
+    private readonly weatherApiClient: WeatherApiClientServiceInterface,
   ) {}
 
   async getWeatherFromAPI(city: string): Promise<WeatherDto> {

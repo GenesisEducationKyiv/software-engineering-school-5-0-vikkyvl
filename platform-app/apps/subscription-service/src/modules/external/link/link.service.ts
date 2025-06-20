@@ -1,16 +1,14 @@
 import { LinkDto } from './dto/link.dto';
-import { configService } from '../../../../../common/config/subscription-config.service';
+import { configService } from '../../../../../../common/config/subscription-config.service';
 import { Injectable } from '@nestjs/common';
 
 export interface LinkServiceInterface {
   getLinks(token: string): LinkDto;
-  getConfirmLink(token: string): string;
-  getUnsubscribeLink(token: string): string;
 }
 
 @Injectable()
-export class LinkService {
-  private readonly baseUrl = configService.getReactAppApiUrl();
+export class LinkService implements LinkServiceInterface {
+  private baseUrl = configService.getReactAppApiUrl();
 
   getLinks(token: string): LinkDto {
     return {
