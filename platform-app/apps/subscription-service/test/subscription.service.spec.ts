@@ -5,7 +5,7 @@ import { SubscriptionRepositoryInterface } from '../src/modules/repository/subsc
 import { SubscriptionServiceBuilder } from './mocks/subscription.service..builder';
 import { RpcException } from '@nestjs/microservices';
 import { subscriptionErrors } from '../src/modules/errors';
-import { LinkServiceInterface } from '../src/modules/link/link.service';
+import { LinkServiceInterface } from '../src/modules/external/link/link.service';
 
 describe('Subscription Service (unit)', () => {
   let service: SubscriptionService;

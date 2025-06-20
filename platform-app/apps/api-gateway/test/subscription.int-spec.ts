@@ -4,8 +4,6 @@ import { INestApplication } from '@nestjs/common';
 import { setupTestContainers, TestContainers } from './utils/setup-containers';
 import { SubscriptionModule as ApiGatewayModule } from '../src/modules/subscription/subscription.module';
 import { SubscriptionModule as SubscriptionModule } from '../../subscription-service/src/modules/subscription/subscription.module';
-import { ConfirmationModule as ConfirmationModule } from '../../subscription-service/src/modules/confirmation/confirmation.module';
-import { UnsubscriptionModule as UnsubscriptionModule } from '../../subscription-service/src/modules/unsubscription/unsubscription.module';
 import { SubscriptionRepositoryInterface } from '../../subscription-service/src/modules/repository/subscription.repository.interface';
 import {
   ClientOptions,
@@ -59,8 +57,6 @@ describe('Subscription Endpoints', () => {
     const subscriptionServiceModule = await Test.createTestingModule({
       imports: [
         SubscriptionModule,
-        ConfirmationModule,
-        UnsubscriptionModule,
         TypeOrmModule.forRoot({
           type: 'postgres',
           host: containers.postgres.host,

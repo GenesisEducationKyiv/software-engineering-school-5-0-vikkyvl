@@ -1,5 +1,5 @@
-import { Frequency } from '../../../../common/shared/enums/frequency.enum';
-import { SubscriptionDto } from '../../../../common/shared/dtos/subscription/subscription.dto';
+import { Frequency } from '../../../../common/shared';
+import { SubscriptionDto } from '../../../../common/shared';
 
 export class SubscriptionServiceBuilder {
   private static readonly TEST_EMAIL = 'test_user@example.com';

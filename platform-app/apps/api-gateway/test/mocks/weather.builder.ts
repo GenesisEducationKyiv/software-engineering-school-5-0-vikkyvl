@@ -1,4 +1,4 @@
-import { WeatherDto } from '../../../../common/shared/dtos/weather/weather.dto';
+import { WeatherDto } from '../../../../common/shared';
 
 export class WeatherBuilder {
   private static readonly TEST_TEMP_C: number = 18.7;

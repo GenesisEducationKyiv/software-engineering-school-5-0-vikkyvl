@@ -1,6 +1,6 @@
 import { WeatherApiResponse } from '../../src/modules/external/dto/weather-api-response';
 import { Weather } from '../../src/entities/weather.entity';
-import { WeatherDto } from '../../../../common/shared/dtos/weather/weather.dto';
+import { WeatherDto } from '../../../../common/shared';
 
 export class WeatherServiceBuilder {
   private static readonly TEST_TEMP_C: number = 18.7;
