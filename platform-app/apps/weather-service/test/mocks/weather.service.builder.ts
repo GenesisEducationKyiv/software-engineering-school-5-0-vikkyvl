@@ -1,6 +1,6 @@
-import { WeatherApiResponse } from '../../src/modules/external/dto/weather-api-response';
 import { Weather } from '../../src/entities/weather.entity';
 import { WeatherDto } from '../../../../common/shared';
+import { WeatherGeneralResponseDto } from '../../src/modules/external/dto';
 
 export class WeatherServiceBuilder {
   private static readonly TEST_TEMP_C: number = 18.7;
@@ -16,15 +16,11 @@ export class WeatherServiceBuilder {
     '2024-01-01T00:00:00Z',
   );
 
-  public static weatherApiResponse(): WeatherApiResponse {
+  public static weatherGeneralResponse(): WeatherGeneralResponseDto {
     return {
-      current: {
-        temp_c: this.TEST_TEMP_C,
-        humidity: this.TEST_HUMIDITY,
-        condition: {
-          text: this.TEST_CONDITION,
-        },
-      },
+      temperature: this.TEST_TEMP_C,
+      humidity: this.TEST_HUMIDITY,
+      description: this.TEST_CONDITION,
     };
   }
 

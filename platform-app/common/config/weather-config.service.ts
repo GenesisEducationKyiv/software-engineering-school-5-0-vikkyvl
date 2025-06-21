@@ -1,9 +1,6 @@
 import { BrokerConfigInterface } from './interfaces/broker-config.interface';
-import { WeatherApiConfigInterface } from './interfaces/weather-api-config.interface';
 
-class WeatherConfigService
-  implements BrokerConfigInterface, WeatherApiConfigInterface
-{
+class WeatherConfigService implements BrokerConfigInterface {
   constructor() {}
 
   public getBrokerUrl() {
@@ -16,14 +13,6 @@ class WeatherConfigService
 
   public getQueueName() {
     return process.env.WEATHER_SERVICE ?? 'weather-service';
-  }
-
-  public getWeatherApiUrl() {
-    return process.env.WEATHER_API_URL || '';
-  }
-
-  public getWeatherApiKey() {
-    return process.env.WEATHER_API_KEY;
   }
 }
 

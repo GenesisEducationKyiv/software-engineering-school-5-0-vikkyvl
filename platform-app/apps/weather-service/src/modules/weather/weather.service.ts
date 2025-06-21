@@ -26,16 +26,16 @@ export class WeatherService implements WeatherServiceInterface {
 
     const weather: Weather = this.weatherRepository.createWeather({
       city,
-      temperature: response.current.temp_c,
-      humidity: response.current.humidity,
-      description: response.current.condition.text,
+      temperature: response.temperature,
+      humidity: response.humidity,
+      description: response.description,
     });
     await this.weatherRepository.saveWeather(weather);
 
     return {
-      temperature: response.current.temp_c,
-      humidity: response.current.humidity,
-      description: response.current.condition.text,
+      temperature: response.temperature,
+      humidity: response.humidity,
+      description: response.description,
     };
   }
 }
