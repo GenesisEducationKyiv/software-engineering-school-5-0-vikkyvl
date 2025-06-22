@@ -1,7 +1,10 @@
 import * as nodemailer from 'nodemailer';
 import { configService } from '../../../../../../../../common/config/subscription-config.service';
+import { Injectable } from '@nestjs/common';
+import { TransporterInterface } from '../email-sender.service';
 
-export class Transporter {
+@Injectable()
+export class Transporter implements TransporterInterface {
   private readonly transporter: nodemailer.Transporter;
   private isDelivered: boolean = true;
 
@@ -39,5 +42,3 @@ export class Transporter {
     return this.isDelivered;
   }
 }
-
-export const transporter = new Transporter();
