@@ -8,6 +8,7 @@ import { SubscriptionRepository } from '../repository/subscription.repository';
 import { LinkService } from '../external/link/link.service';
 import { ConfirmationService } from './confirmation.service';
 import { UnsubscriptionService } from './unsubscription.service';
+import { Transporter } from '../external/mail/email/utils/transporter';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Subscription])],
@@ -16,9 +17,10 @@ import { UnsubscriptionService } from './unsubscription.service';
     SubscriptionService,
     ConfirmationService,
     UnsubscriptionService,
+    EmailSenderService,
     {
-      provide: 'EmailSenderServiceInterface',
-      useClass: EmailSenderService,
+      provide: 'TransporterInterface',
+      useClass: Transporter,
     },
     {
       provide: 'SubscriptionRepositoryInterface',

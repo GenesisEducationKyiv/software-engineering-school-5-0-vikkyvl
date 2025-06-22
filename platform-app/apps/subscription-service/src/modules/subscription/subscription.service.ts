@@ -4,7 +4,7 @@ import { RpcException } from '@nestjs/microservices';
 import { v4 as uuidv4 } from 'uuid';
 import { subscriptionErrors } from '../errors';
 import { MessageResponseDto } from '../../../../../common/shared';
-import { EmailSenderServiceInterface } from '../external/mail/email/email-sender.service';
+import { EmailSenderService } from '../external/mail/email/email-sender.service';
 import { SubscriptionRepositoryInterface } from '../repository/subscription.repository.interface';
 import { MailConnectionResultDto } from '../external/mail/email/dto/mail-connection-result.dto';
 
@@ -17,8 +17,7 @@ export class SubscriptionService implements SubscriptionServiceInterface {
   constructor(
     @Inject('SubscriptionRepositoryInterface')
     private readonly subscriptionRepository: SubscriptionRepositoryInterface,
-    @Inject('EmailSenderServiceInterface')
-    private readonly emailSenderService: EmailSenderServiceInterface,
+    private readonly emailSenderService: EmailSenderService,
   ) {}
 
   async formSubscription(dto: SubscriptionDto): Promise<MessageResponseDto> {
