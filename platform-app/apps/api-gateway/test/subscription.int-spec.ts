@@ -18,6 +18,7 @@ import { SubscriptionBuilder } from './mocks/subscription.builder';
 import { subscriptionErrors } from '../../subscription-service/src/modules/errors';
 import { configPostgres } from './utils/config-postgres';
 import { Response } from './utils/response.dto';
+import { EmailSenderService } from '../../subscription-service/src/modules/external/mail/email/email-sender.service';
 
 describe('Subscription Endpoints', () => {
   let containers: TestContainers;
@@ -70,7 +71,7 @@ describe('Subscription Endpoints', () => {
         TypeOrmModule.forFeature([Subscription]),
       ],
     })
-      .overrideProvider('EmailSenderServiceInterface')
+      .overrideProvider(EmailSenderService)
       .useValue({
         sendSubscriptionEmail: jest
           .fn()

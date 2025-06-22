@@ -18,14 +18,6 @@ export class SubscriptionServiceBuilder {
     };
   }
 
-  // public static emailToSend(): { email: string; confirmLink: string; unsubscribeLink: string; } {
-  //     return {
-  //         email: this.TEST_EMAIL,
-  //         confirmLink: this.TEST_CONFIRMATION_LINK,
-  //         unsubscribeLink: this.TEST_UNSUBSCRIBE_LINK,
-  //     };
-  // }
-
   public static links(): { confirmLink: string; unsubscribeLink: string } {
     return {
       confirmLink: this.TEST_CONFIRMATION_LINK,

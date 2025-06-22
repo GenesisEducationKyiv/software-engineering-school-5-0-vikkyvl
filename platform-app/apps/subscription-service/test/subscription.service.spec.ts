@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SubscriptionService } from '../src/modules/subscription/subscription.service';
-import { EmailSenderServiceInterface } from '../src/modules/external/mail/email/email-sender.service';
+import { EmailSenderService } from '../src/modules/external/mail/email/email-sender.service';
 import { SubscriptionRepositoryInterface } from '../src/modules/repository/subscription.repository.interface';
 import { SubscriptionServiceBuilder } from './mocks/subscription.service..builder';
 import { RpcException } from '@nestjs/microservices';
@@ -10,7 +10,7 @@ import { LinkServiceInterface } from '../src/modules/external/link/link.service'
 describe('Subscription Service (unit)', () => {
   let service: SubscriptionService;
   let mockRepository: jest.Mocked<SubscriptionRepositoryInterface>;
-  let mockEmailService: jest.Mocked<EmailSenderServiceInterface>;
+  let mockEmailService: jest.Mocked<EmailSenderService>;
   let mockLinkService: jest.Mocked<LinkServiceInterface>;
 
   beforeEach(async () => {
@@ -26,7 +26,7 @@ describe('Subscription Service (unit)', () => {
           },
         },
         {
-          provide: 'EmailSenderServiceInterface',
+          provide: EmailSenderService,
           useValue: {
             sendSubscriptionEmail: jest.fn(),
           },
@@ -42,7 +42,7 @@ describe('Subscription Service (unit)', () => {
 
     service = module.get<SubscriptionService>(SubscriptionService);
     mockRepository = module.get('SubscriptionRepositoryInterface');
-    mockEmailService = module.get('EmailSenderServiceInterface');
+    mockEmailService = module.get(EmailSenderService);
     mockLinkService = module.get('LinkServiceInterface');
   });
 
