@@ -1,21 +1,19 @@
-import { transporter } from './utils/transporter';
 import { subscriptionHtml } from './templates/subscription-confirmation';
 import { Inject, Injectable } from '@nestjs/common';
 import { MailConnectionResultDto } from './dto/mail-connection-result.dto';
 import { LinkServiceInterface } from '../../link/link.service';
 
-export interface EmailSenderServiceInterface {
-  sendSubscriptionEmail(
-    email: string,
-    token: string,
-  ): Promise<MailConnectionResultDto>;
+export interface TransporterInterface {
+  sendMail(email: string, html: string): Promise<boolean>;
 }
 
 @Injectable()
-export class EmailSenderService implements EmailSenderServiceInterface {
+export class EmailSenderService {
   constructor(
     @Inject('LinkServiceInterface')
     private readonly linkService: LinkServiceInterface,
+    @Inject('TransporterInterface')
+    private readonly transporter: TransporterInterface,
   ) {}
 
   async sendSubscriptionEmail(
@@ -28,7 +26,7 @@ export class EmailSenderService implements EmailSenderServiceInterface {
       .replace('{{confirmLink}}', confirmLink)
       .replace('{{unsubscribeLink}}', unsubscribeLink);
 
-    const response = await transporter.sendMail(email, html);
+    const response = await this.transporter.sendMail(email, html);
 
     return { isDelivered: response };
   }
