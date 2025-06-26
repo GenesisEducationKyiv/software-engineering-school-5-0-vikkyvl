@@ -36,8 +36,9 @@ describe('Weather Endpoints', () => {
   >;
   let delayCity: ReturnType<typeof WeatherBuilder.getDelayCity>;
 
-  let weatherApiResponse: ReturnType<typeof WeatherBuilder.weatherApiResponse>;
-  let weatherResponse: ReturnType<typeof WeatherBuilder.totalResult>;
+  let weatherGeneralResponse: ReturnType<
+    typeof WeatherBuilder.weatherGeneralResponse
+  >;
 
   jest.setTimeout(90000);
 
@@ -47,8 +48,7 @@ describe('Weather Endpoints', () => {
     invalidCityWithNumber = WeatherBuilder.getInvalidCityWithNumber();
     delayCity = WeatherBuilder.getDelayCity();
 
-    weatherApiResponse = WeatherBuilder.weatherApiResponse();
-    weatherResponse = WeatherBuilder.totalResult();
+    weatherGeneralResponse = WeatherBuilder.weatherGeneralResponse();
 
     containers = await setupTestContainers();
 
@@ -98,10 +98,10 @@ describe('Weather Endpoints', () => {
           }
 
           if (city === delayCity) {
-            return of(weatherApiResponse).pipe(delay(4000));
+            return of(weatherGeneralResponse).pipe(delay(4000));
           }
 
-          return Promise.resolve(weatherApiResponse);
+          return Promise.resolve(weatherGeneralResponse);
         }),
       })
       .compile();
@@ -143,7 +143,7 @@ describe('Weather Endpoints', () => {
 
       expect(weatherApiClient.fetchWeather).toHaveBeenCalledWith(city);
       expect(response.status).toBe(200);
-      expect(response.body).toEqual(weatherResponse);
+      expect(response.body).toEqual(weatherGeneralResponse);
     });
 
     it('/api/weather?city=invalidCity', async () => {

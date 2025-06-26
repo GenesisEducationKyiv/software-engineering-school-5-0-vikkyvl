@@ -42,7 +42,7 @@ describe('Weather Service (unit)', () => {
     let city: ReturnType<typeof WeatherServiceBuilder.getCity>;
     let invalidCity: ReturnType<typeof WeatherServiceBuilder.getInvalidCity>;
     let weatherData: ReturnType<
-      typeof WeatherServiceBuilder.weatherApiResponse
+      typeof WeatherServiceBuilder.weatherGeneralResponse
     >;
     let weatherEntity: ReturnType<typeof WeatherServiceBuilder.weatherEntity>;
     let totalResult: ReturnType<typeof WeatherServiceBuilder.totalResult>;
@@ -51,7 +51,7 @@ describe('Weather Service (unit)', () => {
     beforeEach(() => {
       city = WeatherServiceBuilder.getCity();
       invalidCity = WeatherServiceBuilder.getInvalidCity();
-      weatherData = WeatherServiceBuilder.weatherApiResponse();
+      weatherData = WeatherServiceBuilder.weatherGeneralResponse();
       weatherEntity = WeatherServiceBuilder.weatherEntity();
       totalResult = WeatherServiceBuilder.totalResult();
       dataToSave = WeatherServiceBuilder.dataToSave();

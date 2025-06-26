@@ -37,7 +37,7 @@ export class WeatherApiHandler extends AbstractWeatherApiDataHandler {
     } catch (error: unknown) {
       const err = error as AxiosError;
 
-      // logProviderResponse(this.provider, err.response?.status);
+      logProviderResponse(this.provider, err.response?.status);
 
       if (err.response?.status === weatherErrors.STATUS_400.status) {
         throw new RpcException(weatherErrors.CITY_NOT_FOUND);
