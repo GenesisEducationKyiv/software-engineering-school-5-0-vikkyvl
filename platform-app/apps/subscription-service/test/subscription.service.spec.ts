@@ -5,13 +5,12 @@ import { SubscriptionRepositoryInterface } from '../src/modules/repository/subsc
 import { SubscriptionServiceBuilder } from './mocks/subscription.service..builder';
 import { RpcException } from '@nestjs/microservices';
 import { subscriptionErrors } from '../src/modules/errors';
-import { LinkServiceInterface } from '../src/modules/external/link/link.service';
+import { Subscription } from '../src/entities/subscription.entity';
 
 describe('Subscription Service (unit)', () => {
   let service: SubscriptionService;
   let mockRepository: jest.Mocked<SubscriptionRepositoryInterface>;
   let mockEmailService: jest.Mocked<EmailSenderService>;
-  let mockLinkService: jest.Mocked<LinkServiceInterface>;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -31,38 +30,70 @@ describe('Subscription Service (unit)', () => {
             sendSubscriptionEmail: jest.fn(),
           },
         },
-        {
-          provide: 'LinkServiceInterface',
-          useValue: {
-            getLinks: jest.fn(),
-          },
-        },
       ],
     }).compile();
 
     service = module.get<SubscriptionService>(SubscriptionService);
     mockRepository = module.get('SubscriptionRepositoryInterface');
     mockEmailService = module.get(EmailSenderService);
-    mockLinkService = module.get('LinkServiceInterface');
   });
 
   describe('formSubscription()', () => {
-    let userForm: ReturnType<typeof SubscriptionServiceBuilder.userForm>;
-    let links: ReturnType<typeof SubscriptionServiceBuilder.links>;
+    let userFormWithExistingEmail: ReturnType<
+      typeof SubscriptionServiceBuilder.userFormWithExistingEmail
+    >;
+    let userFormWithWrongEmail: ReturnType<
+      typeof SubscriptionServiceBuilder.userFormWithWrongEmail
+    >;
+    let subscriptionEntity: ReturnType<
+      typeof SubscriptionServiceBuilder.subscriptionEntity
+    >;
 
     beforeEach(() => {
-      userForm = SubscriptionServiceBuilder.userForm();
-      links = SubscriptionServiceBuilder.links();
+      userFormWithExistingEmail =
+        SubscriptionServiceBuilder.userFormWithExistingEmail();
+      userFormWithWrongEmail =
+        SubscriptionServiceBuilder.userFormWithWrongEmail();
+      subscriptionEntity = SubscriptionServiceBuilder.subscriptionEntity();
 
-      mockRepository.findByEmail.mockResolvedValue(null);
-      mockLinkService.getLinks.mockReturnValue(links);
-      mockEmailService.sendSubscriptionEmail.mockResolvedValue({
-        isDelivered: false,
-      });
+      mockRepository.findByEmail.mockImplementation(
+        (email: string): Promise<Subscription | null> => {
+          if (email === userFormWithExistingEmail.email) {
+            return Promise.resolve(subscriptionEntity);
+          }
+
+          return Promise.resolve(null);
+        },
+      );
+
+      mockEmailService.sendSubscriptionEmail.mockImplementation(
+        (email: string) => {
+          if (email === userFormWithWrongEmail.email) {
+            return Promise.resolve({ isDelivered: false });
+          }
+
+          return Promise.resolve({ isDelivered: true });
+        },
+      );
     });
 
-    it('should throw throw RpcException if email not delivered and not call repository methods', async () => {
-      await expect(service.formSubscription(userForm)).rejects.toThrow(
+    it('should call repository methods and return confirmation message', async () => {
+      await expect(
+        service.formSubscription(userFormWithExistingEmail),
+      ).rejects.toThrow(
+        new RpcException(subscriptionErrors.EMAIL_ALREADY_SUBSCRIBED),
+      );
+
+      expect(mockRepository.findByEmail).toHaveBeenCalledWith(
+        userFormWithExistingEmail.email,
+      );
+      expect(mockEmailService.sendSubscriptionEmail).not.toHaveBeenCalled();
+    });
+
+    it('should throw RpcException if email not delivered and not call repository methods', async () => {
+      await expect(
+        service.formSubscription(userFormWithWrongEmail),
+      ).rejects.toThrow(
         new RpcException(subscriptionErrors.EMAIL_SENDING_FAILED),
       );
 
