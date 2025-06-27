@@ -12,14 +12,15 @@ const ConfirmPage = () => {
                 const data = await confirmSubscription(token!);
                 setMessage(data.message || 'Subscription confirmed.');
             } catch (err: any) {
-                // const errorMessage =
-                //     err?.response?.data?.message ||
-                //     err?.message ||
-                //     'Invalid or expired token.';
-                // setMessage(errorMessage);
+                const errorMessage =
+                    err?.response?.data?.message ||
+                    err?.message ||
+                    'Invalid or expired token.';
+                setMessage(errorMessage);
             }
         };
-        confirm();
+        console.log('Effect run');
+        void confirm();
     }, [token]);
 
     return (

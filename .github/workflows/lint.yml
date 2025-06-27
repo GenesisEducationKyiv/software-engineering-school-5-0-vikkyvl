@@ -6,42 +6,54 @@ on:
     pull_request:
         branches: [main]
 jobs:
-  api-gateway-lint:
-      runs-on: ubuntu-latest
-      defaults:
-          run:
-              working-directory: ./api-gateway
-      steps:
-          - uses: actions/checkout@v4
-          - uses: actions/setup-node@v4
-            with:
-                node-version: 18
-          - run: npm ci
-          - run: npm run lint
-
-
-  weather-service-lint:
-      runs-on: ubuntu-latest
-      defaults:
-          run:
-              working-directory: ./weather-service
-      steps:
-          - uses: actions/checkout@v4
-          - uses: actions/setup-node@v4
-            with:
-                node-version: 18
-          - run: npm ci
-          - run: npm run lint
-
-  subscription-service-lint:
-      runs-on: ubuntu-latest
-      defaults:
-          run:
-              working-directory: ./subscription-service
-      steps:
-          - uses: actions/checkout@v4
-          - uses: actions/setup-node@v4
-            with:
-                node-version: 18
-          - run: npm ci
-          - run: npm run lint
+    platform-app:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./platform-app
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+            - run: npm ci
+            - run: npm run lint
+#  api-gateway-lint:
+#      runs-on: ubuntu-latest
+#      defaults:
+#          run:
+#              working-directory: ./api-gateway
+#      steps:
+#          - uses: actions/checkout@v4
+#          - uses: actions/setup-node@v4
+#            with:
+#                node-version: 18
+#          - run: npm ci
+#          - run: npm run lint
+#
+#
+#  weather-service-lint:
+#      runs-on: ubuntu-latest
+#      defaults:
+#          run:
+#              working-directory: ./weather-service
+#      steps:
+#          - uses: actions/checkout@v4
+#          - uses: actions/setup-node@v4
+#            with:
+#                node-version: 18
+#          - run: npm ci
+#          - run: npm run lint
+#
+#  subscription-service-lint:
+#      runs-on: ubuntu-latest
+#      defaults:
+#          run:
+#              working-directory: ./subscription-service
+#      steps:
+#          - uses: actions/checkout@v4
+#          - uses: actions/setup-node@v4
+#            with:
+#                node-version: 18
+#          - run: npm ci
+#          - run: npm run lint
