@@ -21,6 +21,7 @@ import { Response } from './utils/response.dto';
 import { weatherErrors } from '../../weather-service/src/common';
 import { delay, of } from 'rxjs';
 import { errorMessages } from '../src/common';
+import { redisConfig } from '../../weather-service/src/modules/cache/config/config';
 
 describe('Weather Endpoints', () => {
   let containers: TestContainers;
@@ -72,6 +73,9 @@ describe('Weather Endpoints', () => {
     apiGatewayApp = apiGatewayModule.createNestApplication();
     apiGatewayApp.setGlobalPrefix('api');
     await apiGatewayApp.init();
+
+    redisConfig.host = containers.redis.host;
+    redisConfig.port = containers.redis.port;
 
     const weatherServiceModule = await Test.createTestingModule({
       imports: [
@@ -132,6 +136,7 @@ describe('Weather Endpoints', () => {
     await clientProxy.close();
     await containers.rabbit.container.stop();
     await containers.postgres.container.stop();
+    await containers.redis.container.stop();
   });
 
   describe('GET /api/weather/:city', () => {
