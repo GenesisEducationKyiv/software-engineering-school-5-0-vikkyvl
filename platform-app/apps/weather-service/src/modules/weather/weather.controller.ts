@@ -3,7 +3,7 @@ import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { WeatherService } from './weather.service';
 import { patterns } from '../../../../../common/shared';
 import { WeatherDto } from '../../../../../common/shared';
-import { weatherErrors } from '../errors';
+import { weatherErrors } from '../../common';
 
 @Controller('weather')
 export class WeatherController {
