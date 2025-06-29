@@ -18,8 +18,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { configPostgres } from './utils/config-postgres';
 import { Weather } from '../../weather-service/src/entities/weather.entity';
 import { Response } from './utils/response.dto';
-import { weatherErrors } from '../../weather-service/src/modules/errors';
+import { weatherErrors } from '../../weather-service/src/common';
 import { delay, of } from 'rxjs';
+import { errorMessages } from '../src/common';
 
 describe('Weather Endpoints', () => {
   let containers: TestContainers;
@@ -182,7 +183,7 @@ describe('Weather Endpoints', () => {
 
       expect(weatherApiClient.fetchWeather).toHaveBeenCalledWith(delayCity);
       expect(response.status).toBe(500);
-      expect(response.body.message).toEqual('Unable to retrieve weather data');
+      expect(response.body.message).toEqual(errorMessages.WEATHER.FAILED);
     });
   });
 });

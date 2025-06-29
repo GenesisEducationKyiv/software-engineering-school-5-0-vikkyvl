@@ -4,7 +4,7 @@ import { EmailSenderService } from '../src/modules/external/mail/email/email-sen
 import { SubscriptionRepositoryInterface } from '../src/modules/repository/subscription.repository.interface';
 import { SubscriptionServiceBuilder } from './mocks/subscription.service..builder';
 import { RpcException } from '@nestjs/microservices';
-import { subscriptionErrors } from '../src/modules/errors';
+import { subscriptionErrors } from '../src/common';
 import { Subscription } from '../src/entities/subscription.entity';
 
 describe('Subscription Service (unit)', () => {

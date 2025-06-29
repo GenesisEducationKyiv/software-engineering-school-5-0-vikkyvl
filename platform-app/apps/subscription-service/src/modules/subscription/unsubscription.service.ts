@@ -1,8 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
-import { subscriptionErrors } from '../errors';
+import { subscriptionErrors } from '../../common';
 import { MessageResponseDto } from '../../../../../common/shared';
 import { SubscriptionRepositoryInterface } from '../repository/subscription.repository.interface';
+import { messages } from '../../common';
 
 interface UnsubscriptionServiceInterface {
   unsubscribeSubscription(token: string): Promise<MessageResponseDto>;
@@ -24,6 +25,6 @@ export class UnsubscriptionService implements UnsubscriptionServiceInterface {
 
     await this.subscriptionRepository.deleteSubscription(subscription);
 
-    return { message: 'Unsubscribed successfully' };
+    return { message: messages.UNSUBSCRIPTION.SUCCESS };
   }
 }

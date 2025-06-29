@@ -1,5 +1,5 @@
 import * as nodemailer from 'nodemailer';
-import { configService } from '../../../../../../../../common/config/subscription-config.service';
+import { subscriptionConfigService } from '../../../../../../../../common/config';
 import { Injectable } from '@nestjs/common';
 import { TransporterInterface } from '../email-sender.service';
 
@@ -14,8 +14,8 @@ export class Transporter implements TransporterInterface {
       port: 465,
       secure: true,
       auth: {
-        user: configService.getEmailUser(),
-        pass: configService.getEmailPassword(),
+        user: subscriptionConfigService.getEmailUser(),
+        pass: subscriptionConfigService.getEmailPassword(),
       },
       tls: {
         rejectUnauthorized: false,
@@ -33,7 +33,7 @@ export class Transporter implements TransporterInterface {
     }
 
     await this.transporter.sendMail({
-      from: `Weather API Application <${configService.getEmailUser()}>`,
+      from: `Weather API Application <${subscriptionConfigService.getEmailUser()}>`,
       to: email,
       subject: 'Confirm your weather subscription',
       html,

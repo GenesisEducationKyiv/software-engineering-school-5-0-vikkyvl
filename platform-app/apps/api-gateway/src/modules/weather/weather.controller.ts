@@ -7,8 +7,9 @@ import {
   Query,
 } from '@nestjs/common';
 import { WeatherService } from './weather.service';
-import { Errors } from '../../common/errors';
+import { Errors } from '../../common';
 import { WeatherDto } from '../../../../../common/shared';
+import { errorMessages } from '../../common';
 
 @Controller('weather')
 export class WeatherController {
@@ -29,7 +30,7 @@ export class WeatherController {
         throw new BadRequestException(err.message);
       }
 
-      throw new InternalServerErrorException('Unable to retrieve weather data');
+      throw new InternalServerErrorException(errorMessages.WEATHER.FAILED);
     }
   }
 }

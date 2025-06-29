@@ -2,11 +2,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { SubscriptionDto } from '../../../../../common/shared';
 import { RpcException } from '@nestjs/microservices';
 import { v4 as uuidv4 } from 'uuid';
-import { subscriptionErrors } from '../errors';
+import { subscriptionErrors } from '../../common';
 import { MessageResponseDto } from '../../../../../common/shared';
 import { EmailSenderService } from '../external/mail/email/email-sender.service';
 import { SubscriptionRepositoryInterface } from '../repository/subscription.repository.interface';
 import { MailConnectionResultDto } from '../external/mail/email/dto/mail-connection-result.dto';
+import { messages } from '../../common';
 
 interface SubscriptionServiceInterface {
   formSubscription(dto: SubscriptionDto): Promise<MessageResponseDto>;
@@ -45,7 +46,7 @@ export class SubscriptionService implements SubscriptionServiceInterface {
     await this.subscriptionRepository.saveSubscription(subscription);
 
     return {
-      message: 'Confirmation email sent.',
+      message: messages.SUBSCRIPTION.EMAIL_SENT,
     };
   }
 }

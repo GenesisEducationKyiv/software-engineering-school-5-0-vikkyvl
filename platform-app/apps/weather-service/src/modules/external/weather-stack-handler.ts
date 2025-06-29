@@ -3,7 +3,7 @@ import { weatherStackConfigService } from './config';
 import { AbstractWeatherApiDataHandler } from './weather-api-data-handler';
 import { WeatherGeneralResponseDto } from './dto';
 import { WeatherStackResponseDto } from './dto/weather-stack-response.dto';
-import { weatherErrors } from '../errors';
+import { weatherErrors } from '../../common';
 import { RpcException } from '@nestjs/microservices';
 import { logProviderResponse } from './provider-logger';
 

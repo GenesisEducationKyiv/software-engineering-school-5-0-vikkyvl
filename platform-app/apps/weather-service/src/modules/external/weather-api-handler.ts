@@ -4,7 +4,7 @@ import { AbstractWeatherApiDataHandler } from './weather-api-data-handler';
 import { WeatherGeneralResponseDto } from './dto';
 import { WeatherApiResponseDto } from './dto';
 import { RpcException } from '@nestjs/microservices';
-import { weatherErrors } from '../errors';
+import { weatherErrors } from '../../common';
 import { logProviderResponse } from './provider-logger';
 
 export class WeatherApiHandler extends AbstractWeatherApiDataHandler {

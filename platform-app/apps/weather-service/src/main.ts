@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
-import { configService } from '../../../common/config/weather-config.service';
+import { weatherConfigService } from '../../../common/config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -10,8 +10,8 @@ async function bootstrap() {
     {
       transport: Transport.RMQ,
       options: {
-        urls: [configService.getBrokerUrl()],
-        queue: configService.getQueueName(),
+        urls: [weatherConfigService.getBrokerUrl()],
+        queue: weatherConfigService.getQueueName(),
         queueOptions: { durable: false },
       },
     },
@@ -19,7 +19,7 @@ async function bootstrap() {
   );
 
   await app.startAllMicroservices();
-  await app.listen(configService.getPort());
+  await app.listen(weatherConfigService.getPort());
 }
 bootstrap().catch((err) => {
   console.error('Error starting the application:', err);

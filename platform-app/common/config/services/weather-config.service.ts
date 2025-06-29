@@ -16,6 +16,6 @@ class WeatherConfigService implements BrokerConfigInterface {
   }
 }
 
-const configService = new WeatherConfigService();
+const weatherConfigService = new WeatherConfigService();
 
-export { configService };
+export { weatherConfigService };

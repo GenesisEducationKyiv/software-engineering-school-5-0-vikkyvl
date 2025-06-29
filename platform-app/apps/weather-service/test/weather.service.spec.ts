@@ -5,7 +5,7 @@ import {
 } from '../src/modules/weather/weather.service';
 import { WeatherApiClientServiceInterface } from '../src/modules/external/weather-api-client.service';
 import { WeatherServiceBuilder } from './mocks/weather.service.builder';
-import { weatherErrors } from '../src/modules/errors';
+import { weatherErrors } from '../src/common';
 import { RpcException } from '@nestjs/microservices';
 
 describe('Weather Service (unit)', () => {
