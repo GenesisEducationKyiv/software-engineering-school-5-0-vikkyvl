@@ -4,12 +4,9 @@ on:
   push:
     branches:
       - main
-  #  pull_request:
-  #    types: [opened, synchronize, reopened]
-  #    branches:
-  #      - main
-  #    branches-ignore:
-  #      - feedback
+#  pull_request:
+#    types: [opened, synchronize, reopened]
+#    branches: ["**", "!feedback"]
   workflow_dispatch:
 
 jobs:
