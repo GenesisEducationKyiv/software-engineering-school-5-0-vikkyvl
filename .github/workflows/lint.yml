@@ -1,11 +1,13 @@
 name: CI
 
 on:
-#    push:
-#        branches: [main]
+    push:
+        branches: [main]
     pull_request:
         types: [opened, synchronize, reopened]
         branches: ["**"]
+        branches-ignore:
+            - feedback
 
 concurrency:
     group: ${{ github.workflow }}-${{ github.ref }}
