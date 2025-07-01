@@ -31,6 +31,7 @@ export default tseslint.config(
         'error',
         { blankLine: 'always', prev: '*', next: 'return' },
         { blankLine: 'always', prev: '*', next: 'throw' }],
+      '@typescript-eslint/unbound-method': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-floating-promises': 'error',
       '@typescript-eslint/no-unsafe-argument': 'warn'

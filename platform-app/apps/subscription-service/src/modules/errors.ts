@@ -8,7 +8,7 @@ export const subscriptionErrors = {
     message: 'Email already exists',
   },
   INVALID_CONFIRMATION_TOKEN: {
-    status: 400,
+    status: 404,
     message: 'Invalid token',
   },
   INVALID_UNSUBSCRIPTION_TOKEN: {
