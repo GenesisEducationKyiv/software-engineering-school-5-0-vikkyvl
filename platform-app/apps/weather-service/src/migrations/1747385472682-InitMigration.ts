@@ -5,7 +5,7 @@ export class Init1747385472682 implements MigrationInterface {
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE "weather" ("id" SERIAL NOT NULL, "city" character varying NOT NULL, "temperature" double precision NOT NULL, "humidity" double precision NOT NULL, "description" character varying NOT NULL, "createdAt" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_af9937471586e6798a5e4865f2d" PRIMARY KEY ("id"))`,
+      `CREATE TABLE "weather" ("id" SERIAL PRIMARY KEY, "city" VARCHAR NOT NULL, "temperature" FLOAT NOT NULL, "humidity" FLOAT NOT NULL, "description" VARCHAR NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now());`,
     );
   }
 

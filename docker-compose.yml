@@ -21,29 +21,29 @@ services:
     volumes:
       - pg_data:/var/lib/postgresql/data
 
-  weather-service:
-    build: ./weather-service
-    ports:
-      - '3001:3000'
-    depends_on:
-      - rabbitmq
-      - postgres
-
-  subscription-service:
-    build: ./subscription-service
-    ports:
-      - '3002:3000'
-    depends_on:
-      - rabbitmq
-      - postgres
-
-  api-gateway:
-    build: ./api-gateway
-    ports:
-      - '3000:3000'
-    depends_on:
-      - weather-service
-      - subscription-service
+#  weather-service:
+#    build: ./weather-service
+#    ports:
+#      - '3001:3000'
+#    depends_on:
+#      - rabbitmq
+#      - postgres
+#
+#  subscription-service:
+#    build: ./subscription-service
+#    ports:
+#      - '3002:3000'
+#    depends_on:
+#      - rabbitmq
+#      - postgres
+#
+#  api-gateway:
+#    build: ./api-gateway
+#    ports:
+#      - '3000:3000'
+#    depends_on:
+#      - weather-service
+#      - subscription-service
 
 volumes:
   pg_data:
