@@ -1,12 +1,12 @@
-name: Lint all services
+name: CI
 
 on:
     push:
-        branches: ["**"]
-    pull_request:
         branches: [main]
+    pull_request:
+        branches: ["**"]
 jobs:
-    platform-app:
+    lint:
         runs-on: ubuntu-latest
         defaults:
             run:
@@ -18,7 +18,37 @@ jobs:
                   node-version: 18
             - run: npm ci
             - run: npm run lint
-            - run: npm run test:cov
+
+    unit-test:
+        runs-on: ubuntu-latest
+        needs: lint
+        defaults:
+            run:
+                working-directory: ./platform-app
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+            - run: npm ci
+            - run: npm run test:unit-cov
+            - uses: codecov/codecov-action@v5
+              with:
+                  token: ${{ secrets.CODECOV_TOKEN }}
+
+    integration-test:
+        runs-on: ubuntu-latest
+        needs: unit-test
+        defaults:
+            run:
+                working-directory: ./platform-app
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+            - run: npm ci
+            - run: npm run test:int-cov
             - uses: codecov/codecov-action@v5
               with:
                   token: ${{ secrets.CODECOV_TOKEN }}

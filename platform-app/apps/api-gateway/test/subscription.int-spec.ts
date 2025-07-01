@@ -1,6 +1,6 @@
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { setupTestContainers, TestContainers } from './utils/setup-containers';
 import { SubscriptionModule as ApiGatewayModule } from '../src/modules/subscription/subscription.module';
 import { SubscriptionModule as SubscriptionModule } from '../../subscription-service/src/modules/subscription/subscription.module';
@@ -19,20 +19,26 @@ import { subscriptionErrors } from '../../subscription-service/src/modules/error
 import { configPostgres } from './utils/config-postgres';
 import { Response } from './utils/response.dto';
 import { EmailSenderService } from '../../subscription-service/src/modules/external/mail/email/email-sender.service';
+import { throwError, TimeoutError } from 'rxjs';
 
 describe('Subscription Endpoints', () => {
+  let userFormWithWrongEmail: ReturnType<
+    typeof SubscriptionBuilder.userFormWithWrongEmail
+  >;
+
   let containers: TestContainers;
 
   let apiGatewayApp: INestApplication;
   let subscriptionServiceApp: INestApplication;
   let clientProxy: ClientProxy;
   let subscriptionRepository: SubscriptionRepositoryInterface;
-
-  const links = SubscriptionBuilder.links();
+  let emailSenderService: EmailSenderService;
 
   jest.setTimeout(90000);
 
   beforeAll(async () => {
+    userFormWithWrongEmail = SubscriptionBuilder.userFormWithWrongEmail();
+
     containers = await setupTestContainers();
 
     const apiGatewayModule: TestingModule = await Test.createTestingModule({
@@ -52,6 +58,7 @@ describe('Subscription Endpoints', () => {
       .compile();
 
     apiGatewayApp = apiGatewayModule.createNestApplication();
+    apiGatewayApp.useGlobalPipes(new ValidationPipe());
     apiGatewayApp.setGlobalPrefix('api');
     await apiGatewayApp.init();
 
@@ -75,11 +82,13 @@ describe('Subscription Endpoints', () => {
       .useValue({
         sendSubscriptionEmail: jest
           .fn()
-          .mockResolvedValue({ isDelivered: true }),
-      })
-      .overrideProvider('LinkServiceInterface')
-      .useValue({
-        getLinks: jest.fn().mockReturnValue(links),
+          .mockImplementation((email: string, token: string) => {
+            if (email === userFormWithWrongEmail.email && token) {
+              return Promise.resolve({ isDelivered: false });
+            }
+
+            return Promise.resolve({ isDelivered: true });
+          }),
       })
       .compile();
 
@@ -100,6 +109,8 @@ describe('Subscription Endpoints', () => {
     subscriptionRepository = subscriptionServiceApp.get(
       'SubscriptionRepositoryInterface',
     );
+    emailSenderService =
+      subscriptionServiceApp.get<EmailSenderService>(EmailSenderService);
   });
 
   afterAll(async () => {
@@ -112,9 +123,21 @@ describe('Subscription Endpoints', () => {
 
   describe('POST /api/subscribe', () => {
     let userForm: ReturnType<typeof SubscriptionBuilder.userForm>;
+    let userFormWithInvalidEmail: ReturnType<
+      typeof SubscriptionBuilder.userFormWithInvalidEmail
+    >;
+    let subscriptionEntity: ReturnType<
+      typeof SubscriptionBuilder.subscriptionEntity
+    >;
 
     beforeEach(() => {
       userForm = SubscriptionBuilder.userForm();
+      userFormWithInvalidEmail = SubscriptionBuilder.userFormWithInvalidEmail();
+      subscriptionEntity = SubscriptionBuilder.subscriptionEntity();
+    });
+
+    afterEach(async () => {
+      await subscriptionRepository.deleteSubscription(subscriptionEntity);
     });
 
     it('should subscribe a user', async () => {
@@ -124,18 +147,42 @@ describe('Subscription Endpoints', () => {
         .post('/api/subscribe')
         .send(userForm);
 
+      const record = await subscriptionRepository.findByEmail(userForm.email);
+      expect(emailSenderService.sendSubscriptionEmail).toHaveBeenCalledWith(
+        userForm.email,
+        record!.token,
+      );
+
       expect(response.status).toBe(201);
       expect(response.body).toEqual({
         message: 'Confirmation email sent.',
       });
     });
 
+    it('should not subscribe a user', async () => {
+      const response: Response = await request(
+        apiGatewayApp.getHttpServer() as Server,
+      )
+        .post('/api/subscribe')
+        .send(userFormWithInvalidEmail);
+
+      expect(response.status).toBe(400);
+      expect(response.body.message).toContain('email must be an email');
+    });
+
     it('should return 409 if user exists', async () => {
+      subscriptionRepository.createSubscription(subscriptionEntity);
+      await subscriptionRepository.saveSubscription(subscriptionEntity);
+
       const response: Response = await request(
         apiGatewayApp.getHttpServer() as Server,
       )
         .post('/api/subscribe')
         .send(userForm);
+
+      expect(emailSenderService.sendSubscriptionEmail).not.toHaveBeenCalledWith(
+        2,
+      );
 
       expect(response.status).toBe(
         subscriptionErrors.EMAIL_ALREADY_SUBSCRIBED.status,
@@ -144,6 +191,19 @@ describe('Subscription Endpoints', () => {
         subscriptionErrors.EMAIL_ALREADY_SUBSCRIBED.message,
       );
     });
+
+    it('should return 500 if email sending fails', async () => {
+      const response: Response = await request(
+        apiGatewayApp.getHttpServer() as Server,
+      )
+        .post('/api/subscribe')
+        .send(userFormWithWrongEmail);
+
+      expect(response.status).toBe(
+        subscriptionErrors.EMAIL_SENDING_FAILED.status,
+      );
+      expect(response.body.message).toBe('Failed to subscribe');
+    });
   });
 
   describe('GET /api/confirm/{token}', () => {
@@ -151,6 +211,9 @@ describe('Subscription Endpoints', () => {
     let invalidToken: ReturnType<typeof SubscriptionBuilder.invalidToken>;
     let tokenRecord: string | undefined;
     let confirmedRecord: boolean | undefined;
+    let subscriptionEntity: ReturnType<
+      typeof SubscriptionBuilder.subscriptionEntity
+    >;
 
     async function getSubscriptionTokenAndConfirmed(email: string) {
       const record = await subscriptionRepository.findByEmail(email);
@@ -161,15 +224,24 @@ describe('Subscription Endpoints', () => {
       };
     }
 
-    beforeEach(async () => {
+    beforeEach(() => {
       userForm = SubscriptionBuilder.userForm();
       invalidToken = SubscriptionBuilder.invalidToken();
+      subscriptionEntity = SubscriptionBuilder.subscriptionEntity();
+    });
 
-      ({ token: tokenRecord, confirmed: confirmedRecord } =
-        await getSubscriptionTokenAndConfirmed(userForm.email));
+    afterEach(async () => {
+      await subscriptionRepository.deleteSubscription(subscriptionEntity);
+      jest.restoreAllMocks();
     });
 
     it('should confirm a subscription', async () => {
+      subscriptionRepository.createSubscription(subscriptionEntity);
+      await subscriptionRepository.saveSubscription(subscriptionEntity);
+
+      ({ token: tokenRecord, confirmed: confirmedRecord } =
+        await getSubscriptionTokenAndConfirmed(userForm.email));
+
       expect(tokenRecord).toBeDefined();
 
       const response: Response = await request(
@@ -181,6 +253,14 @@ describe('Subscription Endpoints', () => {
     });
 
     it('should return a message if the subscription is already confirmed', async () => {
+      subscriptionEntity = SubscriptionBuilder.subscriptionEntity(true);
+
+      subscriptionRepository.createSubscription(subscriptionEntity);
+      await subscriptionRepository.saveSubscription(subscriptionEntity);
+
+      ({ token: tokenRecord, confirmed: confirmedRecord } =
+        await getSubscriptionTokenAndConfirmed(userForm.email));
+
       expect(confirmedRecord).toBeDefined();
 
       const response: Response = await request(
@@ -203,12 +283,28 @@ describe('Subscription Endpoints', () => {
         subscriptionErrors.INVALID_CONFIRMATION_TOKEN.message,
       );
     });
+
+    it('should return 500 if the confirmation fails', async () => {
+      jest.spyOn(clientProxy, 'send').mockImplementation(() => {
+        return throwError(() => new TimeoutError());
+      });
+
+      const response: Response = await request(
+        apiGatewayApp.getHttpServer() as Server,
+      ).get(`/api/confirm/${invalidToken}`);
+
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe('Failed to confirm subscription');
+    });
   });
 
   describe('GET /api/unsubscribe/{token}', () => {
     let userForm: ReturnType<typeof SubscriptionBuilder.userForm>;
     let invalidToken: ReturnType<typeof SubscriptionBuilder.invalidToken>;
     let tokenRecord: string | undefined;
+    let subscriptionEntity: ReturnType<
+      typeof SubscriptionBuilder.subscriptionEntity
+    >;
 
     async function getSubscriptionToken(email: string) {
       const record = await subscriptionRepository.findByEmail(email);
@@ -218,14 +314,23 @@ describe('Subscription Endpoints', () => {
       };
     }
 
-    beforeEach(async () => {
+    beforeEach(() => {
       userForm = SubscriptionBuilder.userForm();
       invalidToken = SubscriptionBuilder.invalidToken();
+      subscriptionEntity = SubscriptionBuilder.subscriptionEntity();
+    });
 
-      ({ token: tokenRecord } = await getSubscriptionToken(userForm.email));
+    afterEach(async () => {
+      await subscriptionRepository.deleteSubscription(subscriptionEntity);
+      jest.restoreAllMocks();
     });
 
     it('should unsubscribe a user', async () => {
+      subscriptionRepository.createSubscription(subscriptionEntity);
+      await subscriptionRepository.saveSubscription(subscriptionEntity);
+
+      ({ token: tokenRecord } = await getSubscriptionToken(userForm.email));
+
       expect(tokenRecord).toBeDefined();
 
       const response: Response = await request(
@@ -260,6 +365,19 @@ describe('Subscription Endpoints', () => {
       expect(response.body.message).toBe(
         subscriptionErrors.INVALID_UNSUBSCRIPTION_TOKEN.message,
       );
+    });
+
+    it('should return 500 if the unsubscription fails', async () => {
+      jest.spyOn(clientProxy, 'send').mockImplementation(() => {
+        return throwError(() => new TimeoutError());
+      });
+
+      const response: Response = await request(
+        apiGatewayApp.getHttpServer() as Server,
+      ).get(`/api/unsubscribe/${tokenRecord}`);
+
+      expect(response.status).toBe(500);
+      expect(response.body.message).toBe('Failed to confirm unsubscription');
     });
   });
 });

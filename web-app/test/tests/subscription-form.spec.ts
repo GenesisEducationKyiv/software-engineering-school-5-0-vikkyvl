@@ -11,7 +11,7 @@ import { response } from "../utils/consts/response";
 // Steps:
 // 1. Go to the page: http://localhost:3004.
 // 2. In the Email field, enter: test_user@example.com.
-// 3. In the City field, enter: test_user@example.com.
+// 3. In the City field, enter: Kyiv.
 // 4. In the Frequency dropdown, select: Daily.
 // 5. Click the Subscribe button.
 

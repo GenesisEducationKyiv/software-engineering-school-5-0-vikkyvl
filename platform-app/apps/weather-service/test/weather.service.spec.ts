@@ -71,6 +71,7 @@ describe('Weather Service (unit)', () => {
     it('should return current weather for a given city', async () => {
       const response = await mockWeatherApiClient.fetchWeather(city);
 
+      expect(mockWeatherApiClient.fetchWeather).toHaveBeenCalledWith(city);
       expect(response).toEqual(weatherData);
     });
 
@@ -78,6 +79,12 @@ describe('Weather Service (unit)', () => {
       await service.getWeatherFromAPI(city);
 
       expect(mockRepository.createWeather).toHaveBeenCalledWith(dataToSave);
+    });
+
+    it('should call saveWeather with correct data', async () => {
+      await service.getWeatherFromAPI(city);
+
+      expect(mockRepository.saveWeather).toHaveBeenCalledWith(weatherEntity);
     });
 
     it('should return correct DTO', async () => {
@@ -90,6 +97,9 @@ describe('Weather Service (unit)', () => {
       await expect(
         mockWeatherApiClient.fetchWeather(invalidCity),
       ).rejects.toThrow(RpcException);
+      expect(mockWeatherApiClient.fetchWeather).toHaveBeenCalledWith(
+        invalidCity,
+      );
     });
 
     it('should throw RpcException if city not found and not call save/create', async () => {

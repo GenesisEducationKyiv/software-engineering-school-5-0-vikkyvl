@@ -13,6 +13,7 @@ import { WeatherBuilder } from './mocks/weather.builder';
 import { Server } from 'http';
 import { WeatherModule as ApiGatewayModule } from '../src/modules/weather/weather.module';
 import { WeatherModule as WeatherModule } from '../../weather-service/src/modules/weather/weather.module';
+import { WeatherApiClientServiceInterface } from '../../weather-service/src/modules/external/weather-api-client.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { configPostgres } from './utils/config-postgres';
 import { Weather } from '../../weather-service/src/entities/weather.entity';
@@ -26,6 +27,7 @@ describe('Weather Endpoints', () => {
   let apiGatewayApp: INestApplication;
   let weatherServiceApp: INestApplication;
   let clientProxy: ClientProxy;
+  let weatherApiClient: WeatherApiClientServiceInterface;
 
   let city: ReturnType<typeof WeatherBuilder.getCity>;
   let invalidCity: ReturnType<typeof WeatherBuilder.getInvalidCity>;
@@ -118,6 +120,9 @@ describe('Weather Endpoints', () => {
     await weatherServiceApp.init();
 
     clientProxy = apiGatewayApp.get('WEATHER_SERVICE');
+    weatherApiClient = weatherServiceApp.get(
+      'WeatherApiClientServiceInterface',
+    );
   });
 
   afterAll(async () => {
@@ -136,6 +141,7 @@ describe('Weather Endpoints', () => {
         .get('/api/weather')
         .query({ city: city });
 
+      expect(weatherApiClient.fetchWeather).toHaveBeenCalledWith(city);
       expect(response.status).toBe(200);
       expect(response.body).toEqual(weatherResponse);
     });
@@ -147,6 +153,7 @@ describe('Weather Endpoints', () => {
         .get('/api/weather')
         .query({ city: invalidCity });
 
+      expect(weatherApiClient.fetchWeather).toHaveBeenCalledWith(invalidCity);
       expect(response.status).toBe(weatherErrors.CITY_NOT_FOUND.status);
       expect(response.body.message).toEqual(
         weatherErrors.CITY_NOT_FOUND.message,
@@ -173,6 +180,7 @@ describe('Weather Endpoints', () => {
         .get('/api/weather')
         .query({ city: delayCity });
 
+      expect(weatherApiClient.fetchWeather).toHaveBeenCalledWith(delayCity);
       expect(response.status).toBe(500);
       expect(response.body.message).toEqual('Unable to retrieve weather data');
     });
