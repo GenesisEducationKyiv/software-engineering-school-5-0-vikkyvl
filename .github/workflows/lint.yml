@@ -34,6 +34,7 @@ jobs:
             - run: npm run test:unit-cov
             - uses: codecov/codecov-action@v5
               with:
+                  flags: unit-test
                   token: ${{ secrets.CODECOV_TOKEN }}
 
     integration-test:
@@ -51,6 +52,7 @@ jobs:
             - run: npm run test:int-cov
             - uses: codecov/codecov-action@v5
               with:
+                  flags: integration-test
                   token: ${{ secrets.CODECOV_TOKEN }}
 #  api-gateway-lint:
 #      runs-on: ubuntu-latest
