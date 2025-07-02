@@ -10,7 +10,7 @@ export class RedisConfigService {
   }
 
   public getTTL() {
-    return Number(process.env.REDIS_TTL);
+    return Number(process.env.REDIS_TTL) || 900;
   }
 }
 
