@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { Redis } from 'ioredis';
-import { redisConfig } from './config/config';
+import { redisConfig, redisExpiry } from './config/config';
 
 @Injectable()
 export class RedisService implements OnModuleDestroy {
@@ -18,7 +18,7 @@ export class RedisService implements OnModuleDestroy {
     return this.client.get(key);
   }
 
-  async set(key: string, value: string, expiry: number): Promise<void> {
+  async set(key: string, value: string, expiry = redisExpiry): Promise<void> {
     await this.client.set(key, value, 'EX', expiry);
   }
 }

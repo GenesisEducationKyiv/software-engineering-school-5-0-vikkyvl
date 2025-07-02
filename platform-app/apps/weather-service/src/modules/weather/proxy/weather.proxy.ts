@@ -15,7 +15,6 @@ export class WeatherServiceProxy implements WeatherServiceInterface {
     let message: string;
     const prefix = 'weather:';
     const cacheKey = `${prefix}${city}`;
-    const ttlInSeconds = 15 * 60;
 
     const isCached = await this.redisService.get(cacheKey);
 
@@ -31,11 +30,7 @@ export class WeatherServiceProxy implements WeatherServiceInterface {
 
     const weatherData = await this.weatherService.getWeatherFromAPI(city);
 
-    await this.redisService.set(
-      cacheKey,
-      JSON.stringify(weatherData),
-      ttlInSeconds,
-    );
+    await this.redisService.set(cacheKey, JSON.stringify(weatherData));
 
     return weatherData;
   }

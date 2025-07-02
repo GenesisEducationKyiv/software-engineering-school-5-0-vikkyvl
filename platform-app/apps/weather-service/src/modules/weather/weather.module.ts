@@ -7,6 +7,9 @@ import { WeatherRepository } from '../repository/weather.repository';
 import { WeatherApiClientService } from '../external/weather-api-client.service';
 import { RedisService } from '../cache/redis.service';
 import { WeatherServiceProxy } from './proxy/weather.proxy';
+import { WeatherApiHandler } from '../external/providers';
+import { OpenWeatherMapHandler } from '../external/providers';
+import { WeatherStackHandler } from '../external/providers';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Weather])],
@@ -32,7 +35,21 @@ import { WeatherServiceProxy } from './proxy/weather.proxy';
         return new WeatherServiceProxy(weatherService, redisService);
       },
     },
+    {
+      provide: 'WeatherApiHandler',
+      useFactory: () => {
+        const weatherApiHandler = new WeatherApiHandler();
+        const openWeatherMapHandler = new OpenWeatherMapHandler();
+        const weatherStackHandler = new WeatherStackHandler();
+
+        weatherApiHandler
+          .setNextHandler(openWeatherMapHandler)
+          .setNextHandler(weatherStackHandler);
+
+        return weatherApiHandler;
+      },
+    },
   ],
-  exports: ['WeatherServiceInterface'],
+  exports: [WeatherService],
 })
 export class WeatherModule {}

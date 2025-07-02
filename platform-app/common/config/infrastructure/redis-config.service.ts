@@ -8,6 +8,10 @@ export class RedisConfigService {
   public getPort() {
     return Number(process.env.REDIS_PORT);
   }
+
+  public getTTL() {
+    return Number(process.env.REDIS_TTL);
+  }
 }
 
 const redisConfigService = new RedisConfigService();

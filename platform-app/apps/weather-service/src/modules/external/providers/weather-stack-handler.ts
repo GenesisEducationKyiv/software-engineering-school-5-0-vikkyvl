@@ -1,11 +1,10 @@
 import axios from 'axios';
-import { weatherStackConfigService } from './config';
-import { AbstractWeatherApiDataHandler } from './weather-api-data-handler';
-import { WeatherGeneralResponseDto } from './dto';
-import { WeatherStackResponseDto } from './dto/weather-stack-response.dto';
-import { weatherErrors } from '../../common';
+import { weatherStackConfigService } from '../config';
+import { AbstractWeatherApiDataHandler } from '../weather-api-data-handler';
+import { WeatherGeneralResponseDto } from '../dto';
+import { WeatherStackResponseDto } from '../dto/weather-stack-response.dto';
+import { weatherErrors } from '../../../common';
 import { RpcException } from '@nestjs/microservices';
-import { logProviderResponse } from './provider-logger';
 
 export class WeatherStackHandler extends AbstractWeatherApiDataHandler {
   constructor() {
@@ -15,7 +14,7 @@ export class WeatherStackHandler extends AbstractWeatherApiDataHandler {
     this.url = weatherStackConfigService.getUrl();
   }
 
-  async handleRequest(request: string): Promise<WeatherGeneralResponseDto> {
+  async fetchWeatherData(request: string): Promise<WeatherGeneralResponseDto> {
     const response = await axios.get<WeatherStackResponseDto>(this.url, {
       params: {
         access_key: this.apiKey,
@@ -26,14 +25,14 @@ export class WeatherStackHandler extends AbstractWeatherApiDataHandler {
       },
     });
 
-    logProviderResponse(this.provider, response.data);
-
     if (response.data.success === false || !response.data.current) {
       if (response.data.error?.code === 615) {
         throw new RpcException(weatherErrors.CITY_NOT_FOUND);
       }
 
-      return super.handleRequest(request);
+      throw new RpcException(
+        response.data.error?.info || weatherErrors.INTERNAL_ERROR,
+      );
     }
 
     return {
