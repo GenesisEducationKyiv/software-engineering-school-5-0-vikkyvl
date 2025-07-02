@@ -7,9 +7,12 @@ import { weatherErrors } from '../../../common';
 import { RpcException } from '@nestjs/microservices';
 
 export class WeatherStackHandler extends AbstractWeatherApiDataHandler {
+  provider = 'weatherstack.com';
+  private readonly apiKey: string;
+  private readonly url: string;
+
   constructor() {
     super();
-    this.provider = 'weatherstack.com';
     this.apiKey = weatherStackConfigService.getKey();
     this.url = weatherStackConfigService.getUrl();
   }
@@ -29,10 +32,6 @@ export class WeatherStackHandler extends AbstractWeatherApiDataHandler {
       if (response.data.error?.code === 615) {
         throw new RpcException(weatherErrors.CITY_NOT_FOUND);
       }
-
-      throw new RpcException(
-        response.data.error?.info || weatherErrors.INTERNAL_ERROR,
-      );
     }
 
     return {

@@ -15,15 +15,7 @@ export abstract class AbstractWeatherApiDataHandler
   implements WeatherApiDataHandlerInterface
 {
   protected nextHandler: WeatherApiDataHandlerInterface | null = null;
-  protected provider: string;
-  protected apiKey: string;
-  protected url: string;
-
-  protected constructor() {
-    this.provider = '';
-    this.apiKey = '';
-    this.url = '';
-  }
+  protected abstract provider: string;
 
   setNextHandler(
     handler: WeatherApiDataHandlerInterface,

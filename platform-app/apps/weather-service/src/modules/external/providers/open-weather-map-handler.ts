@@ -5,9 +5,12 @@ import { WeatherGeneralResponseDto } from '../dto';
 import { OpenWeatherMapResponseDto } from '../dto/open-weather-map-response.dto';
 
 export class OpenWeatherMapHandler extends AbstractWeatherApiDataHandler {
+  provider = 'openweathermap.org';
+  private readonly apiKey: string;
+  private readonly url: string;
+
   constructor() {
     super();
-    this.provider = 'openweathermap.org';
     this.apiKey = openWeatherMapConfigService.getKey();
     this.url = openWeatherMapConfigService.getUrl();
   }
