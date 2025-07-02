@@ -12,12 +12,11 @@ export function logProviderResponse(provider: string, response: unknown) {
     provider: provider,
     response: response,
   };
-
-  if (!fs.existsSync(LOG_FILE_PATH)) {
-    fs.mkdirSync(path.dirname(LOG_FILE_PATH), { recursive: true });
-  }
-
   try {
+    if (!fs.existsSync(LOG_FILE_PATH)) {
+      fs.mkdirSync(path.dirname(LOG_FILE_PATH), { recursive: true });
+    }
+
     fs.appendFileSync(LOG_FILE_PATH, JSON.stringify(logEntry) + '\n', {
       encoding: 'utf8',
     });

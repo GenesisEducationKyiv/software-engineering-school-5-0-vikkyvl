@@ -5,9 +5,12 @@ import { WeatherGeneralResponseDto } from '../dto';
 import { WeatherApiResponseDto } from '../dto';
 
 export class WeatherApiHandler extends AbstractWeatherApiDataHandler {
+  provider = 'weatherapi.com';
+  private readonly apiKey: string;
+  private readonly url: string;
+
   constructor() {
     super();
-    this.provider = 'weatherapi.com';
     this.apiKey = weatherApiConfigService.getKey();
     this.url = weatherApiConfigService.getUrl();
   }
