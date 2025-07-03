@@ -24,6 +24,8 @@
     "test": "jest",
     "test:unit": "jest --testRegex \".*\\.spec\\.ts$\"",
     "test:int": "jest --testRegex \".*\\.int-spec\\.ts$\"",
+    "test:unit-cov": "jest --coverage --testRegex \".*\\.spec\\.ts$\"",
+    "test:int-cov": "jest --coverage --testRegex \".*\\.int-spec\\.ts$\"",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
