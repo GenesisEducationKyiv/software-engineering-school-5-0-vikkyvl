@@ -1,19 +1,26 @@
 import { WeatherServiceInterface } from '../interface';
 import { WeatherDto } from '../../../../../../common/shared';
 import { Logger } from '@nestjs/common';
-import { RedisService } from '../../cache/redis.service';
+import { prefixKey } from '../constants';
+
+export interface RedisServiceInterface {
+  get(key: string): Promise<string | null>;
+  set(key: string, value: string): Promise<void>;
+}
 
 export class WeatherServiceProxy implements WeatherServiceInterface {
   private readonly logger = new Logger(WeatherServiceProxy.name);
 
   constructor(
     private readonly weatherService: WeatherServiceInterface,
-    private readonly redisService: RedisService,
+    private readonly redisService: RedisServiceInterface,
   ) {}
 
   async getWeatherFromAPI(city: string): Promise<WeatherDto> {
+    city = city.toLowerCase();
+
     let message: string;
-    const prefix = 'weather:';
+    const prefix = prefixKey.WEATHER;
     const cacheKey = `${prefix}${city}`;
 
     const isCached = await this.redisService.get(cacheKey);
