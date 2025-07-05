@@ -1,36 +1,24 @@
-import {
-  BadRequestException,
-  Controller,
-  Get,
-  InternalServerErrorException,
-  NotFoundException,
-  Query,
-} from '@nestjs/common';
+import { Controller, Get, Inject, Query } from '@nestjs/common';
 import { WeatherService } from './weather.service';
-import { Errors } from '../../common';
-import { WeatherDto } from '../../../../../common/shared';
+import { ErrorHandlerInterface } from '../../shared/handlers/interfaces';
+import { WeatherResponseDto } from '../../../../../common/shared';
 import { errorMessages } from '../../common';
+import { WeatherRequestDto } from '../../../../../common/shared';
 
 @Controller('weather')
 export class WeatherController {
-  constructor(private readonly weatherService: WeatherService) {}
+  constructor(
+    private readonly weatherService: WeatherService,
+    @Inject('ErrorHandlerInterface')
+    private readonly errorHandlerService: ErrorHandlerInterface,
+  ) {}
 
   @Get()
-  async get(@Query('city') city: string): Promise<WeatherDto> {
+  async get(@Query() dto: WeatherRequestDto): Promise<WeatherResponseDto> {
     try {
-      return await this.weatherService.getWeather(city);
+      return await this.weatherService.getWeather(dto.city);
     } catch (error: unknown) {
-      const err = error as Errors;
-
-      if (err?.status === 404) {
-        throw new NotFoundException(err.message);
-      }
-
-      if (err?.status === 400) {
-        throw new BadRequestException(err.message);
-      }
-
-      throw new InternalServerErrorException(errorMessages.WEATHER.FAILED);
+      this.errorHandlerService.handleError(error, errorMessages.WEATHER.FAILED);
     }
   }
 }

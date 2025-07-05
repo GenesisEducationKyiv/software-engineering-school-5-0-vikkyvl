@@ -3,7 +3,7 @@ import { SubscriptionService } from './subscription.service';
 import { ConfirmationService } from './confirmation.service';
 import { UnsubscriptionService } from './unsubscription.service';
 import { MessagePattern } from '@nestjs/microservices';
-import { SubscriptionDto } from '../../../../../common/shared';
+import { SubscriptionRequestDto } from '../../../../../common/shared';
 import { patterns } from '../../../../../common/shared';
 import { MessageResponseDto } from '../../../../../common/shared';
 
@@ -16,7 +16,9 @@ export class SubscriptionController {
   ) {}
 
   @MessagePattern(patterns.SUBSCRIPTION.CREATE_SUBSCRIPTION)
-  async createSubscription(data: SubscriptionDto): Promise<MessageResponseDto> {
+  async createSubscription(
+    data: SubscriptionRequestDto,
+  ): Promise<MessageResponseDto> {
     return this.subscriptionService.formSubscription(data);
   }
 

@@ -1,16 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SubscriptionDto } from '../../../../../common/shared';
+import { SubscriptionRequestDto } from '../../../../../common/shared';
 import { RpcException } from '@nestjs/microservices';
 import { v4 as uuidv4 } from 'uuid';
 import { subscriptionErrors } from '../../common';
 import { MessageResponseDto } from '../../../../../common/shared';
-import { EmailSenderService } from '../external/mail/email/email-sender.service';
-import { SubscriptionRepositoryInterface } from '../repository/subscription.repository.interface';
-import { MailConnectionResultDto } from '../external/mail/email/dto/mail-connection-result.dto';
+import { EmailSenderService } from './infrastructure/external/mail/email/email-sender.service';
+import { SubscriptionRepositoryInterface } from './infrastructure/repository/interfaces/subscription.repository.interface';
+import { MailConnectionResultDto } from './infrastructure/external/mail/email/dto/mail-connection-result.dto';
 import { messages } from '../../common';
 
 interface SubscriptionServiceInterface {
-  formSubscription(dto: SubscriptionDto): Promise<MessageResponseDto>;
+  formSubscription(dto: SubscriptionRequestDto): Promise<MessageResponseDto>;
 }
 
 @Injectable()
@@ -21,7 +21,9 @@ export class SubscriptionService implements SubscriptionServiceInterface {
     private readonly emailSenderService: EmailSenderService,
   ) {}
 
-  async formSubscription(dto: SubscriptionDto): Promise<MessageResponseDto> {
+  async formSubscription(
+    dto: SubscriptionRequestDto,
+  ): Promise<MessageResponseDto> {
     const isEmail = await this.subscriptionRepository.findByEmail(dto.email);
 
     if (isEmail) {
@@ -39,6 +41,8 @@ export class SubscriptionService implements SubscriptionServiceInterface {
 
     const subscription = this.subscriptionRepository.createSubscription({
       ...dto,
+      city: dto.city.toLowerCase(),
+      email: dto.email.toLowerCase(),
       confirmed: false,
       token,
     });

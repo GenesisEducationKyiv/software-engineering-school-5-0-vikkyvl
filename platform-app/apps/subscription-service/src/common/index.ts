@@ -1,2 +1,2 @@
-export * from './errors';
-export * from './messages';
+export * from './constantas/errors';
+export * from './constantas/messages';

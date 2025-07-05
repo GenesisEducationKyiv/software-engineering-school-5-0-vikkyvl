@@ -1,9 +1,9 @@
 import { Controller, Inject } from '@nestjs/common';
 import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { patterns } from '../../../../../common/shared';
-import { WeatherDto } from '../../../../../common/shared';
+import { WeatherResponseDto } from '../../../../../common/shared';
 import { weatherErrors } from '../../common';
-import { WeatherServiceInterface } from './interface';
+import { WeatherServiceInterface } from '../../common';
 
 @Controller('weather')
 export class WeatherController {
@@ -13,7 +13,7 @@ export class WeatherController {
   ) {}
 
   @MessagePattern(patterns.WEATHER.GET_WEATHER)
-  async getWeather(city: string): Promise<WeatherDto> {
+  async getWeather(city: string): Promise<WeatherResponseDto> {
     const hasNonAlphabetChars = /[^\p{L}\s-]/u.test(city);
 
     if (hasNonAlphabetChars) {

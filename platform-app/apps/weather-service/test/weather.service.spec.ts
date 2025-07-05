@@ -3,7 +3,7 @@ import {
   WeatherRepositoryInterface,
   WeatherService,
 } from '../src/modules/weather/weather.service';
-import { WeatherApiClientServiceInterface } from '../src/modules/external/weather-api-client.service';
+import { WeatherApiClientServiceInterface } from '../src/modules/weather/infrastructure/external/weather-api-client.service';
 import { WeatherServiceBuilder } from './mocks/weather.service.builder';
 import { weatherErrors } from '../src/common';
 import { RpcException } from '@nestjs/microservices';

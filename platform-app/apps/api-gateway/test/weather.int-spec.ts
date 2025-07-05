@@ -13,7 +13,7 @@ import { WeatherBuilder } from './mocks/weather.builder';
 import { Server } from 'http';
 import { WeatherModule as ApiGatewayModule } from '../src/modules/weather/weather.module';
 import { WeatherModule as WeatherModule } from '../../weather-service/src/modules/weather/weather.module';
-import { WeatherApiClientServiceInterface } from '../../weather-service/src/modules/external/weather-api-client.service';
+import { WeatherApiClientServiceInterface } from '../../weather-service/src/modules/weather/infrastructure/external/weather-api-client.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { configPostgres } from './utils/config-postgres';
 import { Weather } from '../../weather-service/src/entities/weather.entity';
@@ -21,7 +21,7 @@ import { Response } from './utils/response.dto';
 import { weatherErrors } from '../../weather-service/src/common';
 import { delay, of } from 'rxjs';
 import { errorMessages } from '../src/common';
-import { redisConfig } from '../../weather-service/src/modules/cache/config/config';
+import { redisConfig } from '../../weather-service/src/modules/weather/infrastructure/cache/config/config';
 
 describe('Weather Endpoints', () => {
   let containers: TestContainers;

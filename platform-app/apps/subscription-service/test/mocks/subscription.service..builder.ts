@@ -1,5 +1,5 @@
 import { Frequency } from '../../../../common/shared';
-import { SubscriptionDto } from '../../../../common/shared';
+import { SubscriptionRequestDto } from '../../../../common/shared';
 import { Subscription } from '../../src/entities/subscription.entity';
 
 export class SubscriptionServiceBuilder {
@@ -7,7 +7,7 @@ export class SubscriptionServiceBuilder {
   private static readonly TEST_EMAIL = 'test_user@example.com';
   private static readonly TEST_EXISTING_EMAIL = 'existing_user@example.com';
   private static readonly TEST_WRONG_EMAIL = 'wrong_user@example.com';
-  private static readonly TEST_CITY = 'Kyiv';
+  private static readonly TEST_CITY = 'kyiv';
   private static readonly TEST_FREQUENCY = Frequency.DAILY;
   private static readonly TEST_TOKEN = '5ffa803-6e9a-4f55-8fb8-09e60f464095';
   private static readonly TEST_CREATED_AT: Date = new Date(
@@ -17,7 +17,7 @@ export class SubscriptionServiceBuilder {
     '2024-01-01T00:00:00Z',
   );
 
-  public static userFormWithExistingEmail(): SubscriptionDto {
+  public static userFormWithExistingEmail(): SubscriptionRequestDto {
     return {
       email: this.TEST_EXISTING_EMAIL,
       city: this.TEST_CITY,
@@ -25,7 +25,7 @@ export class SubscriptionServiceBuilder {
     };
   }
 
-  public static userFormWithWrongEmail(): SubscriptionDto {
+  public static userFormWithWrongEmail(): SubscriptionRequestDto {
     return {
       email: this.TEST_WRONG_EMAIL,
       city: this.TEST_CITY,

@@ -7,11 +7,16 @@ import {
 import { WeatherController } from './weather.controller';
 import { WeatherService } from './weather.service';
 import { apiConfigService } from '../../../../../common/config';
+import { ErrorHandlerService } from '../../shared';
 
 @Module({
   controllers: [WeatherController],
   providers: [
     WeatherService,
+    {
+      provide: 'ErrorHandlerInterface',
+      useClass: ErrorHandlerService,
+    },
     {
       provide: 'WEATHER_SERVICE',
       useFactory: () =>

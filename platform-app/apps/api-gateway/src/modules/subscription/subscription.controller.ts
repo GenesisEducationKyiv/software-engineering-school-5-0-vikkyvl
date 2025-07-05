@@ -1,65 +1,50 @@
-import {
-  Body,
-  Controller,
-  InternalServerErrorException,
-  ConflictException,
-  Post,
-  NotFoundException,
-  Param,
-  Get,
-} from '@nestjs/common';
+import { Body, Controller, Post, Param, Get, Inject } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
-import { SubscriptionDto } from '../../../../../common/shared';
-import { Errors } from '../../common';
+import { SubscriptionRequestDto } from '../../../../../common/shared';
 import { MessageResponseDto } from '../../../../../common/shared';
 import { errorMessages } from '../../common';
+import { ErrorHandlerInterface } from '../../shared/handlers/interfaces';
+import {TokenRequestDto} from "../../../../../common/shared/dtos/subscription/token-request.dto";
 
 @Controller()
 export class SubscriptionController {
-  constructor(private readonly subscriptionService: SubscriptionService) {}
+  constructor(
+    private readonly subscriptionService: SubscriptionService,
+    @Inject('ErrorHandlerInterface')
+    private readonly errorHandlerService: ErrorHandlerInterface,
+  ) {}
 
   @Post('subscribe')
-  async create(@Body() dto: SubscriptionDto): Promise<MessageResponseDto> {
+  async create(@Body() dto: SubscriptionRequestDto): Promise<MessageResponseDto> {
     try {
       return await this.subscriptionService.createSubscription(dto);
     } catch (error: unknown) {
-      const err = error as Errors;
-
-      if (err?.status === 409) {
-        throw new ConflictException(err.message);
-      }
-
-      throw new InternalServerErrorException(errorMessages.SUBSCRIPTION.FAILED);
+      this.errorHandlerService.handleError(
+        error,
+        errorMessages.SUBSCRIPTION.FAILED,
+      );
     }
   }
 
   @Get('confirm/:token')
-  async confirm(@Param('token') token: string): Promise<MessageResponseDto> {
+  async confirm(@Param() dto:TokenRequestDto): Promise<MessageResponseDto> {
     try {
-      return await this.subscriptionService.confirmSubscription(token);
+      return await this.subscriptionService.confirmSubscription(dto.token);
     } catch (error: unknown) {
-      const err = error as Errors;
-
-      if (err?.status === 404) {
-        throw new NotFoundException(err.message);
-      }
-
-      throw new InternalServerErrorException(errorMessages.CONFIRMATION.FAILED);
+      this.errorHandlerService.handleError(
+        error,
+        errorMessages.CONFIRMATION.FAILED,
+      );
     }
   }
 
   @Get('unsubscribe/:token')
-  async remove(@Param('token') token: string): Promise<MessageResponseDto> {
+  async remove(@Param() dto:TokenRequestDto): Promise<MessageResponseDto> {
     try {
-      return await this.subscriptionService.unsubscribeSubscription(token);
+      return await this.subscriptionService.unsubscribeSubscription(dto.token);
     } catch (error: unknown) {
-      const err = error as Errors;
-
-      if (err?.status === 404) {
-        throw new NotFoundException(err.message);
-      }
-
-      throw new InternalServerErrorException(
+      this.errorHandlerService.handleError(
+        error,
         errorMessages.UNSUBSCRIPTION.FAILED,
       );
     }

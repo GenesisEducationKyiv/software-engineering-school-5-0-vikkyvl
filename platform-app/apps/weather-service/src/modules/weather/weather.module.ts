@@ -3,14 +3,14 @@ import { WeatherController } from './weather.controller';
 import { WeatherService } from './weather.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Weather } from '../../entities/weather.entity';
-import { WeatherRepository } from '../repository/weather.repository';
-import { WeatherApiClientService } from '../external/weather-api-client.service';
+import { WeatherRepository } from './infrastructure/repository/weather.repository';
+import { WeatherApiClientService } from './infrastructure/external/weather-api-client.service';
 import { WeatherServiceProxy } from './proxy/weather.proxy';
-import { WeatherApiHandler } from '../external/providers';
-import { OpenWeatherMapHandler } from '../external/providers';
-import { WeatherStackHandler } from '../external/providers';
-import { RedisService } from '../cache/redis.service';
-import { redisClientFactory } from '../cache/redis.client.factory';
+import { WeatherApiHandler } from './infrastructure/external/providers';
+import { OpenWeatherMapHandler } from './infrastructure/external/providers';
+import { WeatherStackHandler } from './infrastructure/external/providers';
+import { RedisService } from './infrastructure/cache/redis.service';
+import { redisClientFactory } from './infrastructure/cache/redis.client.factory';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Weather])],

@@ -1,7 +1,7 @@
-import { WeatherServiceInterface } from '../interface';
-import { WeatherDto } from '../../../../../../common/shared';
+import { WeatherServiceInterface } from '../../../common';
+import { WeatherResponseDto } from '../../../../../../common/shared';
 import { Logger } from '@nestjs/common';
-import { prefixKey } from '../constants';
+import { prefixKey } from '../../../common';
 
 export interface RedisServiceInterface {
   get(key: string): Promise<string | null>;
@@ -16,7 +16,7 @@ export class WeatherServiceProxy implements WeatherServiceInterface {
     private readonly redisService: RedisServiceInterface,
   ) {}
 
-  async getWeatherFromAPI(city: string): Promise<WeatherDto> {
+  async getWeatherFromAPI(city: string): Promise<WeatherResponseDto> {
     city = city.toLowerCase();
 
     let message: string;
@@ -29,7 +29,7 @@ export class WeatherServiceProxy implements WeatherServiceInterface {
       message = `"${city}" found in cache`;
       this.logger.log(message);
 
-      return JSON.parse(isCached) as WeatherDto;
+      return JSON.parse(isCached) as WeatherResponseDto;
     }
 
     message = `"${city}" not found in cache, adding to cache`;

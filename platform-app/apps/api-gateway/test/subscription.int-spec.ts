@@ -4,7 +4,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { setupTestContainers, TestContainers } from './utils/setup-containers';
 import { SubscriptionModule as ApiGatewayModule } from '../src/modules/subscription/subscription.module';
 import { SubscriptionModule as SubscriptionModule } from '../../subscription-service/src/modules/subscription/subscription.module';
-import { SubscriptionRepositoryInterface } from '../../subscription-service/src/modules/repository/subscription.repository.interface';
+import { SubscriptionRepositoryInterface } from '../../subscription-service/src/modules/subscription/infrastructure/repository/interfaces/subscription.repository.interface';
 import {
   ClientOptions,
   ClientProxy,
@@ -18,7 +18,7 @@ import { SubscriptionBuilder } from './mocks/subscription.builder';
 import { subscriptionErrors } from '../../subscription-service/src/common';
 import { configPostgres } from './utils/config-postgres';
 import { Response } from './utils/response.dto';
-import { EmailSenderService } from '../../subscription-service/src/modules/external/mail/email/email-sender.service';
+import { EmailSenderService } from '../../subscription-service/src/modules/subscription/infrastructure/external/mail/email/email-sender.service';
 import { throwError, TimeoutError } from 'rxjs';
 import { messages } from '../../subscription-service/src/common';
 import { errorMessages } from '../src/common';

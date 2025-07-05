@@ -7,11 +7,16 @@ import {
 import { SubscriptionController } from './subscription.controller';
 import { SubscriptionService } from './subscription.service';
 import { apiConfigService } from '../../../../../common/config';
+import { ErrorHandlerService } from '../../shared';
 
 @Module({
   controllers: [SubscriptionController],
   providers: [
     SubscriptionService,
+    {
+      provide: 'ErrorHandlerInterface',
+      useClass: ErrorHandlerService,
+    },
     {
       provide: 'SUBSCRIPTION_SERVICE',
       useFactory: () =>
