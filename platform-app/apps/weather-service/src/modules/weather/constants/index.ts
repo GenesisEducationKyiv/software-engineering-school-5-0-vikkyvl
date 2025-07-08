@@ -1,3 +1,3 @@
-import { prefixKey } from './keys';
+import { cachePrefixKey } from './cache';
 
-export { prefixKey };
+export { cachePrefixKey };

@@ -1,11 +1,14 @@
 import { Inject, Injectable, OnModuleDestroy } from '@nestjs/common';
 import { redisExpiry } from './config/config';
-import { RedisServiceInterface } from '../weather/proxy/weather.proxy';
+import { CacheServiceInterface } from '../weather/proxy/weather.proxy';
 import { Redis } from 'ioredis';
+import { cacheTokens } from '../../common';
 
 @Injectable()
-export class RedisService implements OnModuleDestroy, RedisServiceInterface {
-  constructor(@Inject('RedisClient') private readonly client: Redis) {}
+export class RedisService implements OnModuleDestroy, CacheServiceInterface {
+  constructor(
+    @Inject(cacheTokens.REDIS_CLIENT) private readonly client: Redis,
+  ) {}
 
   async onModuleDestroy() {
     await this.client.quit();
