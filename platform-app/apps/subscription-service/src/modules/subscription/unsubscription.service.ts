@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
-import { subscriptionErrors } from '../../common';
+import { subscriptionErrors, subscriptionTokens } from '../../common';
 import { MessageResponseDto } from '../../../../../common/shared';
 import { SubscriptionRepositoryInterface } from './infrastructure/repository/interfaces/subscription.repository.interface';
 import { messages } from '../../common';
@@ -12,7 +12,7 @@ interface UnsubscriptionServiceInterface {
 @Injectable()
 export class UnsubscriptionService implements UnsubscriptionServiceInterface {
   constructor(
-    @Inject('SubscriptionRepositoryInterface')
+    @Inject(subscriptionTokens.SUBSCRIPTION_REPOSITORY_INTERFACE)
     private readonly subscriptionRepository: SubscriptionRepositoryInterface,
   ) {}
 

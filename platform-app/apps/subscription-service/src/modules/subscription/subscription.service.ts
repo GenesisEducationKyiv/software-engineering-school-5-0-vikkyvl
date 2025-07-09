@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { SubscriptionRequestDto } from '../../../../../common/shared';
 import { RpcException } from '@nestjs/microservices';
 import { v4 as uuidv4 } from 'uuid';
-import { subscriptionErrors } from '../../common';
+import { subscriptionErrors, subscriptionTokens } from '../../common';
 import { MessageResponseDto } from '../../../../../common/shared';
 import { EmailSenderService } from './infrastructure/external/mail/email/email-sender.service';
 import { SubscriptionRepositoryInterface } from './infrastructure/repository/interfaces/subscription.repository.interface';
@@ -16,7 +16,7 @@ interface SubscriptionServiceInterface {
 @Injectable()
 export class SubscriptionService implements SubscriptionServiceInterface {
   constructor(
-    @Inject('SubscriptionRepositoryInterface')
+    @Inject(subscriptionTokens.SUBSCRIPTION_REPOSITORY_INTERFACE)
     private readonly subscriptionRepository: SubscriptionRepositoryInterface,
     private readonly emailSenderService: EmailSenderService,
   ) {}

@@ -93,7 +93,7 @@ describe('Weather Endpoints', () => {
         TypeOrmModule.forFeature([Weather]),
       ],
     })
-      .overrideProvider('WeatherApiClientServiceInterface')
+      .overrideProvider('WeatherServiceProxy')
       .useValue({
         fetchWeather: jest.fn().mockImplementation((city: string) => {
           if (city === invalidCity) {
@@ -106,7 +106,10 @@ describe('Weather Endpoints', () => {
             return of(weatherGeneralResponse).pipe(delay(4000));
           }
 
-          return Promise.resolve(weatherGeneralResponse);
+          return Promise.resolve({
+            response: weatherGeneralResponse,
+            isRecordInCache: false,
+          });
         }),
       })
       .compile();
@@ -125,9 +128,7 @@ describe('Weather Endpoints', () => {
     await weatherServiceApp.init();
 
     clientProxy = apiGatewayApp.get('WEATHER_SERVICE');
-    weatherApiClient = weatherServiceApp.get(
-      'WeatherApiClientServiceInterface',
-    );
+    weatherApiClient = weatherServiceApp.get('WeatherServiceProxy');
   });
 
   afterAll(async () => {

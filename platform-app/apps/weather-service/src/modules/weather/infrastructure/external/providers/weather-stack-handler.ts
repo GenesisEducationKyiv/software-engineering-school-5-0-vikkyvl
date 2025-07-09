@@ -2,7 +2,7 @@ import axios from 'axios';
 import { weatherStackConfigService } from '../config';
 import { AbstractWeatherApiDataHandler } from '../weather-api-data-handler';
 import { WeatherGeneralResponseDto } from '../dto';
-import { WeatherStackResponseDto } from '../dto/weather-stack-response.dto';
+import { WeatherStackResponseDto } from '../dto';
 import { weatherErrors } from '../../../../../common';
 import { RpcException } from '@nestjs/microservices';
 

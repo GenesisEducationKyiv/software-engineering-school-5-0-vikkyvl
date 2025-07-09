@@ -1,16 +1,13 @@
-import { Controller, Inject } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { patterns } from '../../../../../common/shared';
 import { WeatherResponseDto } from '../../../../../common/shared';
 import { weatherErrors } from '../../common';
-import { WeatherServiceInterface } from '../../common';
+import { WeatherService } from './weather.service';
 
 @Controller('weather')
 export class WeatherController {
-  constructor(
-    @Inject('WeatherServiceInterface')
-    private weatherService: WeatherServiceInterface,
-  ) {}
+  constructor(private weatherService: WeatherService) {}
 
   @MessagePattern(patterns.WEATHER.GET_WEATHER)
   async getWeather(city: string): Promise<WeatherResponseDto> {
