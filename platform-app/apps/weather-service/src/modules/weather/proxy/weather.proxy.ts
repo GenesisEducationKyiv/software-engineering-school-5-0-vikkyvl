@@ -1,7 +1,7 @@
 import { Logger } from '@nestjs/common';
 import { cachePrefixKey } from '../../../common';
 import { WeatherApiClientServiceInterface } from '../infrastructure/external/weather-api-client.service';
-import { WeatherFetchResult } from '../infrastructure/external/dto/weather-fetch-result.dto';
+import { WeatherFetchResult } from '../infrastructure/external/dto';
 import { WeatherGeneralResponseDto } from '../infrastructure/external/dto';
 
 export interface CacheServiceInterface {
