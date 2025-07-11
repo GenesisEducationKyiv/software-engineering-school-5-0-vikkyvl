@@ -3,8 +3,7 @@ import { weatherStackConfigService } from '../config';
 import { AbstractWeatherApiDataHandler } from '../weather-api-data-handler';
 import { WeatherGeneralResponseDto } from '../dto';
 import { WeatherStackResponseDto } from '../dto';
-import { weatherErrors } from '../../../../../common';
-import { RpcException } from '@nestjs/microservices';
+import { CityNotFound } from '../../../../../common';
 
 export class WeatherStackHandler extends AbstractWeatherApiDataHandler {
   provider = 'weatherstack.com';
@@ -30,7 +29,7 @@ export class WeatherStackHandler extends AbstractWeatherApiDataHandler {
 
     if (response.data.success === false || !response.data.current) {
       if (response.data.error?.code === 615) {
-        throw new RpcException(weatherErrors.CITY_NOT_FOUND);
+        throw new CityNotFound();
       }
     }
 

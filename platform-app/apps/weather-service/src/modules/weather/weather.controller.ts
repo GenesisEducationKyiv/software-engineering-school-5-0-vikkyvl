@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { patterns } from '../../../../../common/shared';
 import { WeatherResponseDto } from '../../../../../common/shared';
-import { weatherErrors } from '../../common';
+import { DomainException, IntervalError, InvalidRequest } from '../../common';
 import { WeatherService } from './weather.service';
 
 @Controller('weather')
@@ -14,9 +14,20 @@ export class WeatherController {
     const hasNonAlphabetChars = /[^\p{L}\s-]/u.test(city);
 
     if (hasNonAlphabetChars) {
-      throw new RpcException(weatherErrors.INVALID_REQUEST);
+      throw new InvalidRequest();
     }
 
-    return this.weatherService.getWeatherFromAPI(city);
+    try {
+      return await this.weatherService.getWeatherFromAPI(city);
+    } catch (error: unknown) {
+      if (error instanceof DomainException) {
+        throw new RpcException({
+          status: error.getStatus(),
+          message: error.getMessage(),
+        });
+      }
+
+      throw new IntervalError();
+    }
   }
 }

@@ -25,6 +25,10 @@ export class ErrorHandlerService implements ErrorHandlerInterface {
       throw new BadRequestException(err.message);
     }
 
+    if (err.status === 500) {
+      throw new InternalServerErrorException(err.message);
+    }
+
     throw new InternalServerErrorException(defaultMessage);
   }
 }

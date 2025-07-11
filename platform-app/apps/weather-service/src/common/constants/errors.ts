@@ -13,4 +13,8 @@ export const weatherErrors = {
     status: 500,
     message: 'Internal error.',
   },
+  PROVIDERS_NOT_AVAILABLE: {
+    status: 500,
+    message: 'All weather API handlers failed to process the request.',
+  },
 };

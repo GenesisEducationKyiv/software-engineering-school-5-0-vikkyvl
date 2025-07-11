@@ -19,4 +19,8 @@ export const subscriptionErrors = {
     status: 500,
     message: 'Failed to send email.',
   },
+  UNEXPECTED_ERROR: {
+    status: 500,
+    message: 'An unexpected error occurred.',
+  },
 };
