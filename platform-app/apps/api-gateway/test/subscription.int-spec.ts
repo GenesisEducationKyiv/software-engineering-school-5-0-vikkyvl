@@ -204,7 +204,9 @@ describe('Subscription Endpoints', () => {
       expect(response.status).toBe(
         subscriptionErrors.EMAIL_SENDING_FAILED.status,
       );
-      expect(response.body.message).toBe(errorMessages.SUBSCRIPTION.FAILED);
+      expect(response.body.message).toBe(
+        subscriptionErrors.EMAIL_SENDING_FAILED.message,
+      );
     });
   });
 

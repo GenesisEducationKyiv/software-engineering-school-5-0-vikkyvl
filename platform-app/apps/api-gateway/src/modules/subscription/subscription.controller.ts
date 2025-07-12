@@ -4,7 +4,7 @@ import { SubscriptionRequestDto } from '../../../../../common/shared';
 import { MessageResponseDto } from '../../../../../common/shared';
 import { errorMessages } from '../../common';
 import { ErrorHandlerInterface } from '../../shared/handlers/interfaces';
-import {TokenRequestDto} from "../../../../../common/shared/dtos/subscription/token-request.dto";
+import { TokenRequestDto } from '../../../../../common/shared/dtos/subscription/token-request.dto';
 
 @Controller()
 export class SubscriptionController {
@@ -15,7 +15,9 @@ export class SubscriptionController {
   ) {}
 
   @Post('subscribe')
-  async create(@Body() dto: SubscriptionRequestDto): Promise<MessageResponseDto> {
+  async create(
+    @Body() dto: SubscriptionRequestDto,
+  ): Promise<MessageResponseDto> {
     try {
       return await this.subscriptionService.createSubscription(dto);
     } catch (error: unknown) {
@@ -27,7 +29,7 @@ export class SubscriptionController {
   }
 
   @Get('confirm/:token')
-  async confirm(@Param() dto:TokenRequestDto): Promise<MessageResponseDto> {
+  async confirm(@Param() dto: TokenRequestDto): Promise<MessageResponseDto> {
     try {
       return await this.subscriptionService.confirmSubscription(dto.token);
     } catch (error: unknown) {
@@ -39,7 +41,7 @@ export class SubscriptionController {
   }
 
   @Get('unsubscribe/:token')
-  async remove(@Param() dto:TokenRequestDto): Promise<MessageResponseDto> {
+  async remove(@Param() dto: TokenRequestDto): Promise<MessageResponseDto> {
     try {
       return await this.subscriptionService.unsubscribeSubscription(dto.token);
     } catch (error: unknown) {

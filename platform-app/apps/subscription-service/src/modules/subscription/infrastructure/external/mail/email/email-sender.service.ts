@@ -2,6 +2,7 @@ import { subscriptionHtml } from './templates/subscription-confirmation';
 import { Inject, Injectable } from '@nestjs/common';
 import { MailConnectionResultDto } from './dto/mail-connection-result.dto';
 import { LinkServiceInterface } from '../../link/link.service';
+import { subscriptionTokens } from '../../../../../../common';
 
 export interface TransporterInterface {
   sendMail(email: string, html: string): Promise<boolean>;
@@ -10,9 +11,9 @@ export interface TransporterInterface {
 @Injectable()
 export class EmailSenderService {
   constructor(
-    @Inject('LinkServiceInterface')
+    @Inject(subscriptionTokens.LINK_SERVICE_INTERFACE)
     private readonly linkService: LinkServiceInterface,
-    @Inject('TransporterInterface')
+    @Inject(subscriptionTokens.TRANSPORTER_INTERFACE)
     private readonly transporter: TransporterInterface,
   ) {}
 

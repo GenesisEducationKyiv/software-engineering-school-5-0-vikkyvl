@@ -22,3 +22,34 @@
 {"timestamp":"2025-07-02T10:56:58.144Z","provider":"weatherapi.com","response":{"temperature":24.2,"humidity":39,"description":"Partly Cloudy"}}
 {"timestamp":"2025-07-02T10:57:20.618Z","provider":"weatherapi.com","response":{"temperature":24.2,"humidity":39,"description":"Partly Cloudy"}}
 {"timestamp":"2025-07-04T20:52:12.075Z","provider":"weatherapi.com","response":{"temperature":17.7,"humidity":65,"description":"Partly Cloudy"}}
+{"timestamp":"2025-07-10T19:25:21.651Z","provider":"weatherapi.com","response":{"temperature":17.7,"humidity":68,"description":"Clear"}}
+{"timestamp":"2025-07-10T19:25:29.624Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-10T19:25:32.801Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-10T19:26:21.368Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-10T19:26:24.235Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T07:34:56.166Z","provider":"weatherapi.com","response":{"temperature":22,"humidity":47,"description":"Sunny"}}
+{"timestamp":"2025-07-11T07:35:01.479Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T07:37:55.755Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T07:43:01.970Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T07:44:25.097Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T07:47:23.330Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T07:47:25.318Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T07:48:42.981Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T07:51:10.222Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T07:51:15.821Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T07:52:13.367Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T07:53:04.056Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T07:54:34.687Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T08:00:48.826Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T08:00:50.593Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T08:03:11.131Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T08:03:13.448Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T08:04:07.505Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T08:04:09.355Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T08:12:42.288Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T08:12:43.960Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T08:12:46.904Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T08:12:48.369Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T08:12:49.545Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T08:13:43.573Z","provider":"weatherapi.com","response":"Request failed with status code 400"}
+{"timestamp":"2025-07-11T08:17:20.732Z","provider":"weatherapi.com","response":"Request failed with status code 400"}

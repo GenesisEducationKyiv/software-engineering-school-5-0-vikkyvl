@@ -1,25 +1,33 @@
-import { Controller, Inject } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { MessagePattern, RpcException } from '@nestjs/microservices';
 import { patterns } from '../../../../../common/shared';
 import { WeatherResponseDto } from '../../../../../common/shared';
-import { weatherErrors } from '../../common';
-import { WeatherServiceInterface } from '../../common';
+import { DomainException, IntervalError, InvalidRequest } from '../../common';
+import { WeatherService } from './weather.service';
 
 @Controller('weather')
 export class WeatherController {
-  constructor(
-    @Inject('WeatherServiceInterface')
-    private weatherService: WeatherServiceInterface,
-  ) {}
+  constructor(private weatherService: WeatherService) {}
 
   @MessagePattern(patterns.WEATHER.GET_WEATHER)
   async getWeather(city: string): Promise<WeatherResponseDto> {
     const hasNonAlphabetChars = /[^\p{L}\s-]/u.test(city);
 
     if (hasNonAlphabetChars) {
-      throw new RpcException(weatherErrors.INVALID_REQUEST);
+      throw new InvalidRequest();
     }
 
-    return this.weatherService.getWeatherFromAPI(city);
+    try {
+      return await this.weatherService.getWeatherFromAPI(city);
+    } catch (error: unknown) {
+      if (error instanceof DomainException) {
+        throw new RpcException({
+          status: error.getStatus(),
+          message: error.getMessage(),
+        });
+      }
+
+      throw new IntervalError();
+    }
   }
 }

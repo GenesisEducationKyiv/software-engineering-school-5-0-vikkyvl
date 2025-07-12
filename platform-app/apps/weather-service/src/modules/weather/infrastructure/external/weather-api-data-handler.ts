@@ -1,8 +1,10 @@
 import { WeatherGeneralResponseDto } from './dto';
-import { RpcException } from '@nestjs/microservices';
 import { weatherErrors } from '../../../../common';
 import { AxiosError } from 'axios';
 import { logProviderResponse } from './logger/provider-logger';
+import { WeatherProvidersFailed } from '../../../../common';
+import { CityNotFound } from '../../../../common';
+import { DomainException } from '../../../../common';
 
 export interface WeatherApiDataHandlerInterface {
   setNextHandler(
@@ -40,9 +42,7 @@ export abstract class AbstractWeatherApiDataHandler
         return this.nextHandler.handleRequest(request);
       }
 
-      throw new RpcException(
-        'All weather API handlers failed to process the request.',
-      );
+      throw new WeatherProvidersFailed();
     }
   }
 
@@ -54,9 +54,9 @@ export abstract class AbstractWeatherApiDataHandler
         error.response?.status === weatherErrors.STATUS_404.status ||
         error.response?.status === weatherErrors.STATUS_400.status
       ) {
-        throw new RpcException(weatherErrors.CITY_NOT_FOUND);
+        throw new CityNotFound();
       }
-    } else if (error instanceof RpcException) {
+    } else if (error instanceof DomainException) {
       logProviderResponse(this.provider, error.message);
 
       throw error;

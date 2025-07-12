@@ -2,7 +2,7 @@ import axios from 'axios';
 import { openWeatherMapConfigService } from '../config';
 import { AbstractWeatherApiDataHandler } from '../weather-api-data-handler';
 import { WeatherGeneralResponseDto } from '../dto';
-import { OpenWeatherMapResponseDto } from '../dto/open-weather-map-response.dto';
+import { OpenWeatherMapResponseDto } from '../dto';
 
 export class OpenWeatherMapHandler extends AbstractWeatherApiDataHandler {
   provider = 'openweathermap.org';

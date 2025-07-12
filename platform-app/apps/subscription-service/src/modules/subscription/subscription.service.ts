@@ -1,13 +1,13 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { SubscriptionRequestDto } from '../../../../../common/shared';
-import { RpcException } from '@nestjs/microservices';
 import { v4 as uuidv4 } from 'uuid';
-import { subscriptionErrors } from '../../common';
+import { EmailAlreadySubscribed, subscriptionTokens } from '../../common';
 import { MessageResponseDto } from '../../../../../common/shared';
 import { EmailSenderService } from './infrastructure/external/mail/email/email-sender.service';
 import { SubscriptionRepositoryInterface } from './infrastructure/repository/interfaces/subscription.repository.interface';
 import { MailConnectionResultDto } from './infrastructure/external/mail/email/dto/mail-connection-result.dto';
 import { messages } from '../../common';
+import { EmailSendingFailed } from '../../common';
 
 interface SubscriptionServiceInterface {
   formSubscription(dto: SubscriptionRequestDto): Promise<MessageResponseDto>;
@@ -16,7 +16,7 @@ interface SubscriptionServiceInterface {
 @Injectable()
 export class SubscriptionService implements SubscriptionServiceInterface {
   constructor(
-    @Inject('SubscriptionRepositoryInterface')
+    @Inject(subscriptionTokens.SUBSCRIPTION_REPOSITORY_INTERFACE)
     private readonly subscriptionRepository: SubscriptionRepositoryInterface,
     private readonly emailSenderService: EmailSenderService,
   ) {}
@@ -27,7 +27,7 @@ export class SubscriptionService implements SubscriptionServiceInterface {
     const isEmail = await this.subscriptionRepository.findByEmail(dto.email);
 
     if (isEmail) {
-      throw new RpcException(subscriptionErrors.EMAIL_ALREADY_SUBSCRIBED);
+      throw new EmailAlreadySubscribed();
     }
 
     const token = uuidv4();
@@ -36,7 +36,7 @@ export class SubscriptionService implements SubscriptionServiceInterface {
       await this.emailSenderService.sendSubscriptionEmail(dto.email, token);
 
     if (!resultConnection.isDelivered) {
-      throw new RpcException(subscriptionErrors.EMAIL_SENDING_FAILED);
+      throw new EmailSendingFailed();
     }
 
     const subscription = this.subscriptionRepository.createSubscription({
