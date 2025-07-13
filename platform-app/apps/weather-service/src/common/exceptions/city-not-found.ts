@@ -6,6 +6,10 @@ export class CityNotFound extends DomainException {
     super(weatherErrors.CITY_NOT_FOUND.message);
   }
 
+  getCode(): number {
+    return weatherErrors.CITY_NOT_FOUND.code;
+  }
+
   getStatus(): number {
     return weatherErrors.CITY_NOT_FOUND.status;
   }

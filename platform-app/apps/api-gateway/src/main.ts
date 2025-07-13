@@ -1,6 +1,5 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { MicroserviceOptions, Transport } from '@nestjs/microservices';
 import { apiConfigService } from '../../../common/config';
 import { ValidationPipe } from '@nestjs/common';
 
@@ -10,15 +9,6 @@ async function bootstrap() {
 
   app.setGlobalPrefix('api');
   app.enableCors({ origin: apiConfigService.getReactAppApiUrl() });
-
-  app.connectMicroservice<MicroserviceOptions>({
-    transport: Transport.RMQ,
-    options: {
-      urls: [apiConfigService.getBrokerUrl()],
-      queue: apiConfigService.getQueueName(),
-      queueOptions: { durable: false },
-    },
-  });
 
   await app.listen(apiConfigService.getPort());
 }

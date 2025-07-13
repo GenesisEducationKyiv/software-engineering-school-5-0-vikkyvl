@@ -8,24 +8,29 @@ import { WeatherController } from './weather.controller';
 import { WeatherService } from './weather.service';
 import { apiConfigService } from '../../../../../common/config';
 import { ErrorHandlerService } from '../../shared';
+import { serviceTokens, sharedTokens } from '../../common';
+import { join } from 'path';
 
 @Module({
   controllers: [WeatherController],
   providers: [
     WeatherService,
     {
-      provide: 'ErrorHandlerInterface',
+      provide: sharedTokens.ERROR_HANDLER_INTERFACE,
       useClass: ErrorHandlerService,
     },
     {
-      provide: 'WEATHER_SERVICE',
+      provide: serviceTokens.WEATHER_SERVICE,
       useFactory: () =>
         ClientProxyFactory.create({
-          transport: Transport.RMQ,
+          transport: Transport.GRPC,
           options: {
-            urls: [apiConfigService.getBrokerUrl()],
-            queue: 'weather-service',
-            queueOptions: { durable: false },
+            url: apiConfigService.getGrpcUrl(),
+            package: apiConfigService.getPackageName(),
+            protoPath: join(
+              process.cwd(),
+              'common/proto/weather/weather.proto',
+            ),
           },
         } as ClientOptions),
     },
