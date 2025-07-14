@@ -1,4 +1,4 @@
-export interface WeatherApiResponse {
+export interface WeatherApiResponseDto {
   current: {
     temp_c: number;
     humidity: number;

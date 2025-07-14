@@ -1,8 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
-import { subscriptionErrors } from '../errors';
+import { subscriptionErrors } from '../../common';
 import { MessageResponseDto } from '../../../../../common/shared';
 import { SubscriptionRepositoryInterface } from '../repository/subscription.repository.interface';
+import { messages } from '../../common';
 
 interface ConfirmationServiceInterface {
   confirmSubscription(token: string): Promise<MessageResponseDto>;
@@ -23,12 +24,12 @@ export class ConfirmationService implements ConfirmationServiceInterface {
     }
 
     if (subscription.confirmed) {
-      return { message: 'Subscription already confirmed' };
+      return { message: messages.CONFIRMATION.ALREADY_CONFIRMED };
     }
 
     subscription.confirmed = true;
     await this.subscriptionRepository.saveSubscription(subscription);
 
-    return { message: 'Subscription confirmed successfully' };
+    return { message: messages.CONFIRMATION.SUCCESS };
   }
 }

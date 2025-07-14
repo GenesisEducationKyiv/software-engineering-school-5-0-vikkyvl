@@ -1,5 +1,5 @@
 import { LinkDto } from './dto/link.dto';
-import { configService } from '../../../../../../common/config/subscription-config.service';
+import { subscriptionConfigService } from '../../../../../../common/config';
 import { Injectable } from '@nestjs/common';
 
 export interface LinkServiceInterface {
@@ -8,7 +8,7 @@ export interface LinkServiceInterface {
 
 @Injectable()
 export class LinkService implements LinkServiceInterface {
-  private baseUrl = configService.getReactAppApiUrl();
+  private baseUrl = subscriptionConfigService.getReactAppApiUrl();
 
   getLinks(token: string): LinkDto {
     return {

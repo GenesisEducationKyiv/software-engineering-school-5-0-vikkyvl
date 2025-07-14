@@ -32,6 +32,6 @@ class SubscriptionConfigService
   }
 }
 
-const configService = new SubscriptionConfigService();
+const subscriptionConfigService = new SubscriptionConfigService();
 
-export { configService };
+export { subscriptionConfigService };

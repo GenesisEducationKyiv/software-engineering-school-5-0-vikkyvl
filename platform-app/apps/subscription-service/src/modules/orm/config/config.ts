@@ -1,19 +1,13 @@
 import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions';
-import * as dotenv from 'dotenv';
-
-dotenv.config();
+import { postgresConfigService } from '../../../../../../common/config';
 
 export const typeOrmModuleOptions: PostgresConnectionOptions = {
   type: 'postgres',
-  host: process.env.DB_HOST,
-  port: Number(process.env.DB_PORT),
-  username: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  // url: process.env.DB_URL,
+  host: postgresConfigService.getHost(),
+  port: postgresConfigService.getPort(),
+  username: postgresConfigService.getUsername(),
+  password: postgresConfigService.getPassword(),
+  database: postgresConfigService.getDatabase(),
   synchronize: true,
   logging: false,
-  // ssl: {
-  //   rejectUnauthorized: false,
-  // },
 };

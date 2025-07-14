@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
-import { configService } from '../../../common/config/subscription-config.service';
+import { subscriptionConfigService } from '../../../common/config';
 import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
@@ -12,8 +12,8 @@ async function bootstrap() {
     {
       transport: Transport.RMQ,
       options: {
-        urls: [configService.getBrokerUrl()],
-        queue: configService.getQueueName(),
+        urls: [subscriptionConfigService.getBrokerUrl()],
+        queue: subscriptionConfigService.getQueueName(),
         queueOptions: { durable: false },
       },
     },
@@ -21,7 +21,7 @@ async function bootstrap() {
   );
 
   await app.startAllMicroservices();
-  await app.listen(configService.getPort());
+  await app.listen(subscriptionConfigService.getPort());
 }
 bootstrap().catch((err) => {
   console.error('Error starting the application:', err);

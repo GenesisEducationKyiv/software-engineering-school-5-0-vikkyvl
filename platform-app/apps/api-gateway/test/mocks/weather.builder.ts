@@ -1,5 +1,4 @@
-import { WeatherDto } from '../../../../common/shared';
-import { WeatherApiResponse } from '../../../weather-service/src/modules/external/dto/weather-api-response';
+import { WeatherGeneralResponseDto } from '../../../weather-service/src/modules/external/dto';
 
 export class WeatherBuilder {
   private static readonly TEST_TEMP_C: number = 18.7;
@@ -26,19 +25,7 @@ export class WeatherBuilder {
     return this.TEST_DELAY_CITY;
   }
 
-  public static weatherApiResponse(): WeatherApiResponse {
-    return {
-      current: {
-        temp_c: this.TEST_TEMP_C,
-        humidity: this.TEST_HUMIDITY,
-        condition: {
-          text: this.TEST_CONDITION,
-        },
-      },
-    };
-  }
-
-  public static totalResult(): WeatherDto {
+  public static weatherGeneralResponse(): WeatherGeneralResponseDto {
     return {
       temperature: this.TEST_TEMP_C,
       humidity: this.TEST_HUMIDITY,

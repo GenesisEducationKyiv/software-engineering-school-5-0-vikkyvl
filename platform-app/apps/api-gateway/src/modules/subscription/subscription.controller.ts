@@ -10,8 +10,9 @@ import {
 } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
 import { SubscriptionDto } from '../../../../../common/shared';
-import { Errors } from '../../common/errors';
+import { Errors } from '../../common';
 import { MessageResponseDto } from '../../../../../common/shared';
+import { errorMessages } from '../../common';
 
 @Controller()
 export class SubscriptionController {
@@ -28,7 +29,7 @@ export class SubscriptionController {
         throw new ConflictException(err.message);
       }
 
-      throw new InternalServerErrorException('Failed to subscribe');
+      throw new InternalServerErrorException(errorMessages.SUBSCRIPTION.FAILED);
     }
   }
 
@@ -43,7 +44,7 @@ export class SubscriptionController {
         throw new NotFoundException(err.message);
       }
 
-      throw new InternalServerErrorException('Failed to confirm subscription');
+      throw new InternalServerErrorException(errorMessages.CONFIRMATION.FAILED);
     }
   }
 
@@ -59,7 +60,7 @@ export class SubscriptionController {
       }
 
       throw new InternalServerErrorException(
-        'Failed to confirm unsubscription',
+        errorMessages.UNSUBSCRIPTION.FAILED,
       );
     }
   }

@@ -23,6 +23,6 @@ class ApiGatewayConfigService
   }
 }
 
-const configService = new ApiGatewayConfigService();
+const apiConfigService = new ApiGatewayConfigService();
 
-export { configService };
+export { apiConfigService };

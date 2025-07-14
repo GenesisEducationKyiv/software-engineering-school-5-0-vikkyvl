@@ -15,11 +15,13 @@ import { Subscription } from '../../subscription-service/src/entities/subscripti
 import { Server } from 'http';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubscriptionBuilder } from './mocks/subscription.builder';
-import { subscriptionErrors } from '../../subscription-service/src/modules/errors';
+import { subscriptionErrors } from '../../subscription-service/src/common';
 import { configPostgres } from './utils/config-postgres';
 import { Response } from './utils/response.dto';
 import { EmailSenderService } from '../../subscription-service/src/modules/external/mail/email/email-sender.service';
 import { throwError, TimeoutError } from 'rxjs';
+import { messages } from '../../subscription-service/src/common';
+import { errorMessages } from '../src/common';
 
 describe('Subscription Endpoints', () => {
   let userFormWithWrongEmail: ReturnType<
@@ -155,7 +157,7 @@ describe('Subscription Endpoints', () => {
 
       expect(response.status).toBe(201);
       expect(response.body).toEqual({
-        message: 'Confirmation email sent.',
+        message: messages.SUBSCRIPTION.EMAIL_SENT,
       });
     });
 
@@ -202,7 +204,7 @@ describe('Subscription Endpoints', () => {
       expect(response.status).toBe(
         subscriptionErrors.EMAIL_SENDING_FAILED.status,
       );
-      expect(response.body.message).toBe('Failed to subscribe');
+      expect(response.body.message).toBe(errorMessages.SUBSCRIPTION.FAILED);
     });
   });
 
@@ -249,7 +251,7 @@ describe('Subscription Endpoints', () => {
       ).get(`/api/confirm/${tokenRecord}`);
 
       expect(response.status).toBe(200);
-      expect(response.body.message).toBe('Subscription confirmed successfully');
+      expect(response.body.message).toBe(messages.CONFIRMATION.SUCCESS);
     });
 
     it('should return a message if the subscription is already confirmed', async () => {
@@ -268,7 +270,9 @@ describe('Subscription Endpoints', () => {
       ).get(`/api/confirm/${tokenRecord}`);
 
       expect(response.status).toBe(200);
-      expect(response.body.message).toBe('Subscription already confirmed');
+      expect(response.body.message).toBe(
+        messages.CONFIRMATION.ALREADY_CONFIRMED,
+      );
     });
 
     it('should return 404 for a completely invalid confirmation token', async () => {
@@ -294,7 +298,7 @@ describe('Subscription Endpoints', () => {
       ).get(`/api/confirm/${invalidToken}`);
 
       expect(response.status).toBe(500);
-      expect(response.body.message).toBe('Failed to confirm subscription');
+      expect(response.body.message).toBe(errorMessages.CONFIRMATION.FAILED);
     });
   });
 
@@ -338,7 +342,7 @@ describe('Subscription Endpoints', () => {
       ).get(`/api/unsubscribe/${tokenRecord}`);
 
       expect(response.status).toBe(200);
-      expect(response.body.message).toBe('Unsubscribed successfully');
+      expect(response.body.message).toBe(messages.UNSUBSCRIPTION.SUCCESS);
     });
 
     it('should return 404 if the unsubscription token is no longer valid', async () => {
@@ -377,7 +381,7 @@ describe('Subscription Endpoints', () => {
       ).get(`/api/unsubscribe/${tokenRecord}`);
 
       expect(response.status).toBe(500);
-      expect(response.body.message).toBe('Failed to confirm unsubscription');
+      expect(response.body.message).toBe(errorMessages.UNSUBSCRIPTION.FAILED);
     });
   });
 });

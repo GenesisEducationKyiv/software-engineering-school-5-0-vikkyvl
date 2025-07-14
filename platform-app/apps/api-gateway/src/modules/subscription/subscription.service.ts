@@ -2,7 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { SubscriptionDto } from '../../../../../common/shared';
 import { patterns } from '../../../../../common/shared';
-import { MicroserviceClient } from '../../common/microservice-client';
+import { MicroserviceClient } from '../../common';
 import { MessageResponseDto } from '../../../../../common/shared';
 
 @Injectable()
