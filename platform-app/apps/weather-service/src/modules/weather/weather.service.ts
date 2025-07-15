@@ -2,8 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { Weather } from '../../entities/weather.entity';
 import { WeatherDto } from '../../../../../common/shared';
 import { WeatherApiClientServiceInterface } from '../external/weather-api-client.service';
+import { weatherTokens } from '../../common';
 
-interface WeatherServiceInterface {
+export interface WeatherServiceInterface {
   getWeatherFromAPI(city: string): Promise<WeatherDto>;
 }
 
@@ -15,27 +16,31 @@ export interface WeatherRepositoryInterface {
 @Injectable()
 export class WeatherService implements WeatherServiceInterface {
   constructor(
-    @Inject('WeatherRepositoryInterface')
+    @Inject(weatherTokens.WEATHER_REPOSITORY_INTERFACE)
     private readonly weatherRepository: WeatherRepositoryInterface,
-    @Inject('WeatherApiClientServiceInterface')
+    @Inject(weatherTokens.WEATHER_SERVICE_PROXY)
     private readonly weatherApiClient: WeatherApiClientServiceInterface,
   ) {}
 
   async getWeatherFromAPI(city: string): Promise<WeatherDto> {
-    const response = await this.weatherApiClient.fetchWeather(city);
+    city = city.toLowerCase();
 
-    const weather: Weather = this.weatherRepository.createWeather({
-      city,
-      temperature: response.temperature,
-      humidity: response.humidity,
-      description: response.description,
-    });
-    await this.weatherRepository.saveWeather(weather);
+    const data = await this.weatherApiClient.fetchWeather(city);
+
+    if (!data.isRecordInCache) {
+      const weather: Weather = this.weatherRepository.createWeather({
+        city,
+        temperature: data.response.temperature,
+        humidity: data.response.humidity,
+        description: data.response.description,
+      });
+      await this.weatherRepository.saveWeather(weather);
+    }
 
     return {
-      temperature: response.temperature,
-      humidity: response.humidity,
-      description: response.description,
+      temperature: data.response.temperature,
+      humidity: data.response.humidity,
+      description: data.response.description,
     };
   }
 }

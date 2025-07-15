@@ -5,7 +5,7 @@ import {
 } from '../src/modules/weather/weather.service';
 import { WeatherApiClientServiceInterface } from '../src/modules/external/weather-api-client.service';
 import { WeatherServiceBuilder } from './mocks/weather.service.builder';
-import { weatherErrors } from '../src/common';
+import { weatherErrors, weatherTokens } from '../src/common';
 import { RpcException } from '@nestjs/microservices';
 
 describe('Weather Service (unit)', () => {
@@ -18,14 +18,14 @@ describe('Weather Service (unit)', () => {
       providers: [
         WeatherService,
         {
-          provide: 'WeatherRepositoryInterface',
+          provide: weatherTokens.WEATHER_REPOSITORY_INTERFACE,
           useValue: {
             createWeather: jest.fn(),
             saveWeather: jest.fn(),
           },
         },
         {
-          provide: 'WeatherApiClientServiceInterface',
+          provide: weatherTokens.WEATHER_SERVICE_PROXY,
           useValue: {
             fetchWeather: jest.fn(),
           },
@@ -34,8 +34,8 @@ describe('Weather Service (unit)', () => {
     }).compile();
 
     service = module.get<WeatherService>(WeatherService);
-    mockRepository = module.get('WeatherRepositoryInterface');
-    mockWeatherApiClient = module.get('WeatherApiClientServiceInterface');
+    mockRepository = module.get(weatherTokens.WEATHER_REPOSITORY_INTERFACE);
+    mockWeatherApiClient = module.get(weatherTokens.WEATHER_SERVICE_PROXY);
   });
 
   describe('getWeatherFromAPI()', () => {
@@ -61,7 +61,10 @@ describe('Weather Service (unit)', () => {
           return Promise.reject(new RpcException(weatherErrors.CITY_NOT_FOUND));
         }
 
-        return Promise.resolve(weatherData);
+        return Promise.resolve({
+          response: weatherData,
+          isRecordInCache: false,
+        });
       });
 
       mockRepository.createWeather.mockReturnValue(weatherEntity);
@@ -72,7 +75,7 @@ describe('Weather Service (unit)', () => {
       const response = await mockWeatherApiClient.fetchWeather(city);
 
       expect(mockWeatherApiClient.fetchWeather).toHaveBeenCalledWith(city);
-      expect(response).toEqual(weatherData);
+      expect(response.response).toEqual(weatherData);
     });
 
     it('should call createWeather with correct data', async () => {
