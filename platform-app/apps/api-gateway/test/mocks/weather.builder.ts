@@ -1,4 +1,4 @@
-import { WeatherGeneralResponseDto } from '../../../weather-service/src/modules/external/dto';
+import { WeatherGeneralResponseDto } from '../../../weather-service/src/modules/weather/infrastructure/external/dto';
 
 export class WeatherBuilder {
   private static readonly TEST_TEMP_C: number = 18.7;

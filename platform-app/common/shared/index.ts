@@ -1,10 +1,18 @@
 import { patterns } from './constants/patterns';
 
 import { MessageResponseDto } from './dtos/subscription/message-response.dto';
-import { SubscriptionDto } from './dtos/subscription/subscription.dto';
+import { SubscriptionRequestDto } from './dtos/subscription/subscription-request.dto';
 
-import { WeatherDto } from './dtos/weather/weather.dto';
+import { WeatherResponseDto } from './dtos/weather/weather-response.dto';
+import { WeatherRequestDto } from './dtos/weather/weather-request.dto';
 
 import { Frequency } from './enums/frequency.enum';
 
-export { patterns, MessageResponseDto, SubscriptionDto, WeatherDto, Frequency };
+export {
+  patterns,
+  MessageResponseDto,
+  SubscriptionRequestDto,
+  WeatherResponseDto,
+  WeatherRequestDto,
+  Frequency,
+};

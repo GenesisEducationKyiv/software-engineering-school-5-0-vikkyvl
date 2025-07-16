@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
-import { SubscriptionDto } from '../../../../../common/shared';
+import { SubscriptionRequestDto } from '../../../../../common/shared';
 import { patterns } from '../../../../../common/shared';
-import { MicroserviceClient } from '../../common';
+import { MicroserviceClient } from '../../shared';
 import { MessageResponseDto } from '../../../../../common/shared';
 
 @Injectable()
@@ -14,7 +14,9 @@ export class SubscriptionService extends MicroserviceClient {
     super(client);
   }
 
-  async createSubscription(dto: SubscriptionDto): Promise<MessageResponseDto> {
+  async createSubscription(
+    dto: SubscriptionRequestDto,
+  ): Promise<MessageResponseDto> {
     return this.send(patterns.SUBSCRIPTION.CREATE_SUBSCRIPTION, dto);
   }
 
