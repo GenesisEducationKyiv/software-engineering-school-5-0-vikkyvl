@@ -1,7 +1,13 @@
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { setupTestContainers, TestContainers } from './utils/setup-containers';
+import {
+  setupTestContainers,
+  TestContainers,
+  configPostgres,
+  Response,
+  DEFAULT_TEST_TIMEOUT,
+} from './utils';
 import { SubscriptionModule as ApiGatewayModule } from '../src/modules/subscription/subscription.module';
 import { SubscriptionModule as SubscriptionModule } from '../../subscription-service/src/modules/subscription/subscription.module';
 import { SubscriptionRepositoryInterface } from '../../subscription-service/src/modules/subscription/infrastructure/repository/interfaces/subscription.repository.interface';
@@ -16,12 +22,11 @@ import { Server } from 'http';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubscriptionBuilder } from './mocks/subscription.builder';
 import { subscriptionErrors } from '../../subscription-service/src/common';
-import { configPostgres } from './utils/config-postgres';
-import { Response } from './utils/response.dto';
 import { EmailSenderService } from '../../subscription-service/src/modules/subscription/infrastructure/external/mail/email/email-sender.service';
 import { throwError, TimeoutError } from 'rxjs';
 import { messages } from '../../subscription-service/src/common';
 import { errorMessages } from '../src/common';
+import { ErrorHandlerFilter as SubscriptionServiceFilter } from '../../subscription-service/src/common';
 
 describe('Subscription Endpoints', () => {
   let userFormWithWrongEmail: ReturnType<
@@ -36,7 +41,7 @@ describe('Subscription Endpoints', () => {
   let subscriptionRepository: SubscriptionRepositoryInterface;
   let emailSenderService: EmailSenderService;
 
-  jest.setTimeout(90000);
+  jest.setTimeout(DEFAULT_TEST_TIMEOUT);
 
   beforeAll(async () => {
     userFormWithWrongEmail = SubscriptionBuilder.userFormWithWrongEmail();
@@ -95,14 +100,18 @@ describe('Subscription Endpoints', () => {
       .compile();
 
     subscriptionServiceApp = subscriptionServiceModule.createNestApplication();
-    subscriptionServiceApp.connectMicroservice({
-      transport: Transport.RMQ,
-      options: {
-        urls: [containers.rabbit.url],
-        queue: 'subscription-service',
-        queueOptions: { durable: false },
+    subscriptionServiceApp.useGlobalFilters(new SubscriptionServiceFilter());
+    subscriptionServiceApp.connectMicroservice(
+      {
+        transport: Transport.RMQ,
+        options: {
+          urls: [containers.rabbit.url],
+          queue: 'subscription-service',
+          queueOptions: { durable: false },
+        },
       },
-    });
+      { inheritAppConfig: true },
+    );
 
     await subscriptionServiceApp.startAllMicroservices();
     await subscriptionServiceApp.init();

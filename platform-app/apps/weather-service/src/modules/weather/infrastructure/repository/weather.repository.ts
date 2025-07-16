@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { WeatherRepositoryInterface } from '../../weather.service';
+import { WeatherRepositoryInterface } from './interfaces/weather.repository.interface';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Weather } from '../../../../entities/weather.entity';
 import { Repository } from 'typeorm';
