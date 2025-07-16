@@ -11,4 +11,8 @@ export const errorMessages = {
   WEATHER: {
     FAILED: 'Unable to retrieve weather data.',
   },
+  INTERNAL_SERVER_ERROR: {
+    status: 500,
+    message: 'Internal server error.',
+  },
 };

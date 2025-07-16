@@ -1,4 +1,6 @@
 export interface Errors {
-  status: number;
-  message: string;
+  error: {
+    status: number;
+    message: string;
+  };
 }

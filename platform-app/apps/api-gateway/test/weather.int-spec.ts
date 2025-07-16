@@ -7,19 +7,25 @@ import {
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication } from '@nestjs/common';
-import { setupTestContainers, TestContainers } from './utils/setup-containers';
+import {
+  setupTestContainers,
+  TestContainers,
+  configPostgres,
+  Response,
+  DEFAULT_TEST_TIMEOUT,
+} from './utils';
 import { WeatherBuilder } from './mocks/weather.builder';
 import { Server } from 'http';
 import { WeatherModule as ApiGatewayModule } from '../src/modules/weather/weather.module';
 import { WeatherModule as WeatherModule } from '../../weather-service/src/modules/weather/weather.module';
 import { WeatherApiClientServiceInterface } from '../../weather-service/src/modules/weather/infrastructure/external/weather-api-client.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { configPostgres } from './utils/config-postgres';
 import { Weather } from '../../weather-service/src/entities/weather.entity';
-import { Response } from './utils/response.dto';
 import { CityNotFound, weatherErrors } from '../../weather-service/src/common';
 import { delay, of } from 'rxjs';
 import { redisConfig } from '../../weather-service/src/modules/weather/infrastructure/cache/config/config';
+import { ErrorHandlerFilter as WeatherServiceFilter } from '../../weather-service/src/common';
+import { errorMessages } from '../src/common';
 
 describe('Weather Endpoints', () => {
   let containers: TestContainers;
@@ -40,7 +46,7 @@ describe('Weather Endpoints', () => {
     typeof WeatherBuilder.weatherGeneralResponse
   >;
 
-  jest.setTimeout(90000);
+  jest.setTimeout(DEFAULT_TEST_TIMEOUT);
 
   beforeAll(async () => {
     city = WeatherBuilder.getCity();
@@ -111,14 +117,18 @@ describe('Weather Endpoints', () => {
       .compile();
 
     weatherServiceApp = weatherServiceModule.createNestApplication();
-    weatherServiceApp.connectMicroservice({
-      transport: Transport.RMQ,
-      options: {
-        urls: [containers.rabbit.url],
-        queue: 'weather-service',
-        queueOptions: { durable: false },
+    weatherServiceApp.useGlobalFilters(new WeatherServiceFilter());
+    weatherServiceApp.connectMicroservice(
+      {
+        transport: Transport.RMQ,
+        options: {
+          urls: [containers.rabbit.url],
+          queue: 'weather-service',
+          queueOptions: { durable: false },
+        },
       },
-    });
+      { inheritAppConfig: true },
+    );
 
     await weatherServiceApp.startAllMicroservices();
     await weatherServiceApp.init();
@@ -184,10 +194,8 @@ describe('Weather Endpoints', () => {
         .query({ city: delayCity });
 
       expect(weatherApiClient.fetchWeather).toHaveBeenCalledWith(delayCity);
-      expect(response.status).toBe(weatherErrors.INTERNAL_ERROR.status);
-      expect(response.body.message).toEqual(
-        weatherErrors.INTERNAL_ERROR.message,
-      );
+      expect(response.status).toBe(errorMessages.INTERNAL_SERVER_ERROR.status);
+      expect(response.body.message).toEqual(errorMessages.WEATHER.FAILED);
     });
   });
 });

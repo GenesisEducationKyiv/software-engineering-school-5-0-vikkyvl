@@ -3,14 +3,10 @@ import { Weather } from '../../entities/weather.entity';
 import { WeatherResponseDto } from '../../../../../common/shared';
 import { WeatherApiClientServiceInterface } from './infrastructure/external/weather-api-client.service';
 import { weatherTokens } from '../../common';
+import { WeatherRepositoryInterface } from './infrastructure/repository/interfaces/weather.repository.interface';
 
 export interface WeatherServiceInterface {
   getWeatherFromAPI(city: string): Promise<WeatherResponseDto>;
-}
-
-export interface WeatherRepositoryInterface {
-  createWeather(weather: Partial<Weather>): Weather;
-  saveWeather(weather: Weather): Promise<Weather>;
 }
 
 @Injectable()

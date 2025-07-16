@@ -1,8 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  WeatherRepositoryInterface,
-  WeatherService,
-} from '../src/modules/weather/weather.service';
+import { WeatherService } from '../src/modules/weather/weather.service';
+import { WeatherRepositoryInterface } from '../src/modules/weather/infrastructure/repository/interfaces/weather.repository.interface';
 import { WeatherApiClientServiceInterface } from '../src/modules/weather/infrastructure/external/weather-api-client.service';
 import { WeatherServiceBuilder } from './mocks/weather.service.builder';
 import { weatherErrors, weatherTokens } from '../src/common';
