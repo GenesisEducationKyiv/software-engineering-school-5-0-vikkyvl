@@ -16,6 +16,12 @@ export interface TestContainers {
     host: string;
     port: number;
   };
+  mailhog: {
+    container: StartedTestContainer;
+    host: string;
+    smtpPort: number;
+    webPort: number;
+  };
 }
 
 export async function setupTestContainers(): Promise<TestContainers> {
@@ -38,6 +44,10 @@ export async function setupTestContainers(): Promise<TestContainers> {
     .withExposedPorts(6379)
     .start();
 
+  const mailhogContainer = await new GenericContainer('mailhog/mailhog')
+    .withExposedPorts(1025, 8025)
+    .start();
+
   return {
     rabbit: {
       container: rabbitContainer,
@@ -52,6 +62,12 @@ export async function setupTestContainers(): Promise<TestContainers> {
       container: redisContainer,
       host: redisContainer.getHost(),
       port: redisContainer.getMappedPort(6379),
+    },
+    mailhog: {
+      container: mailhogContainer,
+      host: mailhogContainer.getHost(),
+      smtpPort: mailhogContainer.getMappedPort(1025),
+      webPort: mailhogContainer.getMappedPort(8025),
     },
   };
 }

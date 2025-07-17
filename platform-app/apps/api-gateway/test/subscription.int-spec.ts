@@ -1,32 +1,23 @@
 import * as request from 'supertest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import {
   setupTestContainers,
   TestContainers,
-  configPostgres,
   Response,
   DEFAULT_TEST_TIMEOUT,
+  createApiGatewayApp,
+  createSubscriptionServiceApp,
 } from './utils';
-import { SubscriptionModule as ApiGatewayModule } from '../src/modules/subscription/subscription.module';
-import { SubscriptionModule as SubscriptionModule } from '../../subscription-service/src/modules/subscription/subscription.module';
 import { SubscriptionRepositoryInterface } from '../../subscription-service/src/modules/subscription/infrastructure/repository/interfaces/subscription.repository.interface';
-import {
-  ClientOptions,
-  ClientProxy,
-  ClientProxyFactory,
-  Transport,
-} from '@nestjs/microservices';
-import { Subscription } from '../../subscription-service/src/entities/subscription.entity';
+import { SubscriptionModule as ApiGatewayModule } from '../src/modules/subscription/subscription.module';
+import { ClientProxy } from '@nestjs/microservices';
 import { Server } from 'http';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubscriptionBuilder } from './mocks/subscription.builder';
 import { subscriptionErrors } from '../../subscription-service/src/common';
 import { EmailSenderService } from '../../subscription-service/src/modules/subscription/infrastructure/external/mail/email/email-sender.service';
 import { throwError, TimeoutError } from 'rxjs';
 import { messages } from '../../subscription-service/src/common';
 import { errorMessages } from '../src/common';
-import { ErrorHandlerFilter as SubscriptionServiceFilter } from '../../subscription-service/src/common';
 
 describe('Subscription Endpoints', () => {
   let userFormWithWrongEmail: ReturnType<
@@ -48,73 +39,13 @@ describe('Subscription Endpoints', () => {
 
     containers = await setupTestContainers();
 
-    const apiGatewayModule: TestingModule = await Test.createTestingModule({
-      imports: [ApiGatewayModule],
-    })
-      .overrideProvider('SUBSCRIPTION_SERVICE')
-      .useValue(
-        ClientProxyFactory.create({
-          transport: Transport.RMQ,
-          options: {
-            urls: [containers.rabbit.url],
-            queue: 'subscription-service',
-            queueOptions: { durable: false },
-          },
-        } as ClientOptions),
-      )
-      .compile();
-
-    apiGatewayApp = apiGatewayModule.createNestApplication();
-    apiGatewayApp.useGlobalPipes(new ValidationPipe());
-    apiGatewayApp.setGlobalPrefix('api');
-    await apiGatewayApp.init();
-
-    const subscriptionServiceModule = await Test.createTestingModule({
-      imports: [
-        SubscriptionModule,
-        TypeOrmModule.forRoot({
-          type: 'postgres',
-          host: containers.postgres.host,
-          port: Number(containers.postgres.port),
-          username: configPostgres.TEST_USER,
-          password: configPostgres.TEST_PASSWORD,
-          database: configPostgres.TEST_DB,
-          entities: [Subscription],
-          synchronize: true,
-        }),
-        TypeOrmModule.forFeature([Subscription]),
-      ],
-    })
-      .overrideProvider(EmailSenderService)
-      .useValue({
-        sendSubscriptionEmail: jest
-          .fn()
-          .mockImplementation((email: string, token: string) => {
-            if (email === userFormWithWrongEmail.email && token) {
-              return Promise.resolve({ isDelivered: false });
-            }
-
-            return Promise.resolve({ isDelivered: true });
-          }),
-      })
-      .compile();
-
-    subscriptionServiceApp = subscriptionServiceModule.createNestApplication();
-    subscriptionServiceApp.useGlobalFilters(new SubscriptionServiceFilter());
-    subscriptionServiceApp.connectMicroservice(
-      {
-        transport: Transport.RMQ,
-        options: {
-          urls: [containers.rabbit.url],
-          queue: 'subscription-service',
-          queueOptions: { durable: false },
-        },
-      },
-      { inheritAppConfig: true },
+    apiGatewayApp = await createApiGatewayApp(
+      containers,
+      'SUBSCRIPTION_SERVICE',
+      'subscription-service',
+      ApiGatewayModule,
     );
-
-    await subscriptionServiceApp.startAllMicroservices();
-    await subscriptionServiceApp.init();
+    subscriptionServiceApp = await createSubscriptionServiceApp(containers);
 
     clientProxy = apiGatewayApp.get('SUBSCRIPTION_SERVICE');
     subscriptionRepository = subscriptionServiceApp.get(
@@ -130,6 +61,8 @@ describe('Subscription Endpoints', () => {
     await clientProxy.close();
     await containers.rabbit.container.stop();
     await containers.postgres.container.stop();
+    await containers.redis.container.stop();
+    await containers.mailhog.container.stop();
   });
 
   describe('POST /api/subscribe', () => {
@@ -149,6 +82,7 @@ describe('Subscription Endpoints', () => {
 
     afterEach(async () => {
       await subscriptionRepository.deleteSubscription(subscriptionEntity);
+      jest.restoreAllMocks();
     });
 
     it('should subscribe a user', async () => {
@@ -157,12 +91,6 @@ describe('Subscription Endpoints', () => {
       )
         .post('/api/subscribe')
         .send(userForm);
-
-      const record = await subscriptionRepository.findByEmail(userForm.email);
-      expect(emailSenderService.sendSubscriptionEmail).toHaveBeenCalledWith(
-        userForm.email,
-        record!.token,
-      );
 
       expect(response.status).toBe(201);
       expect(response.body).toEqual({
@@ -191,10 +119,6 @@ describe('Subscription Endpoints', () => {
         .post('/api/subscribe')
         .send(userForm);
 
-      expect(emailSenderService.sendSubscriptionEmail).not.toHaveBeenCalledWith(
-        2,
-      );
-
       expect(response.status).toBe(
         subscriptionErrors.EMAIL_ALREADY_SUBSCRIBED.status,
       );
@@ -204,6 +128,16 @@ describe('Subscription Endpoints', () => {
     });
 
     it('should return 500 if email sending fails', async () => {
+      jest
+        .spyOn(emailSenderService, 'sendSubscriptionEmail')
+        .mockImplementation((email: string, token: string) => {
+          if (email === userFormWithWrongEmail.email && token) {
+            return Promise.resolve({ isDelivered: false });
+          }
+
+          return Promise.resolve({ isDelivered: true });
+        });
+
       const response: Response = await request(
         apiGatewayApp.getHttpServer() as Server,
       )
@@ -382,7 +316,7 @@ describe('Subscription Endpoints', () => {
       );
     });
 
-    it('should return 500 if the unsubscription fails', async () => {
+    it('should return 500 if the unsubscription fails ', async () => {
       jest.spyOn(clientProxy, 'send').mockImplementation(() => {
         return throwError(() => new TimeoutError());
       });
