@@ -7,18 +7,13 @@ import {
 import { WeatherController } from './weather.controller';
 import { WeatherService } from './weather.service';
 import { apiConfigService } from '../../../../../common/config';
-import { ErrorHandlerService } from '../../shared';
-import { serviceTokens, sharedTokens } from '../../common';
 import { join } from 'path';
+import { serviceTokens } from '../../common';
 
 @Module({
   controllers: [WeatherController],
   providers: [
     WeatherService,
-    {
-      provide: sharedTokens.ERROR_HANDLER_INTERFACE,
-      useClass: ErrorHandlerService,
-    },
     {
       provide: serviceTokens.WEATHER_SERVICE,
       useFactory: () =>

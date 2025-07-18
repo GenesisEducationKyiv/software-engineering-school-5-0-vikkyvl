@@ -46,7 +46,7 @@ export abstract class MicroserviceClientGrpc<T extends object>
 
   protected async send<K>(data$: Observable<K>): Promise<K> {
     return await firstValueFrom(
-        data$.pipe(
+      data$.pipe(
         timeout(DEFAULT_TIMEOUT),
         catchError((e: Error) => {
           this.logger.error(e.message);

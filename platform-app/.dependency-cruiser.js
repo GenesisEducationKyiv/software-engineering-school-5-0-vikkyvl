@@ -138,6 +138,29 @@ module.exports = {
         pathNot: ".*\\.interface\\.ts$"
       }
     },
+    {
+      name: "no-service-to-controller",
+      comment: "This module should not depend on a service from a controller. Controllers should only depend on services.",
+      severity: "error",
+      from: {
+        path: ".*/src/modules/[^/]+/.*\\.service\\.ts$",
+      } ,
+      to: {
+        path: ".*/src/modules/[^/]+/.*\\.controller\\.ts$",
+      }
+    },
+    {
+      name: "no-infrastructure-to-application",
+      comment: "This module should not depend on an infrastructure module from an application module.",
+      severity: "error",
+      from: {
+        path: ".*/src/(modules/.*/infrastructure/.*|.*/entities/.*|.*/migrations/.*)",
+      },
+      to: {
+        path: ".*\\.(service|controller)\\.ts$",
+        pathNot: "src/modules/.*/infrastructure/.*"
+      }
+    }
   ],
   allowed: [],
   required: [],

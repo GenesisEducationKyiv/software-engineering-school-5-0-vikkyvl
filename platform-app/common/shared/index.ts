@@ -7,7 +7,6 @@ import { WeatherResponseDto } from './dtos/weather/weather-response.dto';
 import { WeatherRequestDto } from './dtos/weather/weather-request.dto';
 
 import { Frequency } from './enums/frequency.enum';
-import { ErrorsCode } from './enums/errors-code.enum';
 
 export {
   patternsRMQ,
@@ -17,5 +16,4 @@ export {
   WeatherResponseDto,
   WeatherRequestDto,
   Frequency,
-  ErrorsCode,
 };

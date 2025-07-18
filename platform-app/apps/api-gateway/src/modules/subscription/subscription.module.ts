@@ -10,17 +10,12 @@ import {
   apiConfigService,
   subscriptionConfigService,
 } from '../../../../../common/config';
-import { ErrorHandlerService } from '../../shared';
-import { serviceTokens, sharedTokens } from '../../common';
+import { serviceTokens } from '../../common';
 
 @Module({
   controllers: [SubscriptionController],
   providers: [
     SubscriptionService,
-    {
-      provide: sharedTokens.ERROR_HANDLER_INTERFACE,
-      useClass: ErrorHandlerService,
-    },
     {
       provide: serviceTokens.SUBSCRIPTION_SERVICE,
       useFactory: () =>

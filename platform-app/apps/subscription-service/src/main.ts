@@ -3,10 +3,12 @@ import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
 import { subscriptionConfigService } from '../../../common/config';
 import { ValidationPipe } from '@nestjs/common';
+import { ErrorHandlerFilter } from './common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new ErrorHandlerFilter());
 
   app.connectMicroservice(
     {
