@@ -1,15 +1,17 @@
-import { configPostgres } from './config-postgres';
-import { setupTestContainers, TestContainers } from './setup-containers';
-import { Response } from './response.dto';
-import { DEFAULT_TEST_TIMEOUT } from './timeout';
+import { configPostgres } from './configs/config-postgres';
+import { configGrpc } from './configs/config-grpc';
+import { setupTestContainers, TestContainers } from './setup/setup-containers';
+import { Response } from './helpers/response.dto';
+import { DEFAULT_TEST_TIMEOUT } from './helpers/timeout';
 import {
   createApiGatewayApp,
   createSubscriptionServiceApp,
   createWeatherServiceApp,
-} from './setup-app';
+} from './setup/setup-app';
 
 export {
   configPostgres,
+  configGrpc,
   setupTestContainers,
   TestContainers,
   Response,

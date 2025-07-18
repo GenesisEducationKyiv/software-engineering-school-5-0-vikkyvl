@@ -50,8 +50,10 @@ export class ErrorHandlerFilter implements ExceptionFilter {
 
     const isErrorWithCode = typeof res.code === 'number' && res.code > 99;
 
-    const status = isErrorWithCode ? res.code: this.defaultStatus;
-    const message = isErrorWithCode ? (res.details ?? res.message ?? this.defaultMessage): this.defaultMessage;
+    const status = isErrorWithCode ? res.code : this.defaultStatus;
+    const message = isErrorWithCode
+      ? (res.details ?? res.message ?? this.defaultMessage)
+      : this.defaultMessage;
 
     response.status(status ?? this.defaultStatus).json({
       statusCode: status,

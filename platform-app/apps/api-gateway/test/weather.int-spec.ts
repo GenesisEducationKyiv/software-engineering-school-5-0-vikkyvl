@@ -1,4 +1,4 @@
-import {ClientGrpcProxy, Transport} from '@nestjs/microservices';
+import { ClientGrpcProxy, Transport } from '@nestjs/microservices';
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import {
@@ -16,7 +16,7 @@ import { WeatherApiClientServiceInterface } from '../../weather-service/src/modu
 import { weatherErrors } from '../../weather-service/src/common';
 import { redisConfig } from '../../weather-service/src/modules/weather/infrastructure/cache/config/config';
 import { errorMessages } from '../src/common';
-import {delay, of} from "rxjs";
+import { delay, of } from 'rxjs';
 
 describe('Weather Endpoints', () => {
   let containers: TestContainers;
@@ -118,10 +118,10 @@ describe('Weather Endpoints', () => {
 
     it('/api/weather?city=delayCity', async () => {
       jest
-          .spyOn(clientGrpc, 'send')
-          .mockReturnValue(
-              of(delayCity).pipe(delay(DEFAULT_TEST_TIMEOUT + 1000)),
-          );
+        .spyOn(clientGrpc, 'send')
+        .mockReturnValue(
+          of(delayCity).pipe(delay(DEFAULT_TEST_TIMEOUT + 1000)),
+        );
 
       const response: Response = await request(
         apiGatewayApp.getHttpServer() as Server,
