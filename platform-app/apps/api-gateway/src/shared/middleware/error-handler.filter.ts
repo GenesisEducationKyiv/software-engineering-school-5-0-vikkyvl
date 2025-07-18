@@ -27,10 +27,7 @@ export class ErrorHandlerFilter implements ExceptionFilter {
     }
 
     if (exception instanceof Error) {
-      response.status(this.defaultStatus).json({
-        statusCode: this.defaultStatus,
-        message: this.defaultMessage,
-      });
+      this.handleError(response, exception);
 
       return;
     }
@@ -48,10 +45,27 @@ export class ErrorHandlerFilter implements ExceptionFilter {
     });
   }
 
+  private handleError(response: Response, error: Error): void {
+    const res = error as Errors;
+
+    const isErrorWithCode = typeof res.code === 'number' && res.code > 99;
+
+    const status = isErrorWithCode ? res.code : this.defaultStatus;
+    const message = isErrorWithCode
+      ? (res.details ?? res.message ?? this.defaultMessage)
+      : this.defaultMessage;
+
+    response.status(status ?? this.defaultStatus).json({
+      statusCode: status,
+      message: message,
+    });
+  }
+
   private handleException(response: Response, error: unknown): void {
     const res = error as Errors;
-    const status = res.error.status || this.defaultStatus;
-    const message = res.error.message || this.defaultMessage;
+
+    const status = res.status ?? this.defaultStatus;
+    const message = res.message ?? this.defaultMessage;
 
     response.status(status).json({
       statusCode: status,

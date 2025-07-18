@@ -1,18 +1,21 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern, Payload } from '@nestjs/microservices';
-import { patterns } from '../../../../../common/shared';
-import { WeatherResponseDto } from '../../../../../common/shared';
+import { GrpcMethod, Payload } from '@nestjs/microservices';
+import {
+  patternsGRPC,
+  WeatherRequestDto,
+  WeatherResponseDto,
+} from '../../../../../common/shared';
 import { WeatherService } from './weather.service';
-import { CityValidationPipe } from '../../common/pipe/city-validation.pipe';
+import { CityValidationPipe } from '../../common';
 
 @Controller('weather')
 export class WeatherController {
   constructor(private weatherService: WeatherService) {}
 
-  @MessagePattern(patterns.WEATHER.GET_WEATHER)
+  @GrpcMethod(patternsGRPC.WEATHER.SERVICE, patternsGRPC.WEATHER.METHOD)
   async getWeather(
-    @Payload(new CityValidationPipe()) city: string,
+    @Payload(new CityValidationPipe()) dto: WeatherRequestDto,
   ): Promise<WeatherResponseDto> {
-    return await this.weatherService.getWeatherFromAPI(city);
+    return await this.weatherService.getWeatherFromAPI(dto.city);
   }
 }

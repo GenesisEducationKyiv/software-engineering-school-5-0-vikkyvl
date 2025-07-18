@@ -1,4 +1,4 @@
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientGrpcProxy, Transport } from '@nestjs/microservices';
 import * as request from 'supertest';
 import { INestApplication } from '@nestjs/common';
 import {
@@ -16,13 +16,16 @@ import { WeatherApiClientServiceInterface } from '../../weather-service/src/modu
 import { weatherErrors } from '../../weather-service/src/common';
 import { redisConfig } from '../../weather-service/src/modules/weather/infrastructure/cache/config/config';
 import { errorMessages } from '../src/common';
+import { delay, of } from 'rxjs';
 
 describe('Weather Endpoints', () => {
   let containers: TestContainers;
 
+  const transport = Transport.GRPC;
+
   let apiGatewayApp: INestApplication;
   let weatherServiceApp: INestApplication;
-  let clientProxy: ClientProxy;
+  let clientGrpc: ClientGrpcProxy;
   let weatherApiClient: WeatherApiClientServiceInterface;
 
   let city: ReturnType<typeof WeatherBuilder.getCity>;
@@ -53,6 +56,7 @@ describe('Weather Endpoints', () => {
       'WEATHER_SERVICE',
       'weather-service',
       ApiGatewayModule,
+      transport,
     );
 
     redisConfig.host = containers.redis.host;
@@ -60,14 +64,13 @@ describe('Weather Endpoints', () => {
 
     weatherServiceApp = await createWeatherServiceApp(containers);
 
-    clientProxy = apiGatewayApp.get('WEATHER_SERVICE');
+    clientGrpc = apiGatewayApp.get('WEATHER_SERVICE');
     weatherApiClient = weatherServiceApp.get('WeatherServiceProxy');
   });
 
   afterAll(async () => {
     await apiGatewayApp.close();
     await weatherServiceApp.close();
-    await clientProxy.close();
     await containers.rabbit.container.stop();
     await containers.postgres.container.stop();
     await containers.redis.container.stop();
@@ -114,6 +117,12 @@ describe('Weather Endpoints', () => {
     });
 
     it('/api/weather?city=delayCity', async () => {
+      jest
+        .spyOn(clientGrpc, 'send')
+        .mockReturnValue(
+          of(delayCity).pipe(delay(DEFAULT_TEST_TIMEOUT + 1000)),
+        );
+
       const response: Response = await request(
         apiGatewayApp.getHttpServer() as Server,
       )

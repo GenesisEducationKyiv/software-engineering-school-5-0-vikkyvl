@@ -1,45 +1,56 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import {
-  ClientOptions,
-  ClientProxyFactory,
-  Transport,
-} from '@nestjs/microservices';
+import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 import { TestContainers } from './setup-containers';
 import { INestApplication, Type, ValidationPipe } from '@nestjs/common';
-import { SubscriptionModule as SubscriptionModule } from '../../../subscription-service/src/modules/subscription/subscription.module';
+import { SubscriptionModule as SubscriptionModule } from '../../../../subscription-service/src/modules/subscription/subscription.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { configPostgres } from './config-postgres';
-import { Subscription } from '../../../subscription-service/src/entities/subscription.entity';
-import { MailhogTransporter } from './mailhog-transporter';
-import { ErrorHandlerFilter as SubscriptionServiceFilter } from '../../../subscription-service/src/common';
-import { WeatherModule } from '../../../weather-service/src/modules/weather/weather.module';
-import { Weather } from '../../../weather-service/src/entities/weather.entity';
+import { configPostgres } from '../configs/config-postgres';
+import { Subscription } from '../../../../subscription-service/src/entities/subscription.entity';
+import { MailhogTransporter } from '../mailhog/mailhog-transporter';
+import { ErrorHandlerFilter as SubscriptionServiceFilter } from '../../../../subscription-service/src/common';
+import { WeatherModule } from '../../../../weather-service/src/modules/weather/weather.module';
+import { Weather } from '../../../../weather-service/src/entities/weather.entity';
 import {
   CityNotFound,
   ErrorHandlerFilter as WeatherServiceFilter,
-} from '../../../weather-service/src/common';
+} from '../../../../weather-service/src/common';
 import { delay, of } from 'rxjs';
-import { WeatherBuilder } from '../mocks/weather.builder';
+import { WeatherBuilder } from '../../mocks/weather.builder';
+import { join } from 'path';
+import { DEFAULT_TEST_TIMEOUT } from '../helpers/timeout';
+import { configGrpc } from '../configs/config-grpc';
 
 export async function createApiGatewayApp(
   containers: TestContainers,
   token: string,
   queue: string,
   module: Type<any>,
+  transport: Transport,
 ): Promise<INestApplication> {
   const apiGatewayModule: TestingModule = await Test.createTestingModule({
     imports: [module],
   })
     .overrideProvider(token)
     .useValue(
-      ClientProxyFactory.create({
-        transport: Transport.RMQ,
-        options: {
-          urls: [containers.rabbit.url],
-          queue: queue,
-          queueOptions: { durable: false },
-        },
-      } as ClientOptions),
+      ClientProxyFactory.create(
+        transport === Transport.RMQ
+          ? {
+              transport: Transport.RMQ,
+              options: {
+                urls: [containers.rabbit.url],
+                queue,
+                queueOptions: { durable: false },
+              },
+            }
+          : {
+              transport: Transport.GRPC,
+              options: {
+                url: configGrpc.URL,
+                package: configGrpc.PACKAGE,
+                protoPath: join(process.cwd(), configGrpc.PROTO_PATH),
+              },
+            },
+      ),
     )
     .compile();
 
@@ -128,7 +139,9 @@ export async function createWeatherServiceApp(
         }
 
         if (city === delayCity) {
-          return of(weatherGeneralResponse).pipe(delay(7000));
+          return of(weatherGeneralResponse).pipe(
+            delay(DEFAULT_TEST_TIMEOUT + 1000),
+          );
         }
 
         return Promise.resolve({
@@ -143,11 +156,11 @@ export async function createWeatherServiceApp(
   weatherServiceApp.useGlobalFilters(new WeatherServiceFilter());
   weatherServiceApp.connectMicroservice(
     {
-      transport: Transport.RMQ,
+      transport: Transport.GRPC,
       options: {
-        urls: [containers.rabbit.url],
-        queue: 'weather-service',
-        queueOptions: { durable: false },
+        url: configGrpc.URL,
+        package: configGrpc.PACKAGE,
+        protoPath: join(process.cwd(), configGrpc.PROTO_PATH),
       },
     },
     { inheritAppConfig: true },

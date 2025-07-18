@@ -10,9 +10,9 @@ export class ErrorHandlerFilter implements ExceptionFilter<RpcException> {
       const status = exception.getStatus();
       const message = exception.getMessage();
 
-      return throwError(() => new RpcException({ status, message }));
+      return throwError(() => ({ status, message }));
     }
 
-    return throwError(() => new RpcException(new UnexpectedError()));
+    return throwError(() => new UnexpectedError());
   }
 }
