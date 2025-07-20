@@ -14,7 +14,7 @@ import { ClientProxy, Transport } from '@nestjs/microservices';
 import { Server } from 'http';
 import { SubscriptionBuilder } from './mocks/subscription.builder';
 import { subscriptionErrors } from '../../subscription-service/src/common';
-import { EmailSenderService } from '../../subscription-service/src/modules/subscription/infrastructure/external/mail/email/email-sender.service';
+import { EmailSenderService } from '../../subscription-service/src/modules/notification/infrastructure/external/mail/email/email-sender.service';
 import { delay, of } from 'rxjs';
 import { messages } from '../../subscription-service/src/common';
 import { errorMessages } from '../src/common';

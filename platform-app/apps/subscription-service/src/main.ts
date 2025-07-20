@@ -1,7 +1,10 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
-import { subscriptionConfigService } from '../../../common/config';
+import {
+  notificationConfigService,
+  subscriptionConfigService,
+} from '../../../common/config';
 import { ValidationPipe } from '@nestjs/common';
 import { ErrorHandlerFilter } from './common';
 
@@ -16,6 +19,18 @@ async function bootstrap() {
       options: {
         urls: [subscriptionConfigService.getBrokerUrl()],
         queue: subscriptionConfigService.getQueueName(),
+        queueOptions: { durable: false },
+      },
+    },
+    { inheritAppConfig: true },
+  );
+
+  app.connectMicroservice(
+    {
+      transport: Transport.RMQ,
+      options: {
+        urls: [notificationConfigService.getBrokerUrl()],
+        queue: notificationConfigService.getQueueName(),
         queueOptions: { durable: false },
       },
     },

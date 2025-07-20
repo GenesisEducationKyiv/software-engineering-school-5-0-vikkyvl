@@ -1,6 +1,6 @@
 import * as nodemailer from 'nodemailer';
 import { Injectable } from '@nestjs/common';
-import { TransporterInterface } from '../../../../subscription-service/src/modules/subscription/infrastructure/external/mail/email/email-sender.service';
+import { TransporterInterface } from '../../../../subscription-service/src/modules/notification/infrastructure/external/mail/email/email-sender.service';
 import { TestContainers } from '../setup/setup-containers';
 
 @Injectable()
