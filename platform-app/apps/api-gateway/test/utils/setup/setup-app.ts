@@ -14,7 +14,7 @@ import {
   CityNotFound,
   ErrorHandlerFilter as WeatherServiceFilter,
 } from '../../../../weather-service/src/common';
-import {delay, firstValueFrom, of} from 'rxjs';
+import { delay, firstValueFrom, of } from 'rxjs';
 import { WeatherBuilder } from '../../mocks/weather.builder';
 import { join } from 'path';
 import { DEFAULT_TEST_TIMEOUT } from '../helpers/timeout';
@@ -140,7 +140,7 @@ export async function createWeatherServiceApp(
 
         if (city === delayCity) {
           return firstValueFrom(
-              of(weatherGeneralResponse).pipe(delay(DEFAULT_TEST_TIMEOUT + 1000)),
+            of(weatherGeneralResponse).pipe(delay(DEFAULT_TEST_TIMEOUT + 1000)),
           );
         }
 
