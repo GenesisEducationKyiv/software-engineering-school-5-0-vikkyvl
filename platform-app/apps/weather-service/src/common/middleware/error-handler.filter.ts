@@ -1,18 +1,51 @@
 import { Catch, ExceptionFilter } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
-import { DomainException, IntervalError } from '../exceptions';
+import {
+  CityNotFound,
+  DomainException,
+  IntervalError,
+  InvalidRequest,
+  WeatherProvidersFailed,
+} from '../exceptions';
 import { Observable, throwError } from 'rxjs';
+import { weatherErrors } from '../constants';
 
 @Catch()
 export class ErrorHandlerFilter implements ExceptionFilter<RpcException> {
   catch(exception: unknown): Observable<never> {
-    if (exception instanceof DomainException) {
-      const status = exception.getStatus();
-      const message = exception.getMessage();
+    let message: string;
 
-      return throwError(() => new RpcException({ status, message }));
+    if (exception instanceof DomainException) {
+      message = exception.getMessage();
+
+      if (exception instanceof CityNotFound) {
+        return throwError(() => ({
+          status: weatherErrors.CITY_NOT_FOUND.status,
+          message: message,
+        }));
+      }
+
+      if (exception instanceof InvalidRequest) {
+        return throwError(() => ({
+          status: weatherErrors.INVALID_REQUEST.status,
+          message: message,
+        }));
+      }
+
+      if (exception instanceof WeatherProvidersFailed) {
+        return throwError(() => ({
+          status: weatherErrors.PROVIDERS_NOT_AVAILABLE.status,
+          message: message,
+        }));
+      }
     }
 
-    return throwError(() => new RpcException(new IntervalError()));
+    const errorResponse = new IntervalError();
+    message = errorResponse.getMessage();
+
+    return throwError(() => ({
+      status: weatherErrors.INTERNAL_ERROR.status,
+      message: message,
+    }));
   }
 }

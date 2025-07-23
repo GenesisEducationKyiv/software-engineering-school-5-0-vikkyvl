@@ -15,7 +15,6 @@ import { WeatherModule as ApiGatewayModule } from '../src/modules/weather/weathe
 import { WeatherApiClientServiceInterface } from '../../weather-service/src/modules/weather/infrastructure/external/weather-api-client.service';
 import { weatherErrors } from '../../weather-service/src/common';
 import { redisConfig } from '../../weather-service/src/modules/weather/infrastructure/cache/config/config';
-import { errorMessages } from '../src/common';
 
 describe('Weather Endpoints', () => {
   let containers: TestContainers;
@@ -121,8 +120,10 @@ describe('Weather Endpoints', () => {
         .query({ city: delayCity });
 
       expect(weatherApiClient.fetchWeather).toHaveBeenCalledWith(delayCity);
-      expect(response.status).toBe(errorMessages.INTERNAL_SERVER_ERROR.status);
-      expect(response.body.message).toEqual(errorMessages.WEATHER.FAILED);
+      expect(response.status).toBe(weatherErrors.INTERNAL_ERROR.status);
+      expect(response.body.message).toEqual(
+        weatherErrors.INTERNAL_ERROR.message,
+      );
     });
   });
 });
