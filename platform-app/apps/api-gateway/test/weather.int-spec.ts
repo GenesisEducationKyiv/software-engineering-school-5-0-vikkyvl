@@ -117,12 +117,6 @@ describe('Weather Endpoints', () => {
     });
 
     it('/api/weather?city=delayCity', async () => {
-      jest
-        .spyOn(clientGrpc, 'send')
-        .mockReturnValue(
-          of(delayCity).pipe(delay(DEFAULT_TEST_TIMEOUT + 1000)),
-        );
-
       const response: Response = await request(
         apiGatewayApp.getHttpServer() as Server,
       )

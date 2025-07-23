@@ -6,10 +6,6 @@ export class InvalidUnsubscriptionToken extends DomainException {
     super(subscriptionErrors.INVALID_UNSUBSCRIPTION_TOKEN.message);
   }
 
-  getStatus(): number {
-    return subscriptionErrors.INVALID_UNSUBSCRIPTION_TOKEN.status;
-  }
-
   getMessage(): string {
     return this.message;
   }

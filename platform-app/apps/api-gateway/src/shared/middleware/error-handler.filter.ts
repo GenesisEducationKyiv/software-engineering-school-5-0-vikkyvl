@@ -63,7 +63,6 @@ export class ErrorHandlerFilter implements ExceptionFilter {
 
   private handleException(response: Response, error: unknown): void {
     const res = error as Errors;
-
     const status = res.status ?? this.defaultStatus;
     const message = res.message ?? this.defaultMessage;
 
