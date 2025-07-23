@@ -6,10 +6,6 @@ export class UnexpectedError extends DomainException {
     super(subscriptionErrors.UNEXPECTED_ERROR.message);
   }
 
-  getStatus(): number {
-    return subscriptionErrors.UNEXPECTED_ERROR.status;
-  }
-
   getMessage(): string {
     return this.message;
   }

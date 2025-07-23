@@ -6,10 +6,6 @@ export class InvalidRequest extends DomainException {
     super(weatherErrors.INVALID_REQUEST.message);
   }
 
-  getStatus(): number {
-    return weatherErrors.INVALID_REQUEST.status;
-  }
-
   getMessage(): string {
     return this.message;
   }

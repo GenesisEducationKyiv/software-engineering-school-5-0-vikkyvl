@@ -50,8 +50,8 @@ export class ErrorHandlerFilter implements ExceptionFilter {
 
   private handleException(response: Response, error: unknown): void {
     const res = error as Errors;
-    const status = res.error.status || this.defaultStatus;
-    const message = res.error.message || this.defaultMessage;
+    const status = res.status || this.defaultStatus;
+    const message = res.message || this.defaultMessage;
 
     response.status(status).json({
       statusCode: status,
