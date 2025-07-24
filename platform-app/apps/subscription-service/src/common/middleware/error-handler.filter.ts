@@ -14,45 +14,27 @@ import { subscriptionErrors } from '../constantas';
 @Catch()
 export class ErrorHandlerFilter implements ExceptionFilter<RpcException> {
   catch(exception: unknown): Observable<never> {
-    let message: string;
+    const errorResponse = new UnexpectedError();
+
+    let status: number = subscriptionErrors.UNEXPECTED_ERROR.status;
+    let message: string = errorResponse.getMessage();
 
     if (exception instanceof DomainException) {
       message = exception.getMessage();
 
       if (exception instanceof EmailAlreadySubscribed) {
-        return throwError(() => ({
-          status: subscriptionErrors.EMAIL_ALREADY_SUBSCRIBED.status,
-          message: message,
-        }));
-      }
-
-      if (exception instanceof EmailSendingFailed) {
-        return throwError(() => ({
-          status: subscriptionErrors.EMAIL_SENDING_FAILED.status,
-          message: message,
-        }));
-      }
-
-      if (exception instanceof InvalidConfirmationToken) {
-        return throwError(() => ({
-          status: subscriptionErrors.INVALID_CONFIRMATION_TOKEN.status,
-          message: message,
-        }));
-      }
-
-      if (exception instanceof InvalidUnsubscriptionToken) {
-        return throwError(() => ({
-          status: subscriptionErrors.INVALID_UNSUBSCRIPTION_TOKEN.status,
-          message: message,
-        }));
+        status = subscriptionErrors.EMAIL_ALREADY_SUBSCRIBED.status;
+      } else if (exception instanceof EmailSendingFailed) {
+        status = subscriptionErrors.EMAIL_SENDING_FAILED.status;
+      } else if (exception instanceof InvalidConfirmationToken) {
+        status = subscriptionErrors.INVALID_CONFIRMATION_TOKEN.status;
+      } else if (exception instanceof InvalidUnsubscriptionToken) {
+        status = subscriptionErrors.INVALID_UNSUBSCRIPTION_TOKEN.status;
       }
     }
 
-    const errorResponse = new UnexpectedError();
-    message = errorResponse.getMessage();
-
     return throwError(() => ({
-      status: subscriptionErrors.UNEXPECTED_ERROR.status,
+      status: status,
       message: message,
     }));
   }
