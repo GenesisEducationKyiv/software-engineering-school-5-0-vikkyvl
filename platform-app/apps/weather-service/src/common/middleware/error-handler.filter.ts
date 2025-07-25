@@ -1,4 +1,5 @@
-import { Catch, ExceptionFilter } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import { Response } from 'express';
 import { RpcException } from '@nestjs/microservices';
 import {
   CityNotFound,
@@ -9,10 +10,13 @@ import {
 } from '../exceptions';
 import { Observable, throwError } from 'rxjs';
 import { weatherErrors } from '../constants';
+import { contexType } from '../constants/contex-type';
 
 @Catch()
 export class ErrorHandlerFilter implements ExceptionFilter<RpcException> {
-  catch(exception: unknown): Observable<never> {
+  catch(exception: unknown, host: ArgumentsHost): Observable<never> | void {
+    const ctxType = host.getType();
+
     const errorResponse = new IntervalError();
 
     let status: number = weatherErrors.INTERNAL_ERROR.status;
@@ -30,9 +34,19 @@ export class ErrorHandlerFilter implements ExceptionFilter<RpcException> {
       }
     }
 
-    return throwError(() => ({
-      code: status,
-      message: message,
-    }));
+    if (ctxType === contexType.RPC) {
+      return throwError(() => ({
+        code: status,
+        message: message,
+      }));
+    }
+
+    if (ctxType === contexType.HTTP) {
+      const response: Response = host.switchToHttp().getResponse();
+      response.status(status).json({
+        status: status,
+        message: message,
+      });
+    }
   }
 }
