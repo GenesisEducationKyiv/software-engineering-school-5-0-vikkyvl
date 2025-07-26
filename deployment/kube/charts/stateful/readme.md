@@ -25,9 +25,12 @@ helm install secrets-store-csi-driver secrets-store-csi-driver/secrets-store-csi
 # 2. AWS Provider directly via kubectl
 kubectl apply -f https://raw.githubusercontent.com/aws/secrets-store-csi-driver-provider-aws/main/deployment/aws-provider-installer.yaml
   
+helm install stateful ./ -f values-prod.yaml --kube-context arn:aws:eks:us-east-1:301235908824:cluster/ragdoll-eks
+```
+
+```bash
 helm uninstall stateful --kube-context arn:aws:eks:us-east-1:301235908824:cluster/ragdoll-eks
 helm upgrade stateful ./ -f values-prod.yaml --kube-context arn:aws:eks:us-east-1:301235908824:cluster/ragdoll-eks
-helm install stateful ./ -f values-prod.yaml --kube-context arn:aws:eks:us-east-1:301235908824:cluster/ragdoll-eks
 ```
 
 ## Troubleshooting: TODO: clean up

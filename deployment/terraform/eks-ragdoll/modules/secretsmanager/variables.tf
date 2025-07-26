@@ -1,8 +1,3 @@
-variable "public_access_cidrs" {
-  description = "List of CIDRs allowed to access EKS API (e.g. ['1.2.3.4/32', '5.6.7.8/32'])"
-  type        = list(string)
-}
-
 # Platform
 variable "WEATHER_API_KEY" {
   description = "API key for WeatherAPI"
@@ -61,3 +56,8 @@ variable "POSTGRES_DB" {
   type        = string
 }
 
+variable "tags" {
+  description = "Tags to apply to the ECR repositories"
+  type        = map(string)
+  default     = {}
+}

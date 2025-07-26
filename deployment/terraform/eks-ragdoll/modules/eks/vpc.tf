@@ -2,7 +2,7 @@ resource "aws_vpc" "main" {
   cidr_block           = "10.0.0.0/16"
   enable_dns_support   = true
   enable_dns_hostnames = true
-  tags = merge(local.tags, {
+  tags = merge(var.tags, {
     Name = "ragdoll-vpc"
   })
 }
@@ -13,21 +13,21 @@ resource "aws_subnet" "public" {
   cidr_block              = cidrsubnet("10.0.0.0/16", 8, count.index)
   map_public_ip_on_launch = true
   availability_zone       = element(["us-east-1a", "us-east-1b"], count.index)
-  tags = merge(local.tags, {
+  tags = merge(var.tags, {
     Name = "ragdoll-public-${count.index}"
   })
 }
 
 resource "aws_internet_gateway" "gw" {
   vpc_id = aws_vpc.main.id
-  tags = merge(local.tags, {
+  tags = merge(var.tags, {
     Name = "ragdoll-igw"
   })
 }
 
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
-  tags = merge(local.tags, {
+  tags = merge(var.tags, {
     Name = "ragdoll-public-rt"
   })
 }

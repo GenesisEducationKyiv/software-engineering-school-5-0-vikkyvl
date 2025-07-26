@@ -1,4 +1,4 @@
-namespace: ragdoll-web
+namespace: platform-web
 
 image:
   repository: registry.local:80/platform-web

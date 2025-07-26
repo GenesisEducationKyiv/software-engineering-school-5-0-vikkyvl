@@ -1,15 +1,12 @@
-output "cluster_name" {
-  value = aws_eks_cluster.main.name
+output "github_ci_access_key_id" {
+  value     = module.ecr.github_ci_access_key_id
+  description = "Use as AWS_ACCESS_KEY_ID"
+  sensitive = true
 }
 
-output "cluster_endpoint" {
-  value = aws_eks_cluster.main.endpoint
+output "github_ci_secret_access_key" {
+  value       = module.ecr.github_ci_secret_access_key
+  description = "Use as AWS_SECRET_ACCESS_KEY"
+  sensitive   = true
 }
 
-output "cluster_ca_certificate" {
-  value = aws_eks_cluster.main.certificate_authority[0].data
-}
-
-output "node_role_arn" {
-  value = aws_iam_role.eks_node_role.arn
-}

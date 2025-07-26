@@ -1,8 +1,8 @@
-namespace: ragdoll-web
+namespace: platform-web
 
 image:
   repository: 301235908824.dkr.ecr.us-east-1.amazonaws.com/platform-web
-  tag: 0.1.1
+  tag: latest
   pullPolicy: IfNotPresent
 
 service:
@@ -13,17 +13,17 @@ service:
 replicaCount: 1
 
 platformWeb:
-  containerPort: 3004
+  containerPort: 80
   envs:
     - name: REACT_APP_API_URL
-      value: http://localhost:3004
+      value: http://platform.stateful.svc.cluster.local:3000
   resources:
-    limits:
-      cpu: 500m
-      memory: 512Mi
     requests:
-      cpu: 100m
-      memory: 128Mi
+      memory: "64Mi"
+      cpu: "50m"
+    limits:
+      memory: "128Mi"
+      cpu: "100m"
 
 ingress:
   enabled: true

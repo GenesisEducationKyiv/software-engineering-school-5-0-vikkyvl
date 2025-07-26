@@ -21,6 +21,9 @@ helm template platform ./  -f values-local.yaml -n ragdoll --kube-context docker
 
 Production (AWS EKS):
 ```bash
-helm install platform ./charts/platform -f charts/platform/values-prod.yaml \
+kubectl apply -f templates/platform-application.yaml
+```
+```bash
+helm install platform ./ -f values-prod.yaml \
   --kube-context arn:aws:eks:us-east-1:301235908824:cluster/ragdoll-eks
 ```

@@ -1,21 +1,23 @@
-# Stage 1: Build
+# -------- STAGE 1: Install & Build --------
 FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
-RUN npm install --production=false
+COPY package*.json ./
+
+RUN npm ci
 
 COPY . .
 RUN npm run build
 
-# Stage 2: Production
+# -------- STAGE 2: Run-only (slim) --------
 FROM node:18-alpine AS runner
 
 WORKDIR /app
 
-COPY --from=builder /app/package.json ./
-COPY --from=builder /app/node_modules ./node_modules
+COPY package*.json ./
+RUN npm ci --omit=dev
+
 COPY --from=builder /app/dist ./dist
 
 CMD ["node", "dist/apps/api-gateway/src/main.js"]

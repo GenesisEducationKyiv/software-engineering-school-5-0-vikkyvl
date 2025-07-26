@@ -29,4 +29,3 @@ resource "kubernetes_config_map" "aws_auth" {
 
   depends_on = [aws_eks_cluster.main]
 }
-

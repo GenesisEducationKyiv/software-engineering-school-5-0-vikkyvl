@@ -15,6 +15,9 @@ spec:
       labels:
         app: platform
     spec:
+      {{- if .Values.serviceAccount }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+      {{- end}}
       containers:
         - name: platform-api-gateway
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -26,6 +29,12 @@ spec:
             {{- toYaml .Values.platformApiGateway.envs | nindent 12 }}
           resources:
             {{- toYaml .Values.platformApiGateway.resources | nindent 12 }}
+          {{- if .Values.secrets.useExternalSecrets }}
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+          {{- end }}
 
         - name: platform-weather-service
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -37,6 +46,12 @@ spec:
             {{- toYaml .Values.platformWeatherService.envs | nindent 12 }}
           resources:
             {{- toYaml .Values.platformWeatherService.resources | nindent 12 }}
+          {{- if .Values.secrets.useExternalSecrets }}
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+          {{- end }}
 
         - name: platform-subscription-service
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -48,3 +63,18 @@ spec:
             {{- toYaml .Values.platformSubscriptionService.envs | nindent 12 }}
           resources:
             {{- toYaml .Values.platformSubscriptionService.resources | nindent 12 }}
+          {{- if .Values.secrets.useExternalSecrets }}
+          volumeMounts:
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+          {{- end }}
+      {{- if .Values.secrets.useExternalSecrets }}
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: platform-secret-store
+        {{- end }}

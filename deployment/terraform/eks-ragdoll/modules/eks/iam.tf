@@ -3,7 +3,7 @@ resource "aws_iam_role" "eks_cluster_role" {
 
   assume_role_policy = data.aws_iam_policy_document.eks_cluster_assume_role.json
 
-  tags = local.tags
+  tags = var.tags
 }
 
 data "aws_iam_policy_document" "eks_cluster_assume_role" {
@@ -26,7 +26,7 @@ resource "aws_iam_role" "eks_node_role" {
 
   assume_role_policy = data.aws_iam_policy_document.eks_node_assume_role.json
 
-  tags = local.tags
+  tags = var.tags
 }
 
 data "aws_iam_policy_document" "eks_node_assume_role" {
@@ -82,8 +82,8 @@ resource "aws_iam_role" "secrets_csi_sa_role" {
         },
         Action = "sts:AssumeRoleWithWebIdentity",
         Condition = {
-          StringEquals = {
-            "${replace(aws_eks_cluster.main.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:stateful:secret-sa"
+          StringLike = {
+            "${replace(aws_eks_cluster.main.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:*:secret-sa"
           }
         }
       }
@@ -115,10 +115,58 @@ resource "aws_iam_role" "ebs_csi_role" {
     }]
   })
 
-  tags = local.tags
+  tags = var.tags
 }
 
 resource "aws_iam_role_policy_attachment" "ebs_csi_policy" {
   role       = aws_iam_role.ebs_csi_role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+}
+
+resource "aws_iam_role" "argocd_ecr_role" {
+  name = "argocd-ecr-access"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect = "Allow"
+      Principal = {
+        Federated = aws_iam_openid_connect_provider.eks.arn
+      }
+      Action = "sts:AssumeRoleWithWebIdentity"
+      Condition = {
+        StringEquals = {
+          "${replace(aws_eks_cluster.main.identity[0].oidc[0].issuer, "https://", "")}:sub" = "system:serviceaccount:argocd:argocd-repo-server"
+        }
+      }
+    }]
+  })
+
+  tags = {
+    project = "ragdoll"
+  }
+}
+
+resource "aws_iam_policy" "ecr_pull" {
+  name = "argocd-ecr-pull"
+  description = "Allow ArgoCD to pull images from ECR"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchGetImage",
+          "ecr:GetDownloadUrlForLayer"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "argocd_ecr_attach" {
+  role       = aws_iam_role.argocd_ecr_role.name
+  policy_arn = aws_iam_policy.ecr_pull.arn
 }

@@ -17,7 +17,7 @@ resource "aws_eks_node_group" "default" {
   disk_size = var.disk_size
   ami_type = var.ami_type
 
-  tags = local.tags
+  tags = var.tags
 
   depends_on = [
     aws_iam_role_policy_attachment.node_AmazonEKSWorkerNodePolicy,
