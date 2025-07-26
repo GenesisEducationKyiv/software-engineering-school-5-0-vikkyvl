@@ -1,10 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { WeatherApiDataHandlerInterface } from './weather-api-data-handler';
-import { weatherTokens } from '../../common';
-import { WeatherFetchResult } from './dto/weather-fetch-result.dto';
+import { WeatherGeneralResponseDto } from './dto';
 
 export interface WeatherApiClientServiceInterface {
-  fetchWeather(city: string): Promise<WeatherFetchResult>;
+  fetchWeather(city: string): Promise<WeatherGeneralResponseDto>;
 }
 
 @Injectable()
@@ -12,13 +11,11 @@ export class WeatherApiClientService
   implements WeatherApiClientServiceInterface
 {
   constructor(
-    @Inject(weatherTokens.WEATHER_API_HANDLER)
+    @Inject('WeatherApiHandler')
     private handlers: WeatherApiDataHandlerInterface,
   ) {}
 
-  async fetchWeather(city: string): Promise<WeatherFetchResult> {
-    return {
-      response: await this.handlers.handleRequest(city),
-    };
+  async fetchWeather(city: string): Promise<WeatherGeneralResponseDto> {
+    return await this.handlers.handleRequest(city);
   }
 }

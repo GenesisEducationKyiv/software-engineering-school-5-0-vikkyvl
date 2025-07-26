@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
-import { subscriptionErrors, subscriptionTokens } from '../../common';
+import { subscriptionErrors } from '../../common';
 import { MessageResponseDto } from '../../../../../common/shared';
 import { SubscriptionRepositoryInterface } from '../repository/subscription.repository.interface';
 import { messages } from '../../common';
@@ -12,7 +12,7 @@ interface ConfirmationServiceInterface {
 @Injectable()
 export class ConfirmationService implements ConfirmationServiceInterface {
   constructor(
-    @Inject(subscriptionTokens.SUBSCRIPTION_REPOSITORY_INTERFACE)
+    @Inject('SubscriptionRepositoryInterface')
     private readonly subscriptionRepository: SubscriptionRepositoryInterface,
   ) {}
 
