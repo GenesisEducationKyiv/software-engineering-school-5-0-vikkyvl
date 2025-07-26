@@ -21,7 +21,6 @@ import { Response } from './utils/response.dto';
 import { weatherErrors } from '../../weather-service/src/common';
 import { delay, of } from 'rxjs';
 import { errorMessages } from '../src/common';
-import { redisConfig } from '../../weather-service/src/modules/cache/config/config';
 
 describe('Weather Endpoints', () => {
   let containers: TestContainers;
@@ -74,9 +73,6 @@ describe('Weather Endpoints', () => {
     apiGatewayApp.setGlobalPrefix('api');
     await apiGatewayApp.init();
 
-    redisConfig.host = containers.redis.host;
-    redisConfig.port = containers.redis.port;
-
     const weatherServiceModule = await Test.createTestingModule({
       imports: [
         WeatherModule,
@@ -93,7 +89,7 @@ describe('Weather Endpoints', () => {
         TypeOrmModule.forFeature([Weather]),
       ],
     })
-      .overrideProvider('WeatherServiceProxy')
+      .overrideProvider('WeatherApiClientServiceInterface')
       .useValue({
         fetchWeather: jest.fn().mockImplementation((city: string) => {
           if (city === invalidCity) {
@@ -106,10 +102,7 @@ describe('Weather Endpoints', () => {
             return of(weatherGeneralResponse).pipe(delay(4000));
           }
 
-          return Promise.resolve({
-            response: weatherGeneralResponse,
-            isRecordInCache: false,
-          });
+          return Promise.resolve(weatherGeneralResponse);
         }),
       })
       .compile();
@@ -128,7 +121,9 @@ describe('Weather Endpoints', () => {
     await weatherServiceApp.init();
 
     clientProxy = apiGatewayApp.get('WEATHER_SERVICE');
-    weatherApiClient = weatherServiceApp.get('WeatherServiceProxy');
+    weatherApiClient = weatherServiceApp.get(
+      'WeatherApiClientServiceInterface',
+    );
   });
 
   afterAll(async () => {
@@ -137,7 +132,6 @@ describe('Weather Endpoints', () => {
     await clientProxy.close();
     await containers.rabbit.container.stop();
     await containers.postgres.container.stop();
-    await containers.redis.container.stop();
   });
 
   describe('GET /api/weather/:city', () => {

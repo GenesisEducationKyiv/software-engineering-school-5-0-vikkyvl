@@ -11,11 +11,6 @@ export interface TestContainers {
     host: string;
     port: number;
   };
-  redis: {
-    container: StartedTestContainer;
-    host: string;
-    port: number;
-  };
 }
 
 export async function setupTestContainers(): Promise<TestContainers> {
@@ -34,10 +29,6 @@ export async function setupTestContainers(): Promise<TestContainers> {
     })
     .start();
 
-  const redisContainer = await new GenericContainer('redis:7-alpine')
-    .withExposedPorts(6379)
-    .start();
-
   return {
     rabbit: {
       container: rabbitContainer,
@@ -47,11 +38,6 @@ export async function setupTestContainers(): Promise<TestContainers> {
       container: postgresContainer,
       host: postgresContainer.getHost(),
       port: postgresContainer.getMappedPort(5432),
-    },
-    redis: {
-      container: redisContainer,
-      host: redisContainer.getHost(),
-      port: redisContainer.getMappedPort(6379),
     },
   };
 }

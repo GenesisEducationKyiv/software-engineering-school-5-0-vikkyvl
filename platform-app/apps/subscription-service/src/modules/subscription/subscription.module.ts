@@ -9,7 +9,6 @@ import { LinkService } from '../external/link/link.service';
 import { ConfirmationService } from './confirmation.service';
 import { UnsubscriptionService } from './unsubscription.service';
 import { Transporter } from '../external/mail/email/utils/transporter';
-import { subscriptionTokens } from '../../common';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Subscription])],
@@ -20,15 +19,15 @@ import { subscriptionTokens } from '../../common';
     UnsubscriptionService,
     EmailSenderService,
     {
-      provide: subscriptionTokens.TRANSPORTER_INTERFACE,
+      provide: 'TransporterInterface',
       useClass: Transporter,
     },
     {
-      provide: subscriptionTokens.SUBSCRIPTION_REPOSITORY_INTERFACE,
+      provide: 'SubscriptionRepositoryInterface',
       useClass: SubscriptionRepository,
     },
     {
-      provide: subscriptionTokens.LINK_SERVICE_INTERFACE,
+      provide: 'LinkServiceInterface',
       useClass: LinkService,
     },
   ],
