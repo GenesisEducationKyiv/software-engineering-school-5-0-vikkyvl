@@ -1,0 +1,4 @@
+apiVersion: v2
+name: platform-web
+description: React Web App deployment
+version: 0.1.0

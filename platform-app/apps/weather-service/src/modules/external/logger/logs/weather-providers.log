@@ -14,10 +14,3 @@
 {"timestamp":"2025-06-30T20:16:29.714Z","provider":"openweathermap.org","response":{"temperature":14.84,"humidity":84,"description":"overcast clouds"}}
 {"timestamp":"2025-06-30T20:16:41.048Z","provider":"weatherapi.com","response":"Request failed with status code 401"}
 {"timestamp":"2025-06-30T20:16:41.181Z","provider":"openweathermap.org","response":{"temperature":14.84,"humidity":84,"description":"overcast clouds"}}
-{"timestamp":"2025-07-02T10:38:51.542Z","provider":"weatherapi.com","response":"connect ETIMEDOUT 89.187.169.47:80"}
-{"timestamp":"2025-07-02T10:38:51.817Z","provider":"openweathermap.org","response":{"temperature":25.96,"humidity":48,"description":"few clouds"}}
-{"timestamp":"2025-07-02T10:39:02.067Z","provider":"weatherapi.com","response":"connect ETIMEDOUT 89.187.169.47:80"}
-{"timestamp":"2025-07-02T10:39:02.189Z","provider":"openweathermap.org","response":{"temperature":25.96,"humidity":48,"description":"few clouds"}}
-{"timestamp":"2025-07-02T10:40:42.738Z","provider":"weatherapi.com","response":{"temperature":24.2,"humidity":39,"description":"Partly Cloudy"}}
-{"timestamp":"2025-07-02T10:56:58.144Z","provider":"weatherapi.com","response":{"temperature":24.2,"humidity":39,"description":"Partly Cloudy"}}
-{"timestamp":"2025-07-02T10:57:20.618Z","provider":"weatherapi.com","response":{"temperature":24.2,"humidity":39,"description":"Partly Cloudy"}}

@@ -4,7 +4,7 @@ import { EmailSenderService } from '../src/modules/external/mail/email/email-sen
 import { SubscriptionRepositoryInterface } from '../src/modules/repository/subscription.repository.interface';
 import { SubscriptionServiceBuilder } from './mocks/subscription.service..builder';
 import { RpcException } from '@nestjs/microservices';
-import { subscriptionErrors, subscriptionTokens } from '../src/common';
+import { subscriptionErrors } from '../src/common';
 import { Subscription } from '../src/entities/subscription.entity';
 
 describe('Subscription Service (unit)', () => {
@@ -17,7 +17,7 @@ describe('Subscription Service (unit)', () => {
       providers: [
         SubscriptionService,
         {
-          provide: subscriptionTokens.SUBSCRIPTION_REPOSITORY_INTERFACE,
+          provide: 'SubscriptionRepositoryInterface',
           useValue: {
             findByEmail: jest.fn(),
             createSubscription: jest.fn(),

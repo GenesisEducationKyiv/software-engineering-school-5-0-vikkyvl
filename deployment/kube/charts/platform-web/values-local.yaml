@@ -1,0 +1,35 @@
+namespace: platform-web
+
+image:
+  repository: registry.local:80/platform-web
+  tag: 0.1.1
+  pullPolicy: IfNotPresent
+
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+
+replicaCount: 1
+
+platformWeb:
+  containerPort: 3004
+  envs:
+    - name: REACT_APP_API_URL
+      value: platform.local
+  resources:
+    limits:
+      cpu: 500m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+ingress:
+  enabled: true
+  host: platform-web.local
+  className: nginx
+
+secrets:
+  useExternalSecrets: false

@@ -1,0 +1,75 @@
+namespace: stateful
+
+postgres:
+  enabled: true
+  image: postgres:15-alpine
+  replicaCount: 1
+  useExternalSecrets: false
+  storageSize: 1Gi
+  storageClass: ""
+  envs:
+    - name: POSTGRES_USER
+      value: postgres
+    - name: POSTGRES_PASSWORD
+      value: password
+    - name: POSTGRES_DB
+      value: weather_db
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 100m
+      memory: 256Mi
+  readinessProbe:
+    exec:
+      command:
+        - pg_isready
+        - -U
+        - postgres
+    initialDelaySeconds: 5
+    periodSeconds: 10
+  livenessProbe:
+    exec:
+      command:
+        - pg_isready
+        - -U
+        - postgres
+    initialDelaySeconds: 15
+    periodSeconds: 20
+
+rabbitmq:
+  image: rabbitmq:3-management
+  user: guest
+  password: guest
+  useExternalSecrets: false
+  storageSize: 5Gi
+  storageClass: standard
+  envs:
+    - name: RABBITMQ_DEFAULT_USER
+      value: guest
+    - name: RABBITMQ_DEFAULT_PASS
+      value: guest
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+registry:
+  enabled: true
+  image: registry:2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  ingress:
+    enabled: true
+    host: registry.local
+    className: nginx
+  storage: 5Gi
