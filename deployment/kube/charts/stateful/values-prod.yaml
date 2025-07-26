@@ -1,0 +1,73 @@
+namespace: stateful
+
+serviceAccount:
+  create: true
+  name: secret-sa
+  roleArn: arn:aws:iam::301235908824:role/ragdoll-secrets-csi-sa-role
+
+postgres:
+  enabled: true
+  image: postgres:15-alpine
+  replicaCount: 1
+  useExternalSecrets: true
+  storageSize: 1Gi
+  storageClass: gp3
+  envs:
+    - name: POSTGRES_USER
+      valueFrom:
+        secretKeyRef:
+          name: postgres-secret-store
+          key: POSTGRES_USER
+    - name: POSTGRES_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: postgres-secret-store
+          key: POSTGRES_PASSWORD
+    - name: POSTGRES_DB
+      valueFrom:
+        secretKeyRef:
+          name: postgres-secret-store
+          key: POSTGRES_DB
+  resources:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+  readinessProbe:
+    exec:
+      command:
+        - pg_isready
+        - -U
+        - postgres
+    initialDelaySeconds: 10
+    periodSeconds: 15
+  livenessProbe:
+    exec:
+      command:
+        - pg_isready
+        - -U
+        - postgres
+    initialDelaySeconds: 30
+    periodSeconds: 30
+
+rabbitmq:
+  image: rabbitmq:3-management
+  useExternalSecrets: true
+  storageClass: gp3
+  storageSize: 1Gi
+  envs:
+    - name: RABBITMQ_DEFAULT_USER
+      valueFrom:
+        secretKeyRef:
+          name: rabbitmq-secrets-store
+          key: RABBITMQ_DEFAULT_USER
+    - name: RABBITMQ_DEFAULT_PASS
+      valueFrom:
+        secretKeyRef:
+          name: rabbitmq-secrets-store
+          key: RABBITMQ_DEFAULT_PASS
+
+registry:
+  enabled: false

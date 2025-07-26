@@ -1,0 +1,270 @@
+namespace: platform
+
+replicaCount: 2
+
+image:
+  repository: 301235908824.dkr.ecr.us-east-1.amazonaws.com/platform
+  tag: latest
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  portAPIGateway: 80
+  portWeatherAPI: 81
+  portSubscriptionAPI: 82
+  targetPortAPIGateway: 3000
+  targetPortWeatherAPI: 3001
+  targetPortSubscriptionAPI: 3002
+
+secrets:
+  useExternalSecrets: true
+
+platformApiGateway:
+
+  command: [ "node", "dist/apps/api-gateway/src/main.js" ]
+  containerPort: 3000
+  port: 80
+  useExternalSecrets: true
+  envs:
+    - name: PORT_API_GATEWAY
+      value: "3000"
+    - name: PORT_WEATHER_SERVICE
+      value: "3001"
+    - name: PORT_SUBSCRIPTION_SERVICE
+      value: "3002"
+    - name: WEATHER_API_URL
+      value: "http://api.weatherapi.com/v1/current.json"
+    - name: OPEN_WEATHER_MAP_URL
+      value: "https://api.openweathermap.org/data/2.5/weather"
+    - name: WEATHER_STACK_URL
+      value: "http://api.weatherstack.com/current"
+    - name: BROKER_URL
+      value: "amqp://guest:guest@rabbitmq.stateful.svc.cluster.local:5672"
+    - name: DB_HOST
+      value: "postgres.stateful.svc.cluster.local"
+    - name: DB_PORT
+      value: "5432"
+    - name: DB_USER
+      value: "postgres"
+    - name: DB_NAME
+      value: "weather_db"
+    - name: REACT_APP_API_URL
+      value: "https://platform.mycompany.com"
+    - name: WEATHER_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: WEATHER_API_KEY
+    - name: OPEN_WEATHER_MAP_KEY
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: OPEN_WEATHER_MAP_KEY
+    - name: WEATHER_STACK_KEY
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: WEATHER_STACK_KEY
+    - name: DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: DB_PASSWORD
+    - name: EMAIL_USER
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: EMAIL_USER
+    - name: EMAIL_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: EMAIL_PASSWORD
+  externalSecretKeys:
+    - objectName: WEATHER_API_KEY
+      key: WEATHER_API_KEY
+    - objectName: OPEN_WEATHER_MAP_KEY
+      key: OPEN_WEATHER_MAP_KEY
+    - objectName: WEATHER_STACK_KEY
+      key: WEATHER_STACK_KEY
+    - objectName: DB_PASSWORD
+      key: DB_PASSWORD
+    - objectName: EMAIL_USER
+      key: EMAIL_USER
+    - objectName: EMAIL_PASSWORD
+      key: EMAIL_PASSWORD
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 2Gi
+
+platformWeatherService:
+  command: [ "node", "dist/apps/weather-service/src/main.js" ]
+  containerPort: 3001
+  port: 81
+  useExternalSecrets: true
+  envs:
+    - name: PORT_API_GATEWAY
+      value: "3000"
+    - name: PORT_WEATHER_SERVICE
+      value: "3001"
+    - name: PORT_SUBSCRIPTION_SERVICE
+      value: "3002"
+    - name: WEATHER_API_URL
+      value: "http://api.weatherapi.com/v1/current.json"
+    - name: OPEN_WEATHER_MAP_URL
+      value: "https://api.openweathermap.org/data/2.5/weather"
+    - name: WEATHER_STACK_URL
+      value: "http://api.weatherstack.com/current"
+    - name: BROKER_URL
+      value: "amqp://guest:guest@rabbitmq.stateful.svc.cluster.local:5672"
+    - name: DB_HOST
+      value: "postgres.stateful.svc.cluster.local"
+    - name: DB_PORT
+      value: "5432"
+    - name: DB_USER
+      value: "postgres"
+    - name: DB_NAME
+      value: "weather_db"
+    - name: REACT_APP_API_URL
+      value: "https://platform.mycompany.com"
+    - name: WEATHER_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: WEATHER_API_KEY
+    - name: OPEN_WEATHER_MAP_KEY
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: OPEN_WEATHER_MAP_KEY
+    - name: WEATHER_STACK_KEY
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: WEATHER_STACK_KEY
+    - name: DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: DB_PASSWORD
+    - name: EMAIL_USER
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: EMAIL_USER
+    - name: EMAIL_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: EMAIL_PASSWORD
+  externalSecretKeys:
+    - objectName: WEATHER_API_KEY
+      key: WEATHER_API_KEY
+    - objectName: OPEN_WEATHER_MAP_KEY
+      key: OPEN_WEATHER_MAP_KEY
+    - objectName: WEATHER_STACK_KEY
+      key: WEATHER_STACK_KEY
+    - objectName: DB_PASSWORD
+      key: DB_PASSWORD
+    - objectName: EMAIL_USER
+      key: EMAIL_USER
+    - objectName: EMAIL_PASSWORD
+      key: EMAIL_PASSWORD
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 2Gi
+
+platformSubscriptionService:
+  command: [ "node", "dist/apps/subscription-service/src/main.js" ]
+  containerPort: 3002
+  port: 82
+  useExternalSecrets: true
+  envs:
+    - name: PORT_API_GATEWAY
+      value: "3000"
+    - name: PORT_WEATHER_SERVICE
+      value: "3001"
+    - name: PORT_SUBSCRIPTION_SERVICE
+      value: "3002"
+    - name: WEATHER_API_URL
+      value: "http://api.weatherapi.com/v1/current.json"
+    - name: OPEN_WEATHER_MAP_URL
+      value: "https://api.openweathermap.org/data/2.5/weather"
+    - name: WEATHER_STACK_URL
+      value: "http://api.weatherstack.com/current"
+    - name: BROKER_URL
+      value: "amqp://guest:guest@rabbitmq.stateful.svc.cluster.local:5672"
+    - name: DB_HOST
+      value: "postgres.stateful.svc.cluster.local"
+    - name: DB_PORT
+      value: "5432"
+    - name: DB_USER
+      value: "postgres"
+    - name: DB_NAME
+      value: "weather_db"
+    - name: REACT_APP_API_URL
+      value: "https://platform.mycompany.com"
+    - name: WEATHER_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: WEATHER_API_KEY
+    - name: OPEN_WEATHER_MAP_KEY
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: OPEN_WEATHER_MAP_KEY
+    - name: WEATHER_STACK_KEY
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: WEATHER_STACK_KEY
+    - name: DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: DB_PASSWORD
+    - name: EMAIL_USER
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: EMAIL_USER
+    - name: EMAIL_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: aws-secretsmanager-platform
+          key: EMAIL_PASSWORD
+  externalSecretKeys:
+    - objectName: WEATHER_API_KEY
+      key: WEATHER_API_KEY
+    - objectName: OPEN_WEATHER_MAP_KEY
+      key: OPEN_WEATHER_MAP_KEY
+    - objectName: WEATHER_STACK_KEY
+      key: WEATHER_STACK_KEY
+    - objectName: DB_PASSWORD
+      key: DB_PASSWORD
+    - objectName: EMAIL_USER
+      key: EMAIL_USER
+    - objectName: EMAIL_PASSWORD
+      key: EMAIL_PASSWORD
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1
+      memory: 2Gi
+
+ingress:
+  enabled: true
+  host: platform.ainp.valmark.dev
+  className: alb
+  path: /
