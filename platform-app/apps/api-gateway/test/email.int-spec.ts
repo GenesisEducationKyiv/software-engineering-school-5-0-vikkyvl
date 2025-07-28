@@ -115,7 +115,7 @@ describe('EmailService Integration Tests', () => {
       });
 
       it('should contain correct sender and recipient', () => {
-        expect(message.Raw.From).toBe('test@mailhog.local');
+        expect(message.Raw.From).toBe('staff-base@ukr.net');
         expect(message.Raw.To).toContain(subscriptionEntity.email);
       });
 
