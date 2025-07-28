@@ -1,22 +1,18 @@
 import { Controller } from '@nestjs/common';
-import { MessagePattern, RpcException } from '@nestjs/microservices';
+import { MessagePattern, Payload } from '@nestjs/microservices';
 import { patterns } from '../../../../../common/shared';
-import { WeatherDto } from '../../../../../common/shared';
-import { weatherErrors } from '../../common';
+import { WeatherResponseDto } from '../../../../../common/shared';
 import { WeatherService } from './weather.service';
+import { CityValidationPipe } from '../../common/pipe/city-validation.pipe';
 
 @Controller('weather')
 export class WeatherController {
   constructor(private weatherService: WeatherService) {}
 
   @MessagePattern(patterns.WEATHER.GET_WEATHER)
-  async getWeather(city: string): Promise<WeatherDto> {
-    const hasNonAlphabetChars = /[^\p{L}\s-]/u.test(city);
-
-    if (hasNonAlphabetChars) {
-      throw new RpcException(weatherErrors.INVALID_REQUEST);
-    }
-
-    return this.weatherService.getWeatherFromAPI(city);
+  async getWeather(
+    @Payload(new CityValidationPipe()) city: string,
+  ): Promise<WeatherResponseDto> {
+    return await this.weatherService.getWeatherFromAPI(city);
   }
 }

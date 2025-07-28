@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { SubscriptionService } from '../src/modules/subscription/subscription.service';
-import { EmailSenderService } from '../src/modules/external/mail/email/email-sender.service';
-import { SubscriptionRepositoryInterface } from '../src/modules/repository/subscription.repository.interface';
+import { EmailSenderService } from '../src/modules/subscription/infrastructure/external/mail/email/email-sender.service';
+import { SubscriptionRepositoryInterface } from '../src/modules/subscription/infrastructure/repository/interfaces/subscription.repository.interface';
 import { SubscriptionServiceBuilder } from './mocks/subscription.service..builder';
 import { RpcException } from '@nestjs/microservices';
 import { subscriptionErrors, subscriptionTokens } from '../src/common';

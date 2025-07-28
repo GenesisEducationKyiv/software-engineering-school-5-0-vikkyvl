@@ -1,8 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { RpcException } from '@nestjs/microservices';
-import { subscriptionErrors, subscriptionTokens } from '../../common';
+import { InvalidConfirmationToken, subscriptionTokens } from '../../common';
 import { MessageResponseDto } from '../../../../../common/shared';
-import { SubscriptionRepositoryInterface } from '../repository/subscription.repository.interface';
+import { SubscriptionRepositoryInterface } from './infrastructure/repository/interfaces/subscription.repository.interface';
 import { messages } from '../../common';
 
 interface ConfirmationServiceInterface {
@@ -20,7 +19,7 @@ export class ConfirmationService implements ConfirmationServiceInterface {
     const subscription = await this.subscriptionRepository.findByToken(token);
 
     if (!subscription) {
-      throw new RpcException(subscriptionErrors.INVALID_CONFIRMATION_TOKEN);
+      throw new InvalidConfirmationToken();
     }
 
     if (subscription.confirmed) {

@@ -11,7 +11,7 @@
     "build:weather-service": "nest build apps/weather-service",
     "build:subscription-service": "nest build apps/subscription-service",
     "build:all": "concurrently \"npm run build:weather-service\" \"npm run build:subscription-service\" \"npm run build:api-gateway\"",
-    "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\" \"apps/test/**/*.ts\"",
     "start": "npm run start:all",
     "start:api-gateway": "ts-node apps/api-gateway/src/main.ts",
     "start:weather-service": "ts-node apps/weather-service/src/main.ts",
@@ -24,12 +24,13 @@
     "test": "jest",
     "test:unit": "jest --testRegex \".*\\.spec\\.ts$\"",
     "test:int": "jest --testRegex \".*\\.int-spec\\.ts$\"",
+    "test:arch": "npx depcruise --validate .dependency-cruiser.js apps",
     "test:unit-cov": "jest --coverage --testRegex \".*\\.spec\\.ts$\"",
     "test:int-cov": "jest --coverage --testRegex \".*\\.int-spec\\.ts$\"",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config apps/test/jest-e2e.json"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
@@ -45,12 +46,16 @@
     "axios": "^1.9.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.2",
+    "dotenv": "^17.0.1",
+    "eslint-plugin-import": "^2.32.0",
+    "express": "^5.1.0",
     "ioredis": "^5.6.1",
     "nodemailer": "^7.0.3",
     "pg": "^8.16.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.24"
+    "typeorm": "^0.3.24",
+    "uuid": "^11.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -66,6 +71,7 @@
     "@types/node": "^22.10.7",
     "@types/supertest": "^6.0.2",
     "concurrently": "^9.1.2",
+    "dependency-cruiser": "^16.10.4",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-no-comments": "^1.1.10",
@@ -79,6 +85,7 @@
     "ts-jest": "^29.4.0",
     "ts-loader": "^9.5.2",
     "ts-node": "^10.9.2",
+    "tsarch": "^5.4.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.7.3",
     "typescript-eslint": "^8.20.0"
@@ -90,7 +97,7 @@
       "ts"
     ],
     "rootDir": "apps",
-    "testRegex": ".*\\.(spec|int-spec)\\.ts$",
+    "testRegex": ".*\\.(spec|int-spec|arch-spec)\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },

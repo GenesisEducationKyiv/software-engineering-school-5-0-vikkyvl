@@ -1,3 +1,2 @@
-export * from './errors';
-export * from './error-messages';
-export * from './microservice-client';
+export * from './interfaces/errors';
+export * from './constants/error-messages';
