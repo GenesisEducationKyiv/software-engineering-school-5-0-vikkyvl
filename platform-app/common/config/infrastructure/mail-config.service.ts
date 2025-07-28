@@ -4,11 +4,15 @@ class MailConfigService implements EmailConfigInterface {
   private emailHost: string;
   private emailPort: number;
   private emailSecure: boolean;
+  private emailUser: string;
+  private emailPassword: string;
 
   constructor() {
     this.emailHost = process.env.EMAIL_HOST ?? 'smtp.ukr.net';
     this.emailPort = Number(process.env.EMAIL_PORT ?? 465);
     this.emailSecure = Boolean(process.env.EMAIL_SECURE ?? true);
+    this.emailUser = process.env.EMAIL_USER ?? '';
+    this.emailPassword = process.env.EMAIL_PASSWORD ?? '';
   }
 
   public getEmailHost() {
@@ -23,12 +27,12 @@ class MailConfigService implements EmailConfigInterface {
     return this.emailSecure;
   }
 
-  public getEmailUser() {
-    return process.env.EMAIL_USER ?? '';
+  public getEmailUser(): string {
+    return this.emailUser;
   }
 
-  public getEmailPassword() {
-    return process.env.EMAIL_PASSWORD ?? '';
+  public getEmailPassword(): string {
+    return this.emailPassword;
   }
 
   public setEmailHost(host: string) {
@@ -41,6 +45,14 @@ class MailConfigService implements EmailConfigInterface {
 
   public setEmailSecure(secure: boolean) {
     this.emailSecure = secure;
+  }
+
+  public setEmailUser(user: string) {
+    this.emailUser = user;
+  }
+
+  public setEmailPassword(password: string) {
+    this.emailPassword = password;
   }
 }
 
