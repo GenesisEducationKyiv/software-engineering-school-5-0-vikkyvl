@@ -24,11 +24,11 @@ class MailConfigService implements EmailConfigInterface {
   }
 
   public getEmailUser() {
-    return process.env.EMAIL_USER;
+    return process.env.EMAIL_USER ?? '';
   }
 
   public getEmailPassword() {
-    return process.env.EMAIL_PASSWORD;
+    return process.env.EMAIL_PASSWORD ?? '';
   }
 
   public setEmailHost(host: string) {
