@@ -16,12 +16,7 @@ export class Transporter implements TransporterInterface {
       host: mailConfigService.getEmailHost(),
       port: Number(mailConfigService.getEmailPort()),
       secure: Boolean(mailConfigService.getEmailSecure()),
-      ...(user && pass ? {
-        auth: {
-          user,
-          pass,
-        },
-      } : {}),
+      ...(user ? { auth: pass ? { user, pass } : { user } } : {}),
       tls: {
         rejectUnauthorized: false,
       },
