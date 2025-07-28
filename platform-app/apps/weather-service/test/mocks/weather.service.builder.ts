@@ -6,8 +6,8 @@ export class WeatherServiceBuilder {
   private static readonly TEST_TEMP_C: number = 18.7;
   private static readonly TEST_HUMIDITY: number = 73;
   private static readonly TEST_CONDITION: string = 'Clear';
-  private static readonly TEST_CITY: string = 'Kyiv';
-  private static readonly TEST_INVALID_CITY: string = 'Kyviv';
+  private static readonly TEST_CITY: string = 'kyiv';
+  private static readonly TEST_INVALID_CITY: string = 'kyviv';
   private static readonly TEST_ID: number = 1;
   private static readonly TEST_CREATED_AT: Date = new Date(
     '2024-01-01T00:00:00Z',
