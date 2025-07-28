@@ -1,8 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { RpcException } from '@nestjs/microservices';
-import { subscriptionErrors } from '../../common';
+import { InvalidUnsubscriptionToken, subscriptionTokens } from '../../common';
 import { MessageResponseDto } from '../../../../../common/shared';
-import { SubscriptionRepositoryInterface } from '../repository/subscription.repository.interface';
+import { SubscriptionRepositoryInterface } from './infrastructure/repository/interfaces/subscription.repository.interface';
 import { messages } from '../../common';
 
 interface UnsubscriptionServiceInterface {
@@ -12,7 +11,7 @@ interface UnsubscriptionServiceInterface {
 @Injectable()
 export class UnsubscriptionService implements UnsubscriptionServiceInterface {
   constructor(
-    @Inject('SubscriptionRepositoryInterface')
+    @Inject(subscriptionTokens.SUBSCRIPTION_REPOSITORY_INTERFACE)
     private readonly subscriptionRepository: SubscriptionRepositoryInterface,
   ) {}
 
@@ -20,7 +19,7 @@ export class UnsubscriptionService implements UnsubscriptionServiceInterface {
     const subscription = await this.subscriptionRepository.findByToken(token);
 
     if (!subscription) {
-      throw new RpcException(subscriptionErrors.INVALID_UNSUBSCRIPTION_TOKEN);
+      throw new InvalidUnsubscriptionToken();
     }
 
     await this.subscriptionRepository.deleteSubscription(subscription);

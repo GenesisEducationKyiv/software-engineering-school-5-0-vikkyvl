@@ -3,12 +3,13 @@ import { SubscriptionController } from './subscription.controller';
 import { SubscriptionService } from './subscription.service';
 import { Subscription } from '../../entities/subscription.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EmailSenderService } from '../external/mail/email/email-sender.service';
-import { SubscriptionRepository } from '../repository/subscription.repository';
-import { LinkService } from '../external/link/link.service';
+import { EmailSenderService } from './infrastructure/external/mail/email/email-sender.service';
+import { SubscriptionRepository } from './infrastructure/repository/subscription.repository';
+import { LinkService } from './infrastructure/external/link/link.service';
 import { ConfirmationService } from './confirmation.service';
 import { UnsubscriptionService } from './unsubscription.service';
-import { Transporter } from '../external/mail/email/utils/transporter';
+import { Transporter } from './infrastructure/external/mail/email/utils/transporter';
+import { subscriptionTokens } from '../../common';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Subscription])],
@@ -19,15 +20,15 @@ import { Transporter } from '../external/mail/email/utils/transporter';
     UnsubscriptionService,
     EmailSenderService,
     {
-      provide: 'TransporterInterface',
+      provide: subscriptionTokens.TRANSPORTER_INTERFACE,
       useClass: Transporter,
     },
     {
-      provide: 'SubscriptionRepositoryInterface',
+      provide: subscriptionTokens.SUBSCRIPTION_REPOSITORY_INTERFACE,
       useClass: SubscriptionRepository,
     },
     {
-      provide: 'LinkServiceInterface',
+      provide: subscriptionTokens.LINK_SERVICE_INTERFACE,
       useClass: LinkService,
     },
   ],

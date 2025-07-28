@@ -2,8 +2,9 @@
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
-import tseslint from 'typescript-eslint'
+import tseslint from 'typescript-eslint';
 import noComments from 'eslint-plugin-no-comments';
+import importPlugin from 'eslint-plugin-import';
 
 export default tseslint.config(
   {
@@ -29,8 +30,12 @@ export default tseslint.config(
   {
     plugins: {
       "no-comments": noComments,
+      'import': importPlugin,
     },
     rules: {
+      "import/no-useless-path-segments": ["error", {
+        noUselessIndex: true,
+      }],
       'no-comments/disallowComments': 'error',
       'padding-line-between-statements': [
         'error',

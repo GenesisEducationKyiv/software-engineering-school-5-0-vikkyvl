@@ -1,5 +1,5 @@
 import { Frequency } from '../../../../common/shared';
-import { SubscriptionDto } from '../../../../common/shared';
+import { SubscriptionRequestDto } from '../../../../common/shared';
 import { Subscription } from '../../../subscription-service/src/entities/subscription.entity';
 
 export class SubscriptionBuilder {
@@ -7,7 +7,7 @@ export class SubscriptionBuilder {
   private static readonly TEST_EMAIL = 'test_user@example.com';
   private static readonly TEST_INVALID_EMAIL = 'test_userexample.com';
   private static readonly TEST_WRONG_EMAIL = 'wrong_user@example.com';
-  private static readonly TEST_CITY = 'Kyiv';
+  private static readonly TEST_CITY = 'kyiv';
   private static readonly TEST_FREQUENCY = Frequency.DAILY;
   private static readonly TEST_TOKEN = '5ffa803-6e9a-4f55-8fb8-09e60f464095';
   private static readonly TEST_INVALID_TOKEN =
@@ -19,7 +19,7 @@ export class SubscriptionBuilder {
     '2024-01-01T00:00:00Z',
   );
 
-  public static userForm(): SubscriptionDto {
+  public static userForm(): SubscriptionRequestDto {
     return {
       email: this.TEST_EMAIL,
       city: this.TEST_CITY,
@@ -27,7 +27,7 @@ export class SubscriptionBuilder {
     };
   }
 
-  public static userFormWithInvalidEmail(): SubscriptionDto {
+  public static userFormWithInvalidEmail(): SubscriptionRequestDto {
     return {
       email: this.TEST_INVALID_EMAIL,
       city: this.TEST_CITY,
@@ -35,7 +35,7 @@ export class SubscriptionBuilder {
     };
   }
 
-  public static userFormWithWrongEmail(): SubscriptionDto {
+  public static userFormWithWrongEmail(): SubscriptionRequestDto {
     return {
       email: this.TEST_WRONG_EMAIL,
       city: this.TEST_CITY,

@@ -55,11 +55,28 @@ jobs:
               with:
                   node-version: 18
             - run: npm ci
+            - run: npm run test:int
             - run: npm run test:int-cov
             - uses: codecov/codecov-action@v5
               with:
                   flags: integration-test
                   token: ${{ secrets.CODECOV_TOKEN }}
+
+    architecture-test:
+        runs-on: ubuntu-latest
+        needs: integration-test
+        defaults:
+            run:
+                working-directory: ./platform-app
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+            - run: npm ci
+            - run: npm run test:arch
+           
+                  
 #  api-gateway-lint:
 #      runs-on: ubuntu-latest
 #      defaults:

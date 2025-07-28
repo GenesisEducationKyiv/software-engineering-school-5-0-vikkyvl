@@ -1,6 +1,6 @@
 import { Weather } from '../../src/entities/weather.entity';
-import { WeatherDto } from '../../../../common/shared';
-import { WeatherGeneralResponseDto } from '../../src/modules/external/dto';
+import { WeatherResponseDto } from '../../../../common/shared';
+import { WeatherGeneralResponseDto } from '../../src/modules/weather/infrastructure/external/dto';
 
 export class WeatherServiceBuilder {
   private static readonly TEST_TEMP_C: number = 18.7;
@@ -44,7 +44,7 @@ export class WeatherServiceBuilder {
     };
   }
 
-  public static totalResult(): WeatherDto {
+  public static totalResult(): WeatherResponseDto {
     return {
       temperature: this.TEST_TEMP_C,
       humidity: this.TEST_HUMIDITY,
