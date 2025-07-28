@@ -9,14 +9,19 @@ export class Transporter implements TransporterInterface {
   private isDelivered: boolean = true;
 
   constructor() {
+    const user = mailConfigService.getEmailUser();
+    const pass = mailConfigService.getEmailPassword();
+
     this.transporter = nodemailer.createTransport({
       host: mailConfigService.getEmailHost(),
       port: Number(mailConfigService.getEmailPort()),
       secure: Boolean(mailConfigService.getEmailSecure()),
-      auth: {
-        user: mailConfigService.getEmailUser(),
-        pass: mailConfigService.getEmailPassword(),
-      },
+      ...(user && pass ? {
+        auth: {
+          user,
+          pass,
+        },
+      } : {}),
       tls: {
         rejectUnauthorized: false,
       },

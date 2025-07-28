@@ -57,8 +57,6 @@ export async function createSubscriptionServiceApp(
   mailConfigService.setEmailHost(containers.mailhog.host);
   mailConfigService.setEmailPort(containers.mailhog.smtpPort);
   mailConfigService.setEmailSecure(false);
-  mailConfigService.setEmailUser('');
-  mailConfigService.setEmailPassword('');
 
   const subscriptionServiceModule = await Test.createTestingModule({
     imports: [
