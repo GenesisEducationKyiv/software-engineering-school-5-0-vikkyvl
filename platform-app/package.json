@@ -25,6 +25,7 @@
     "test:unit": "jest --testRegex \".*\\.spec\\.ts$\"",
     "test:int": "jest --testRegex \".*\\.int-spec\\.ts$\"",
     "test:arch": "npx depcruise --validate .dependency-cruiser.js apps",
+    "test:performance": "jest --testRegex \".*\\.performance-spec\\.ts$\"",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -50,6 +51,7 @@
     "eslint-plugin-import": "^2.32.0",
     "express": "^5.1.0",
     "ioredis": "^5.6.1",
+    "k6": "^0.0.0",
     "nodemailer": "^7.0.3",
     "pg": "^8.16.0",
     "quoted-printable": "^1.0.1",
@@ -70,6 +72,7 @@
     "@testcontainers/rabbitmq": "^11.0.3",
     "@types/express": "^5.0.0",
     "@types/jest": "^29.5.14",
+    "@types/k6": "^1.1.1",
     "@types/node": "^22.10.7",
     "@types/quoted-printable": "^1.0.2",
     "@types/supertest": "^6.0.2",
@@ -100,7 +103,7 @@
       "ts"
     ],
     "rootDir": "apps",
-    "testRegex": ".*\\.(spec|int-spec|arch-spec)\\.ts$",
+    "testRegex": ".*\\.(spec|int-spec|arch-spec|performance-spec)\\.ts$",
     "transform": {
       "^.+\\.(t|j)s$": "ts-jest"
     },

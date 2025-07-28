@@ -4,6 +4,5 @@ export abstract class DomainException extends Error {
     this.name = this.constructor.name;
   }
 
-  abstract getStatus(): number;
   abstract getMessage(): string;
 }

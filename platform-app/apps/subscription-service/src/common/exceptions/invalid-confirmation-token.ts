@@ -6,10 +6,6 @@ export class InvalidConfirmationToken extends DomainException {
     super(subscriptionErrors.INVALID_CONFIRMATION_TOKEN.message);
   }
 
-  getStatus(): number {
-    return subscriptionErrors.INVALID_CONFIRMATION_TOKEN.status;
-  }
-
   getMessage(): string {
     return this.message;
   }

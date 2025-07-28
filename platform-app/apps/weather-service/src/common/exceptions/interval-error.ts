@@ -6,10 +6,6 @@ export class IntervalError extends DomainException {
     super(weatherErrors.INTERNAL_ERROR.message);
   }
 
-  getStatus(): number {
-    return weatherErrors.INTERNAL_ERROR.status;
-  }
-
   getMessage(): string {
     return this.message;
   }
