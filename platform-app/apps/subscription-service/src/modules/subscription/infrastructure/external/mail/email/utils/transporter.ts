@@ -7,16 +7,17 @@ import { TransporterInterface } from '../email-sender.service';
 export class Transporter implements TransporterInterface {
   private readonly transporter: nodemailer.Transporter;
   private isDelivered: boolean = true;
+  private readonly user = mailConfigService.getEmailUser();
+  private readonly pass = mailConfigService.getEmailPassword();
 
   constructor() {
-    const user = mailConfigService.getEmailUser();
-    const pass = mailConfigService.getEmailPassword();
-
     this.transporter = nodemailer.createTransport({
       host: mailConfigService.getEmailHost(),
       port: Number(mailConfigService.getEmailPort()),
       secure: Boolean(mailConfigService.getEmailSecure()),
-      ...(user ? { auth: pass ? { user, pass } : { user } } : {}),
+      ...(this.user && this.pass
+        ? { auth: { user: this.user, pass: this.pass } }
+        : {}),
       tls: {
         rejectUnauthorized: false,
       },
@@ -33,7 +34,7 @@ export class Transporter implements TransporterInterface {
     }
 
     await this.transporter.sendMail({
-      from: `Weather API Application <${mailConfigService.getEmailUser()}>`,
+      from: `Weather API Application <${this.user}>`,
       to: email,
       subject: 'Confirm your weather subscription',
       html,

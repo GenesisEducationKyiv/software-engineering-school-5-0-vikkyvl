@@ -20,6 +20,7 @@ import {
 import { delay, of } from 'rxjs';
 import { WeatherBuilder } from '../mocks/weather.builder';
 import { mailConfigService } from '../../../../common/config';
+import { configMail } from './config-mail';
 
 export async function createApiGatewayApp(
   containers: TestContainers,
@@ -57,6 +58,8 @@ export async function createSubscriptionServiceApp(
   mailConfigService.setEmailHost(containers.mailhog.host);
   mailConfigService.setEmailPort(containers.mailhog.smtpPort);
   mailConfigService.setEmailSecure(false);
+  mailConfigService.setEmailUser(configMail.TEST_USER);
+  mailConfigService.setEmailPassword(configMail.TEST_PASSWORD);
 
   const subscriptionServiceModule = await Test.createTestingModule({
     imports: [

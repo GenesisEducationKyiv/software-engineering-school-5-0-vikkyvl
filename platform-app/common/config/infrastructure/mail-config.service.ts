@@ -27,11 +27,11 @@ class MailConfigService implements EmailConfigInterface {
     return this.emailSecure;
   }
 
-  public getEmailUser(): string {
+  public getEmailUser() {
     return this.emailUser;
   }
 
-  public getEmailPassword(): string {
+  public getEmailPassword() {
     return this.emailPassword;
   }
 
