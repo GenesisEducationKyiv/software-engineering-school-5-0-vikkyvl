@@ -6,7 +6,6 @@ import { SubscriptionModule as SubscriptionModule } from '../../../../subscripti
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { configPostgres } from '../configs/config-postgres';
 import { Subscription } from '../../../../subscription-service/src/entities/subscription.entity';
-import { MailhogTransporter } from '../mailhog/mailhog-transporter';
 import { ErrorHandlerFilter as SubscriptionServiceFilter } from '../../../../subscription-service/src/common';
 import { WeatherModule } from '../../../../weather-service/src/modules/weather/weather.module';
 import { Weather } from '../../../../weather-service/src/entities/weather.entity';
@@ -19,6 +18,8 @@ import { WeatherBuilder } from '../../mocks/weather.builder';
 import { join } from 'path';
 import { DEFAULT_TEST_TIMEOUT } from '../helpers/timeout';
 import { configGrpc } from '../configs/config-grpc';
+import { configMail } from '../mailhog/config-mail';
+import { mailConfigService } from '../../../../../common/config';
 
 export async function createApiGatewayApp(
   containers: TestContainers,
@@ -65,6 +66,12 @@ export async function createApiGatewayApp(
 export async function createSubscriptionServiceApp(
   containers: TestContainers,
 ): Promise<INestApplication> {
+  mailConfigService.setEmailHost(containers.mailhog.host);
+  mailConfigService.setEmailPort(containers.mailhog.smtpPort);
+  mailConfigService.setEmailSecure(false);
+  mailConfigService.setEmailUser(configMail.TEST_USER);
+  mailConfigService.setEmailPassword(configMail.TEST_PASSWORD);
+
   const subscriptionServiceModule = await Test.createTestingModule({
     imports: [
       SubscriptionModule,
@@ -80,12 +87,7 @@ export async function createSubscriptionServiceApp(
       }),
       TypeOrmModule.forFeature([Subscription]),
     ],
-  })
-    .overrideProvider('TransporterInterface')
-    .useFactory({
-      factory: () => new MailhogTransporter(containers),
-    })
-    .compile();
+  }).compile();
 
   const subscriptionServiceApp =
     subscriptionServiceModule.createNestApplication();
