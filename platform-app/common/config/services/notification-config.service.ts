@@ -1,9 +1,8 @@
 import { BrokerConfigInterface } from './interfaces/broker-config.interface';
 import { ClientConfigInterface } from './interfaces/client-config.interface';
-import { EmailConfigInterface } from './interfaces/email-config.interface';
 
 class NotificationConfigService
-  implements BrokerConfigInterface, ClientConfigInterface, EmailConfigInterface
+  implements BrokerConfigInterface, ClientConfigInterface
 {
   public getBrokerUrl() {
     return process.env.BROKER_URL ?? 'amqps://...';
@@ -19,14 +18,6 @@ class NotificationConfigService
 
   public getReactAppApiUrl() {
     return process.env.REACT_APP_API_URL;
-  }
-
-  public getEmailUser() {
-    return process.env.EMAIL_USER;
-  }
-
-  public getEmailPassword() {
-    return process.env.EMAIL_PASSWORD;
   }
 }
 
