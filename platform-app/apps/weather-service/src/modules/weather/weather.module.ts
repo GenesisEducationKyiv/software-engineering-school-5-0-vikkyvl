@@ -12,6 +12,7 @@ import { WeatherStackHandler } from './infrastructure/external/providers';
 import { RedisService } from './infrastructure/cache/redis.service';
 import { redisClientFactory } from './infrastructure/cache/redis.client.factory';
 import { weatherTokens } from '../../common';
+import { LoggerService } from '../../common/logger/logger.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Weather])],
@@ -20,6 +21,7 @@ import { weatherTokens } from '../../common';
     WeatherApiClientService,
     WeatherService,
     RedisService,
+    LoggerService,
     redisClientFactory,
     {
       provide: weatherTokens.WEATHER_REPOSITORY_INTERFACE,
