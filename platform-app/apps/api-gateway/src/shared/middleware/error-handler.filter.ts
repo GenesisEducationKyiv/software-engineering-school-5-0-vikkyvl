@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { errorMessages, Errors } from '../../common';
+import { GrpcCode, mapGrpcToHttp } from '../../../../../common/shared';
 
 @Catch()
 export class ErrorHandlerFilter implements ExceptionFilter {
@@ -48,9 +49,11 @@ export class ErrorHandlerFilter implements ExceptionFilter {
   private handleError(response: Response, error: Error): void {
     const res = error as Errors;
 
-    const isErrorWithCode = typeof res.code === 'number' && res.code > 99;
+    const isErrorWithCode = typeof res.code === 'number';
 
-    const status = isErrorWithCode ? res.code : this.defaultStatus;
+    const status = isErrorWithCode
+      ? mapGrpcToHttp(res.code as GrpcCode)
+      : this.defaultStatus;
     const message = isErrorWithCode
       ? (res.details ?? res.message ?? this.defaultMessage)
       : this.defaultMessage;

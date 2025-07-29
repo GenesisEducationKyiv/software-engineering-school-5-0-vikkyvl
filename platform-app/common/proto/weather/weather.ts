@@ -1,6 +1,6 @@
-import { WeatherRequestDto, WeatherResponseDto } from '../../shared';
+import { WeatherRequestGrpcDto, WeatherResponseGrpcDto } from '../../shared';
 import { Observable } from 'rxjs';
 
 export interface WeatherServiceInterface {
-  getWeather(dto: WeatherRequestDto): Observable<WeatherResponseDto>;
+  getWeather(dto: WeatherRequestGrpcDto): Observable<WeatherResponseGrpcDto>;
 }

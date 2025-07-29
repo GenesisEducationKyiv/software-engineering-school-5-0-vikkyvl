@@ -16,6 +16,7 @@ import { WeatherApiClientServiceInterface } from '../../weather-service/src/modu
 import { weatherErrors } from '../../weather-service/src/common';
 import { redisConfig } from '../../weather-service/src/modules/weather/infrastructure/cache/config/config';
 import { errorMessages } from '../src/common';
+import { mapGrpcToHttp } from '../../../common/shared';
 
 describe('Weather Endpoints', () => {
   let containers: TestContainers;
@@ -71,6 +72,7 @@ describe('Weather Endpoints', () => {
     await containers.rabbit.container.stop();
     await containers.postgres.container.stop();
     await containers.redis.container.stop();
+    await containers.mailhog.container.stop();
   });
 
   describe('GET /api/weather/:city', () => {
@@ -94,7 +96,9 @@ describe('Weather Endpoints', () => {
         .query({ city: invalidCity });
 
       expect(weatherApiClient.fetchWeather).toHaveBeenCalledWith(invalidCity);
-      expect(response.status).toBe(weatherErrors.CITY_NOT_FOUND.status);
+      expect(response.status).toBe(
+        mapGrpcToHttp(weatherErrors.CITY_NOT_FOUND.code),
+      );
       expect(response.body.message).toEqual(
         weatherErrors.CITY_NOT_FOUND.message,
       );
@@ -107,7 +111,9 @@ describe('Weather Endpoints', () => {
         .get('/api/weather')
         .query({ city: invalidCityWithNumber });
 
-      expect(response.status).toBe(weatherErrors.INVALID_REQUEST.status);
+      expect(response.status).toBe(
+        mapGrpcToHttp(weatherErrors.INVALID_REQUEST.code),
+      );
       expect(response.body.message).toEqual(
         weatherErrors.INVALID_REQUEST.message,
       );

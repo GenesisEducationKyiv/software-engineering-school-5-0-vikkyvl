@@ -19,18 +19,18 @@ export class ErrorHandlerFilter implements ExceptionFilter<RpcException> {
 
     const errorResponse = new IntervalError();
 
-    let status: number = weatherErrors.INTERNAL_ERROR.status;
+    let status: number = weatherErrors.INTERNAL_ERROR.code;
     let message: string = errorResponse.getMessage();
 
     if (exception instanceof DomainException) {
       message = exception.getMessage();
 
       if (exception instanceof CityNotFound) {
-        status = weatherErrors.CITY_NOT_FOUND.status;
+        status = weatherErrors.CITY_NOT_FOUND.code;
       } else if (exception instanceof InvalidRequest) {
-        status = weatherErrors.INVALID_REQUEST.status;
+        status = weatherErrors.INVALID_REQUEST.code;
       } else if (exception instanceof WeatherProvidersFailed) {
-        status = weatherErrors.PROVIDERS_NOT_AVAILABLE.status;
+        status = weatherErrors.PROVIDERS_NOT_AVAILABLE.code;
       }
     }
 
