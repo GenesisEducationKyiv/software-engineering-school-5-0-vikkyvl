@@ -1,0 +1,47 @@
+name: auto-tagger
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_ACCOUNT_ID: ${{ secrets.ECR_ACCOUNT_ID }}
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine next version
+        id: tag
+        run: |
+          LAST_TAG=$(git tag --sort=-v:refname | grep '^v' | head -n1)
+
+          if [[ -z "$LAST_TAG" ]]; then
+            NEXT_VERSION=1
+          elif [[ "$LAST_TAG" =~ ^v([0-9]+)$ ]]; then
+            NEXT_VERSION=$(( ${BASH_REMATCH[1]} + 1 ))
+          else
+            echo "Invalid format with last tag: $LAST_TAG"
+            exit 1
+          fi
+
+          echo "NEW_TAG=v$NEXT_VERSION" >> $GITHUB_ENV
+          echo "tag=v$NEXT_VERSION" >> $GITHUB_OUTPUT
+          echo "Next tag: v$NEXT_VERSION"
+
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+
+      - name: Push tag to GitHub
+        run: |
+          git tag ${{ env.NEW_TAG }}
+          git push origin ${{ env.NEW_TAG }}
