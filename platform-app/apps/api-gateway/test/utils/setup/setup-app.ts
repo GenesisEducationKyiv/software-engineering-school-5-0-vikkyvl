@@ -11,7 +11,7 @@ import { WeatherModule } from '../../../../weather-service/src/modules/weather/w
 import { Weather } from '../../../../weather-service/src/entities/weather.entity';
 import {
   CityNotFound,
-  ErrorHandlerFilter as WeatherServiceFilter,
+  GrpcErrorHandlerFilter as WeatherServiceFilter,
 } from '../../../../weather-service/src/common';
 import { delay, firstValueFrom, of } from 'rxjs';
 import { WeatherBuilder } from '../../mocks/weather.builder';

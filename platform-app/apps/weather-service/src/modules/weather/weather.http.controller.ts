@@ -1,12 +1,14 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Query, UseFilters } from '@nestjs/common';
 import { WeatherService } from './weather.service';
 import { CityValidationPipe } from '../../common';
 import {
   WeatherRequestHttpDto,
   WeatherResponseHttpDto,
 } from '../../../../../common/shared';
+import { HttpErrorHandlerFilter } from '../../common';
 
 @Controller('weather')
+@UseFilters(new HttpErrorHandlerFilter())
 export class WeatherHttpController {
   constructor(private weatherService: WeatherService) {}
 

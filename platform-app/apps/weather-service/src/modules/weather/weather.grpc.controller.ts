@@ -1,4 +1,4 @@
-import { Controller } from '@nestjs/common';
+import { Controller, UseFilters } from '@nestjs/common';
 import { GrpcMethod, Payload } from '@nestjs/microservices';
 import {
   patternsGRPC,
@@ -6,9 +6,10 @@ import {
   WeatherResponseGrpcDto,
 } from '../../../../../common/shared';
 import { WeatherService } from './weather.service';
-import { CityValidationPipe } from '../../common';
+import { CityValidationPipe, GrpcErrorHandlerFilter } from '../../common';
 
 @Controller()
+@UseFilters(new GrpcErrorHandlerFilter())
 export class WeatherGrpcController {
   constructor(private weatherService: WeatherService) {}
 

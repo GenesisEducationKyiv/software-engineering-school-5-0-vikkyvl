@@ -1,6 +1,10 @@
-import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
 import { Response } from 'express';
-import { RpcException } from '@nestjs/microservices';
+import {
+  ArgumentsHost,
+  Catch,
+  ExceptionFilter,
+  HttpException,
+} from '@nestjs/common';
 import {
   CityNotFound,
   DomainException,
@@ -8,14 +12,13 @@ import {
   InvalidRequest,
   WeatherProvidersFailed,
 } from '../exceptions';
-import { Observable, throwError } from 'rxjs';
 import { weatherErrors } from '../constants';
-import { contexType } from '../constants/contex-type';
+import { mapGrpcToHttp } from '../../../../../common/shared';
 
 @Catch()
-export class ErrorHandlerFilter implements ExceptionFilter<RpcException> {
-  catch(exception: unknown, host: ArgumentsHost): Observable<never> | void {
-    const ctxType = host.getType();
+export class HttpErrorHandlerFilter implements ExceptionFilter<HttpException> {
+  catch(exception: unknown, host: ArgumentsHost): void {
+    const response: Response = host.switchToHttp().getResponse();
 
     const errorResponse = new IntervalError();
 
@@ -34,19 +37,9 @@ export class ErrorHandlerFilter implements ExceptionFilter<RpcException> {
       }
     }
 
-    if (ctxType === contexType.RPC) {
-      return throwError(() => ({
-        code: status,
-        message: message,
-      }));
-    }
-
-    if (ctxType === contexType.HTTP) {
-      const response: Response = host.switchToHttp().getResponse();
-      response.status(status).json({
-        status: status,
-        message: message,
-      });
-    }
+    response.status(mapGrpcToHttp(status)).json({
+      status: mapGrpcToHttp(status),
+      message: message,
+    });
   }
 }
