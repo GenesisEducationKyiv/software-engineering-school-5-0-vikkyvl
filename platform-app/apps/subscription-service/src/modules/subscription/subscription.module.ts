@@ -33,7 +33,13 @@ import { notificationConfigService } from '../../../../../common/config';
           options: {
             urls: [notificationConfigService.getBrokerUrl()],
             queue: notificationConfigService.getQueueName(),
-            queueOptions: { durable: false },
+            persistent: true,
+            queueOptions: {
+              durable: true,
+              arguments: {
+                'x-message-ttl': notificationConfigService.getTTL(),
+              },
+            },
           },
         } as ClientOptions),
     },
