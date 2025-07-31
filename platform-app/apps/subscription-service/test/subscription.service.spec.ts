@@ -4,18 +4,27 @@ import { EmailSenderService } from '../src/modules/notification/infrastructure/e
 import { SubscriptionRepositoryInterface } from '../src/modules/subscription/infrastructure/repository/interfaces/subscription.repository.interface';
 import { SubscriptionServiceBuilder } from './mocks/subscription.service..builder';
 import { RpcException } from '@nestjs/microservices';
-import { subscriptionErrors, subscriptionTokens } from '../src/common';
+import {
+  EmailAlreadySubscribed,
+  subscriptionErrors,
+  subscriptionTokens,
+} from '../src/common';
 import { Subscription } from '../src/entities/subscription.entity';
+import { NotificationService } from '../src/modules/notification/notification.service';
 
 describe('Subscription Service (unit)', () => {
   let service: SubscriptionService;
   let mockRepository: jest.Mocked<SubscriptionRepositoryInterface>;
   let mockEmailService: jest.Mocked<EmailSenderService>;
+  let mockClient: { emit: jest.Mock };
 
   beforeEach(async () => {
+    mockClient = { emit: jest.fn() };
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         SubscriptionService,
+        NotificationService,
         {
           provide: subscriptionTokens.SUBSCRIPTION_REPOSITORY_INTERFACE,
           useValue: {
@@ -28,6 +37,12 @@ describe('Subscription Service (unit)', () => {
           provide: EmailSenderService,
           useValue: {
             sendSubscriptionEmail: jest.fn(),
+          },
+        },
+        {
+          provide: subscriptionTokens.NOTIFICATION_EVENT_SERVICE,
+          useValue: {
+            emit: mockClient,
           },
         },
       ],
@@ -90,13 +105,12 @@ describe('Subscription Service (unit)', () => {
       expect(mockEmailService.sendSubscriptionEmail).not.toHaveBeenCalled();
     });
 
-    it('should throw RpcException if email not delivered and not call repository methods', async () => {
+    it('should throw RpcException if email already exists and not call repository methods', async () => {
       await expect(
-        service.formSubscription(userFormWithWrongEmail),
-      ).rejects.toThrow(
-        new RpcException(subscriptionErrors.EMAIL_SENDING_FAILED),
-      );
+        service.formSubscription(userFormWithExistingEmail),
+      ).rejects.toThrow(new EmailAlreadySubscribed());
 
+      expect(mockClient.emit).not.toHaveBeenCalled();
       expect(mockRepository.createSubscription).not.toHaveBeenCalled();
       expect(mockRepository.saveSubscription).not.toHaveBeenCalled();
     });
