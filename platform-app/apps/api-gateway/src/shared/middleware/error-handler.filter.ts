@@ -5,8 +5,10 @@ import {
   HttpException,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { errorMessages, Errors } from '../../common';
+import { errorMessages } from '../../common';
 import { GrpcCode, mapGrpcToHttp } from '../../../../../common/shared';
+import { GrpcException } from '../../common/exceptions/grpc-exception';
+import { MessageBrokerException } from '../../common/exceptions/message-broker-exception';
 
 @Catch()
 export class ErrorHandlerFilter implements ExceptionFilter {
@@ -27,51 +29,59 @@ export class ErrorHandlerFilter implements ExceptionFilter {
       return;
     }
 
-    if (exception instanceof Error) {
-      this.handleError(response, exception);
+    if (exception instanceof GrpcException) {
+      this.handleGrpcException(response, exception);
 
       return;
     }
 
-    this.handleException(response, exception);
+    if (exception instanceof MessageBrokerException) {
+      this.handleMessageBrokerException(response, exception);
+
+      return;
+    }
+
+    this.sendResponse(response, this.defaultStatus, this.defaultMessage);
   }
 
   private handleHttpException(response: Response, error: HttpException): void {
     const status = error.getStatus();
     const message = (error.getResponse() as HttpException).message;
 
-    response.status(status).json({
-      statusCode: status,
-      message,
-    });
+    this.sendResponse(response, status, message);
   }
 
-  private handleError(response: Response, error: Error): void {
-    const res = error as Errors;
+  private handleGrpcException(response: Response, error: GrpcException): void {
+    const status = mapGrpcToHttp(error.code as GrpcCode) ?? this.defaultStatus;
+    const message =
+      error.code === GrpcCode.UNAVAILABLE
+        ? this.defaultMessage
+        : (error.details ?? error.message ?? this.defaultMessage);
 
-    const isErrorWithCode = typeof res.code === 'number';
+    this.sendResponse(response, status, message);
+  }
 
-    const status = isErrorWithCode
-      ? mapGrpcToHttp(res.code as GrpcCode)
-      : this.defaultStatus;
-    const message = isErrorWithCode
-      ? (res.details ?? res.message ?? this.defaultMessage)
-      : this.defaultMessage;
+  private handleMessageBrokerException(
+    response: Response,
+    error: MessageBrokerException,
+  ): void {
+    const status = error.status ?? this.defaultStatus;
+    const message =
+      error.message === errorMessages.TIMEOUT.message
+        ? this.defaultMessage
+        : (error.message ?? this.defaultMessage);
 
-    response.status(status ?? this.defaultStatus).json({
+    this.sendResponse(response, status, message);
+  }
+
+  private sendResponse(
+    response: Response,
+    status: number,
+    message: string,
+  ): void {
+    response.status(status).json({
       statusCode: status,
       message: message,
-    });
-  }
-
-  private handleException(response: Response, error: unknown): void {
-    const res = error as Errors;
-    const status = res.status ?? this.defaultStatus;
-    const message = res.message ?? this.defaultMessage;
-
-    response.status(status).json({
-      statusCode: status,
-      message,
     });
   }
 }

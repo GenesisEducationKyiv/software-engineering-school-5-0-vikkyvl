@@ -7,6 +7,8 @@ import {
   Observable,
 } from 'rxjs';
 import { Logger, OnModuleInit } from '@nestjs/common';
+import { GrpcException } from '../../common/exceptions/grpc-exception';
+import { MessageBrokerException } from '../../common/exceptions/message-broker-exception';
 
 const DEFAULT_TIMEOUT = 5000;
 
@@ -18,10 +20,11 @@ export abstract class MicroserviceClientMessageBroker {
   protected send<T = any, R = any>(pattern: T, data: any): Promise<R> {
     const res$ = this.client.send(pattern, data).pipe(
       timeout(DEFAULT_TIMEOUT),
-      catchError((e: Error) => {
-        this.logger.error(e.message);
+      catchError((e: unknown) => {
+        const error = e as MessageBrokerException;
+        this.logger.error(error.message);
 
-        return throwError(() => e);
+        return throwError(() => new MessageBrokerException(error));
       }),
     );
 
@@ -33,7 +36,7 @@ export abstract class MicroserviceClientGrpc<T extends object>
   implements OnModuleInit
 {
   protected readonly logger = new Logger(this.constructor.name);
-  protected service: T;
+  service: T;
 
   protected constructor(
     protected readonly client: ClientGrpc,
@@ -48,10 +51,11 @@ export abstract class MicroserviceClientGrpc<T extends object>
     return await firstValueFrom(
       data$.pipe(
         timeout(DEFAULT_TIMEOUT),
-        catchError((e: Error) => {
-          this.logger.error(e.message);
+        catchError((e: unknown) => {
+          const error = e as GrpcException;
+          this.logger.error(error.details);
 
-          return throwError(() => e);
+          return throwError(() => new GrpcException(error));
         }),
       ),
     );

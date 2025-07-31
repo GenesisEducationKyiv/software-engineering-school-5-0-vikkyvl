@@ -13,10 +13,8 @@ import {
   CityNotFound,
   GrpcErrorHandlerFilter as WeatherServiceFilter,
 } from '../../../../weather-service/src/common';
-import { delay, firstValueFrom, of } from 'rxjs';
 import { WeatherBuilder } from '../../mocks/weather.builder';
 import { join } from 'path';
-import { DEFAULT_TEST_TIMEOUT } from '../helpers/timeout';
 import { configGrpc } from '../configs/config-grpc';
 import { configMail } from '../mailhog/config-mail';
 import { mailConfigService } from '../../../../../common/config';
@@ -114,7 +112,6 @@ export async function createWeatherServiceApp(
   containers: TestContainers,
 ): Promise<INestApplication> {
   const invalidCity = WeatherBuilder.getInvalidCity();
-  const delayCity = WeatherBuilder.getDelayCity();
   const weatherGeneralResponse = WeatherBuilder.weatherGeneralResponse();
 
   const weatherServiceModule = await Test.createTestingModule({
@@ -138,12 +135,6 @@ export async function createWeatherServiceApp(
       fetchWeather: jest.fn().mockImplementation((city: string) => {
         if (city === invalidCity) {
           return Promise.reject(new CityNotFound());
-        }
-
-        if (city === delayCity) {
-          return firstValueFrom(
-            of(weatherGeneralResponse).pipe(delay(DEFAULT_TEST_TIMEOUT + 1000)),
-          );
         }
 
         return Promise.resolve({

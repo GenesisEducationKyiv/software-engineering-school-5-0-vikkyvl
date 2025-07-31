@@ -6,6 +6,7 @@ const grpcToHttpMap = {
   [GrpcCode.INVALID_ARGUMENT]: 400,
   [GrpcCode.NOT_FOUND]: 404,
   [GrpcCode.ABORTED]: 409,
+  [GrpcCode.UNAVAILABLE]: 500,
 };
 
 export function mapGrpcToHttp(grpcCode: GrpcCode): number {

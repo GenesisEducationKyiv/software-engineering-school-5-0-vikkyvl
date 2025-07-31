@@ -4,4 +4,5 @@ export enum GrpcCode {
   INVALID_ARGUMENT = 3,
   NOT_FOUND = 5,
   ABORTED = 10,
+  UNAVAILABLE = 14,
 }

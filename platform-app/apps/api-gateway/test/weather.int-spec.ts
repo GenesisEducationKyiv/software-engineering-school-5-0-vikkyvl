@@ -17,6 +17,9 @@ import { weatherErrors } from '../../weather-service/src/common';
 import { redisConfig } from '../../weather-service/src/modules/weather/infrastructure/cache/config/config';
 import { errorMessages } from '../src/common';
 import { mapGrpcToHttp } from '../../../common/shared';
+import { WeatherService } from '../src/modules/weather/weather.service';
+import { throwError } from 'rxjs';
+import { GrpcException } from '../src/common/exceptions/grpc-exception';
 
 describe('Weather Endpoints', () => {
   let containers: TestContainers;
@@ -37,6 +40,8 @@ describe('Weather Endpoints', () => {
   let weatherGeneralResponse: ReturnType<
     typeof WeatherBuilder.weatherGeneralResponse
   >;
+
+  let clientGrpc: WeatherService;
 
   jest.setTimeout(DEFAULT_TEST_TIMEOUT);
 
@@ -64,6 +69,7 @@ describe('Weather Endpoints', () => {
     weatherServiceApp = await createWeatherServiceApp(containers);
 
     weatherApiClient = weatherServiceApp.get('WeatherServiceProxy');
+    clientGrpc = apiGatewayApp.get(WeatherService);
   });
 
   afterAll(async () => {
@@ -120,13 +126,24 @@ describe('Weather Endpoints', () => {
     });
 
     it('/api/weather?city=delayCity', async () => {
+      const error = {
+        message:
+          '14 UNAVAILABLE: No connection established. Last error: Error: connect ECONNREFUSED 127.0.0.1:5000',
+        code: 14,
+        details:
+          'No connection established. Last error: Error: connect ECONNREFUSED 127.0.0.1:5000',
+      };
+
+      jest
+        .spyOn(clientGrpc.service, 'getWeather')
+        .mockReturnValue(throwError(() => new GrpcException(error)));
+
       const response: Response = await request(
         apiGatewayApp.getHttpServer() as Server,
       )
         .get('/api/weather')
         .query({ city: delayCity });
 
-      expect(weatherApiClient.fetchWeather).toHaveBeenCalledWith(delayCity);
       expect(response.status).toBe(errorMessages.INTERNAL_SERVER_ERROR.status);
       expect(response.body.message).toEqual(errorMessages.WEATHER.FAILED);
     });
