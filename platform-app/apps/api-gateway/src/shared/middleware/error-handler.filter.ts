@@ -23,25 +23,25 @@ export class ErrorHandlerFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    if (exception instanceof HttpException) {
-      this.handleHttpException(response, exception);
+    switch (true) {
+      case exception instanceof HttpException:
+        this.handleHttpException(response, exception);
 
-      return;
+        return;
+
+      case exception instanceof GrpcException:
+        this.handleGrpcException(response, exception);
+
+        return;
+
+      case exception instanceof MessageBrokerException:
+        this.handleMessageBrokerException(response, exception);
+
+        return;
+
+      default:
+        this.sendResponse(response, this.defaultStatus, this.defaultMessage);
     }
-
-    if (exception instanceof GrpcException) {
-      this.handleGrpcException(response, exception);
-
-      return;
-    }
-
-    if (exception instanceof MessageBrokerException) {
-      this.handleMessageBrokerException(response, exception);
-
-      return;
-    }
-
-    this.sendResponse(response, this.defaultStatus, this.defaultMessage);
   }
 
   private handleHttpException(response: Response, error: HttpException): void {
@@ -52,11 +52,13 @@ export class ErrorHandlerFilter implements ExceptionFilter {
   }
 
   private handleGrpcException(response: Response, error: GrpcException): void {
-    const status = mapGrpcToHttp(error.code as GrpcCode) ?? this.defaultStatus;
-    const message =
-      error.code === GrpcCode.UNAVAILABLE
-        ? this.defaultMessage
-        : (error.details ?? error.message ?? this.defaultMessage);
+    const status: number =
+      mapGrpcToHttp(error.code as GrpcCode) ?? this.defaultStatus;
+    let message: string = error.details ?? error.message ?? this.defaultMessage;
+
+    if (error.code === GrpcCode.UNAVAILABLE) {
+      message = this.defaultMessage;
+    }
 
     this.sendResponse(response, status, message);
   }
@@ -65,11 +67,12 @@ export class ErrorHandlerFilter implements ExceptionFilter {
     response: Response,
     error: MessageBrokerException,
   ): void {
-    const status = error.status ?? this.defaultStatus;
-    const message =
-      error.message === errorMessages.TIMEOUT.message
-        ? this.defaultMessage
-        : (error.message ?? this.defaultMessage);
+    const status: number = error.status ?? this.defaultStatus;
+    let message: string = error.message ?? this.defaultMessage;
+
+    if (error.message === errorMessages.TIMEOUT.message) {
+      message = this.defaultMessage;
+    }
 
     this.sendResponse(response, status, message);
   }
