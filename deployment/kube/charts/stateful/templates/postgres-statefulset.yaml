@@ -1,0 +1,72 @@
+{{- if .Values.postgres.enabled }}
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: postgres
+spec:
+  serviceName: postgres
+  replicas: {{ .Values.postgres.replicaCount | default 1 }}
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+        {{- if .Values.serviceAccount }}
+      serviceAccountName: {{ .Values.serviceAccount.name }}
+        {{- end}}
+      containers:
+        - name: postgres
+          image: {{ .Values.postgres.image }}
+          ports:
+            - containerPort: 5432
+          env:
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+              {{- if .Values.postgres.envs }}
+              {{- toYaml .Values.postgres.envs | nindent 12 }}
+              {{- end }}
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+              {{- if .Values.postgres.useExternalSecrets }}
+            - name: secrets-store-inline
+              mountPath: "/mnt/secrets-store"
+              readOnly: true
+              {{- end }}
+          resources:
+              {{- toYaml .Values.postgres.resources | nindent 12 }}
+            {{- with .Values.postgres.livenessProbe }}
+          livenessProbe:
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+            {{- with .Values.postgres.readinessProbe }}
+          readinessProbe:
+              {{- toYaml . | nindent 12 }}
+            {{- end }}
+        {{- if .Values.postgres.useExternalSecrets }}
+      volumes:
+        - name: secrets-store-inline
+          csi:
+            driver: secrets-store.csi.k8s.io
+            readOnly: true
+            volumeAttributes:
+              secretProviderClass: postgres-secret-store
+        {{- end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: {{ .Values.postgres.storageSize | default "1Gi" }}
+          {{- if .Values.postgres.storageClass }}
+        storageClassName: {{ .Values.postgres.storageClass }}
+          {{- end }}
+{{- end }}

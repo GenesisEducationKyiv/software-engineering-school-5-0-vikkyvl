@@ -1,0 +1,118 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        types: [opened, synchronize, reopened]
+        branches: ["**", "!feedback"]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    lint:
+        runs-on: ubuntu-latest
+        defaults:
+            run:
+                working-directory: ./platform-app
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+            - run: npm ci
+            - run: npm run lint
+
+    unit-test:
+        runs-on: ubuntu-latest
+        needs: lint
+        defaults:
+            run:
+                working-directory: ./platform-app
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+            - run: npm ci
+            - run: npm run test:unit-cov
+            - uses: codecov/codecov-action@v5
+              with:
+                  flags: unit-test
+                  token: ${{ secrets.CODECOV_TOKEN }}
+
+    integration-test:
+        runs-on: ubuntu-latest
+        needs: unit-test
+        defaults:
+            run:
+                working-directory: ./platform-app
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+            - run: npm ci
+            - run: npm run test:int
+            - run: npm run test:int-cov
+            - uses: codecov/codecov-action@v5
+              with:
+                  flags: integration-test
+                  token: ${{ secrets.CODECOV_TOKEN }}
+
+    architecture-test:
+        runs-on: ubuntu-latest
+        needs: integration-test
+        defaults:
+            run:
+                working-directory: ./platform-app
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 18
+            - run: npm ci
+            - run: npm run test:arch
+           
+                  
+#  api-gateway-lint:
+#      runs-on: ubuntu-latest
+#      defaults:
+#          run:
+#              working-directory: ./api-gateway
+#      steps:
+#          - uses: actions/checkout@v4
+#          - uses: actions/setup-node@v4
+#            with:
+#                node-version: 18
+#          - run: npm ci
+#          - run: npm run lint
+#
+#
+#  weather-service-lint:
+#      runs-on: ubuntu-latest
+#      defaults:
+#          run:
+#              working-directory: ./weather-service
+#      steps:
+#          - uses: actions/checkout@v4
+#          - uses: actions/setup-node@v4
+#            with:
+#                node-version: 18
+#          - run: npm ci
+#          - run: npm run lint
+#
+#  subscription-service-lint:
+#      runs-on: ubuntu-latest
+#      defaults:
+#          run:
+#              working-directory: ./subscription-service
+#      steps:
+#          - uses: actions/checkout@v4
+#          - uses: actions/setup-node@v4
+#            with:
+#                node-version: 18
+#          - run: npm ci
+#          - run: npm run lint

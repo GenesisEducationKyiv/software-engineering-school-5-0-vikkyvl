@@ -1,0 +1,176 @@
+namespace: platform
+
+replicaCount: 1
+
+image:
+  repository: registry.local:80/platform
+  tag: 0.1.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  portAPIGateway: 80
+  portWeatherAPI: 81
+  portSubscriptionAPI: 82
+  targetPortAPIGateway: 3000
+  targetPortWeatherAPI: 3001
+  targetPortSubscriptionAPI: 3002
+
+platformApiGateway:
+  command: [ "node", "dist/apps/api-gateway/src/main.js" ]
+  containerPort: 3000
+  port: 80
+  useExternalSecrets: false
+  envs:
+    - name: PORT_API_GATEWAY
+      value: "3000"
+    - name: PORT_WEATHER_SERVICE
+      value: "3001"
+    - name: PORT_SUBSCRIPTION_SERVICE
+      value: "3002"
+    - name: WEATHER_API_URL
+      value: "http://api.weatherapi.com/v1/current.json"
+    - name: OPEN_WEATHER_MAP_URL
+      value: "https://api.openweathermap.org/data/2.5/weather"
+    - name: WEATHER_STACK_URL
+      value: "http://api.weatherstack.com/current"
+    - name: BROKER_URL
+      value: "amqp://guest:guest@rabbitmq.stateful.svc.cluster.local:5672"
+    - name: DB_HOST
+      value: "postgres.stateful.svc.cluster.local"
+    - name: DB_PORT
+      value: "5432"
+    - name: DB_USER
+      value: "postgres"
+    - name: DB_NAME
+      value: "weather_db"
+    - name: REACT_APP_API_URL
+      value: "http://localhost:3004"
+    - name: WEATHER_API_KEY
+      value: ""
+    - name: OPEN_WEATHER_MAP_KEY
+      value: ""
+    - name: WEATHER_STACK_KEY
+      value: ""
+    - name: DB_PASSWORD
+      value: "password"
+    - name: EMAIL_USER
+      value: ""
+    - name: EMAIL_PASSWORD
+      value: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+platformWeatherService:
+  command: [ "node", "dist/apps/weather-service/src/main.js" ]
+  containerPort: 3001
+  port: 81
+  useExternalSecrets: false
+  envs:
+    - name: PORT_API_GATEWAY
+      value: "3000"
+    - name: PORT_WEATHER_SERVICE
+      value: "3001"
+    - name: PORT_SUBSCRIPTION_SERVICE
+      value: "3002"
+    - name: WEATHER_API_URL
+      value: "http://api.weatherapi.com/v1/current.json"
+    - name: OPEN_WEATHER_MAP_URL
+      value: "https://api.openweathermap.org/data/2.5/weather"
+    - name: WEATHER_STACK_URL
+      value: "http://api.weatherstack.com/current"
+    - name: BROKER_URL
+      value: "amqp://guest:guest@rabbitmq.stateful.svc.cluster.local:5672"
+    - name: DB_HOST
+      value: "postgres.stateful.svc.cluster.local"
+    - name: DB_PORT
+      value: "5432"
+    - name: DB_USER
+      value: "postgres"
+    - name: DB_NAME
+      value: "weather_db"
+    - name: REACT_APP_API_URL
+      value: "http://localhost:3004"
+    - name: WEATHER_API_KEY
+      value: ""
+    - name: OPEN_WEATHER_MAP_KEY
+      value: ""
+    - name: WEATHER_STACK_KEY
+      value: ""
+    - name: DB_PASSWORD
+      value: "password"
+    - name: EMAIL_USER
+      value: ""
+    - name: EMAIL_PASSWORD
+      value: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+platformSubscriptionService:
+  command: [ "node", "dist/apps/subscription-service/src/main.js" ]
+  containerPort: 3002
+  port: 82
+  useExternalSecrets: false
+  envs:
+    - name: PORT_API_GATEWAY
+      value: "3000"
+    - name: PORT_WEATHER_SERVICE
+      value: "3001"
+    - name: PORT_SUBSCRIPTION_SERVICE
+      value: "3002"
+    - name: WEATHER_API_URL
+      value: "http://api.weatherapi.com/v1/current.json"
+    - name: OPEN_WEATHER_MAP_URL
+      value: "https://api.openweathermap.org/data/2.5/weather"
+    - name: WEATHER_STACK_URL
+      value: "http://api.weatherstack.com/current"
+    - name: BROKER_URL
+      value: "amqp://guest:guest@rabbitmq.stateful.svc.cluster.local:5672"
+    - name: DB_HOST
+      value: "postgres.stateful.svc.cluster.local"
+    - name: DB_PORT
+      value: "5432"
+    - name: DB_USER
+      value: "postgres"
+    - name: DB_NAME
+      value: "weather_db"
+    - name: REACT_APP_API_URL
+      value: "http://localhost:3004"
+    - name: WEATHER_API_KEY
+      value: ""
+    - name: OPEN_WEATHER_MAP_KEY
+      value: ""
+    - name: WEATHER_STACK_KEY
+      value: ""
+    - name: DB_PASSWORD
+      value: "password"
+    - name: EMAIL_USER
+      value: ""
+    - name: EMAIL_PASSWORD
+      value: ""
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 1Gi
+
+secrets:
+  useExternalSecrets: false
+
+ingress:
+  enabled: true
+  host: platform.local
+  className: nginx
+  path: /

@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-web
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: platform-web
+  template:
+    metadata:
+      labels:
+        app: platform-web
+    spec:
+      containers:
+        - name: platform-web
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.platformWeb.containerPort }}
+          env:
+            {{- toYaml .Values.platformWeb.envs | nindent 12 }}
+          resources:
+            {{- toYaml .Values.platformWeb.resources | nindent 12 }}
+          volumeMounts:
+            - name: nginx-config-volume
+              mountPath: /etc/nginx/nginx.conf
+              subPath: nginx.conf
+      volumes:
+        - name: nginx-config-volume
+          configMap:
+            name: platform-web-nginx-config

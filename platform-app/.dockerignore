@@ -1,0 +1,9 @@
+/node_modules
+/dist
+/apps/test
+
+.git
+.gitignore
+.prettierrc
+.eslintrc
+eslint.config.js

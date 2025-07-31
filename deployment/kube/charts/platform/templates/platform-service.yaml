@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: platform
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: platform
+  ports:
+    - protocol: TCP
+      name: api-gateway
+      port: {{ .Values.service.portAPIGateway }}
+      targetPort: {{ .Values.service.targetPortAPIGateway }}
+    - protocol: TCP
+      name: weather-api
+      port: {{ .Values.service.portWeatherAPI }}
+      targetPort: {{ .Values.service.targetPortWeatherAPI }}
+    - protocol: TCP
+      name: subscription-api
+      port: {{ .Values.service.portSubscriptionAPI }}
+      targetPort: {{ .Values.service.targetPortSubscriptionAPI }}
+  type: {{ .Values.service.type }}
