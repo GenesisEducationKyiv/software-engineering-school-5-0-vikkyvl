@@ -2,8 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { ClientGrpc } from '@nestjs/microservices';
 import {
   patternsGRPC,
-  WeatherRequestDto,
-  WeatherResponseDto,
+  WeatherRequestGrpcDto,
+  WeatherResponseGrpcDto,
 } from '../../../../../common/shared';
 import { serviceTokens } from '../../common';
 import { MicroserviceClientGrpc } from '../../shared';
@@ -18,7 +18,9 @@ export class WeatherService extends MicroserviceClientGrpc<WeatherServiceInterfa
     super(client, patternsGRPC.WEATHER.SERVICE);
   }
 
-  async getWeather(dto: WeatherRequestDto): Promise<WeatherResponseDto> {
+  async getWeather(
+    dto: WeatherRequestGrpcDto,
+  ): Promise<WeatherResponseGrpcDto> {
     return this.send(this.service.getWeather(dto));
   }
 }

@@ -2,12 +2,10 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
 import { weatherConfigService } from '../../../common/config';
-import { ErrorHandlerFilter } from './common';
 import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalFilters(new ErrorHandlerFilter());
 
   app.connectMicroservice(
     {

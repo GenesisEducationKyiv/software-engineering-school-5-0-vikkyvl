@@ -1,4 +1,4 @@
 export const contexType = {
   HTTP: 'http',
-  RPC: 'rpc',
+  GRPC: 'grpc',
 };
