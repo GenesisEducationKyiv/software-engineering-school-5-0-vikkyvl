@@ -1,25 +1,23 @@
 import { BrokerConfigInterface } from './interfaces/broker-config.interface';
 import { ClientConfigInterface } from './interfaces/client-config.interface';
 
-class SubscriptionConfigService
+class NotificationConfigService
   implements BrokerConfigInterface, ClientConfigInterface
 {
-  constructor() {}
-
   public getBrokerUrl() {
     return process.env.BROKER_URL ?? 'amqps://...';
   }
 
   public getTTL() {
-    return Number(process.env.SUBSCRIPTION_TTL ?? 3600000);
+    return Number(process.env.NOTIFICATION_TTL ?? 3600000);
   }
 
   public getPort() {
-    return process.env.PORT_SUBSCRIPTION_SERVICE ?? 3002;
+    return process.env.PORT_SUBSCRIPTION_SERVICE ?? 3003;
   }
 
   public getQueueName() {
-    return process.env.SUBSCRIPTION_SERVICE ?? 'subscription-service';
+    return process.env.NOTIFICATION_SERVICE ?? 'notification-service';
   }
 
   public getReactAppApiUrl() {
@@ -27,6 +25,6 @@ class SubscriptionConfigService
   }
 }
 
-const subscriptionConfigService = new SubscriptionConfigService();
+const notificationConfigService = new NotificationConfigService();
 
-export { subscriptionConfigService };
+export { notificationConfigService };

@@ -18,6 +18,7 @@ import { join } from 'path';
 import { configGrpc } from '../configs/config-grpc';
 import { configMail } from '../mailhog/config-mail';
 import { mailConfigService } from '../../../../../common/config';
+import { NotificationModule } from '../../../../subscription-service/src/modules/notification/notification.module';
 
 export async function createApiGatewayApp(
   containers: TestContainers,
@@ -84,8 +85,21 @@ export async function createSubscriptionServiceApp(
         synchronize: true,
       }),
       TypeOrmModule.forFeature([Subscription]),
+      NotificationModule,
     ],
-  }).compile();
+  })
+    .overrideProvider('NotificationEventService')
+    .useValue(
+      ClientProxyFactory.create({
+        transport: Transport.RMQ,
+        options: {
+          urls: [containers.rabbit.url],
+          queue: 'notification-service',
+          queueOptions: { durable: false },
+        },
+      }),
+    )
+    .compile();
 
   const subscriptionServiceApp =
     subscriptionServiceModule.createNestApplication();
@@ -96,6 +110,18 @@ export async function createSubscriptionServiceApp(
       options: {
         urls: [containers.rabbit.url],
         queue: 'subscription-service',
+        queueOptions: { durable: false },
+      },
+    },
+    { inheritAppConfig: true },
+  );
+
+  subscriptionServiceApp.connectMicroservice(
+    {
+      transport: Transport.RMQ,
+      options: {
+        urls: [containers.rabbit.url],
+        queue: 'notification-service',
         queueOptions: { durable: false },
       },
     },

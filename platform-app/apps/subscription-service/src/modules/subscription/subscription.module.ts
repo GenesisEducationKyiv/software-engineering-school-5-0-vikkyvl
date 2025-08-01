@@ -3,13 +3,16 @@ import { SubscriptionController } from './subscription.controller';
 import { SubscriptionService } from './subscription.service';
 import { Subscription } from '../../entities/subscription.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { EmailSenderService } from './infrastructure/external/mail/email/email-sender.service';
 import { SubscriptionRepository } from './infrastructure/repository/subscription.repository';
-import { LinkService } from './infrastructure/external/link/link.service';
 import { ConfirmationService } from './confirmation.service';
 import { UnsubscriptionService } from './unsubscription.service';
-import { Transporter } from './infrastructure/external/mail/email/utils/transporter';
 import { subscriptionTokens } from '../../common';
+import {
+  ClientOptions,
+  ClientProxyFactory,
+  Transport,
+} from '@nestjs/microservices';
+import { notificationConfigService } from '../../../../../common/config';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Subscription])],
@@ -18,18 +21,27 @@ import { subscriptionTokens } from '../../common';
     SubscriptionService,
     ConfirmationService,
     UnsubscriptionService,
-    EmailSenderService,
-    {
-      provide: subscriptionTokens.TRANSPORTER_INTERFACE,
-      useClass: Transporter,
-    },
     {
       provide: subscriptionTokens.SUBSCRIPTION_REPOSITORY_INTERFACE,
       useClass: SubscriptionRepository,
     },
     {
-      provide: subscriptionTokens.LINK_SERVICE_INTERFACE,
-      useClass: LinkService,
+      provide: subscriptionTokens.NOTIFICATION_EVENT_SERVICE,
+      useFactory: () =>
+        ClientProxyFactory.create({
+          transport: Transport.RMQ,
+          options: {
+            urls: [notificationConfigService.getBrokerUrl()],
+            queue: notificationConfigService.getQueueName(),
+            persistent: true,
+            queueOptions: {
+              durable: true,
+              arguments: {
+                'x-message-ttl': notificationConfigService.getTTL(),
+              },
+            },
+          },
+        } as ClientOptions),
     },
   ],
   exports: [SubscriptionService],

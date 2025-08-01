@@ -1,13 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { SubscriptionRequestDto } from '../../../../../common/shared';
+import {
+  patternsRMQ,
+  SubscriptionRequestDto,
+} from '../../../../../common/shared';
 import { v4 as uuidv4 } from 'uuid';
 import { EmailAlreadySubscribed, subscriptionTokens } from '../../common';
 import { MessageResponseDto } from '../../../../../common/shared';
-import { EmailSenderService } from './infrastructure/external/mail/email/email-sender.service';
 import { SubscriptionRepositoryInterface } from './infrastructure/repository/interfaces/subscription.repository.interface';
-import { MailConnectionResultDto } from './infrastructure/external/mail/email/dto/mail-connection-result.dto';
 import { messages } from '../../common';
-import { EmailSendingFailed } from '../../common';
+import { ClientProxy } from '@nestjs/microservices';
 
 interface SubscriptionServiceInterface {
   formSubscription(dto: SubscriptionRequestDto): Promise<MessageResponseDto>;
@@ -18,7 +19,8 @@ export class SubscriptionService implements SubscriptionServiceInterface {
   constructor(
     @Inject(subscriptionTokens.SUBSCRIPTION_REPOSITORY_INTERFACE)
     private readonly subscriptionRepository: SubscriptionRepositoryInterface,
-    private readonly emailSenderService: EmailSenderService,
+    @Inject(subscriptionTokens.NOTIFICATION_EVENT_SERVICE)
+    private readonly eventClient: ClientProxy,
   ) {}
 
   async formSubscription(
@@ -32,12 +34,10 @@ export class SubscriptionService implements SubscriptionServiceInterface {
 
     const token = uuidv4();
 
-    const resultConnection: MailConnectionResultDto =
-      await this.emailSenderService.sendSubscriptionEmail(dto.email, token);
-
-    if (!resultConnection.isDelivered) {
-      throw new EmailSendingFailed();
-    }
+    this.eventClient.emit(patternsRMQ.SUBSCRIPTION.CREATED_SUBSCRIPTION, {
+      email: dto.email,
+      token: token,
+    });
 
     const subscription = this.subscriptionRepository.createSubscription({
       ...dto,

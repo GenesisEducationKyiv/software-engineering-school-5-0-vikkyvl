@@ -24,7 +24,13 @@ import { serviceTokens } from '../../common';
           options: {
             urls: [apiConfigService.getBrokerUrl()],
             queue: subscriptionConfigService.getQueueName(),
-            queueOptions: { durable: false },
+            persistent: true,
+            queueOptions: {
+              durable: true,
+              arguments: {
+                'x-message-ttl': subscriptionConfigService.getTTL(),
+              },
+            },
           },
         } as ClientOptions),
     },
