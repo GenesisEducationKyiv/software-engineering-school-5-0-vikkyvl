@@ -1,5 +1,5 @@
 import { GenericContainer, StartedTestContainer } from 'testcontainers';
-import { configPostgres } from './config-postgres';
+import { configPostgres } from '../configs/config-postgres';
 
 export interface TestContainers {
   rabbit: {

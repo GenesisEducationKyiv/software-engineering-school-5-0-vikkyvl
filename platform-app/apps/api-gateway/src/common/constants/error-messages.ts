@@ -15,4 +15,7 @@ export const errorMessages = {
     status: 500,
     message: 'Internal server error.',
   },
+  TIMEOUT: {
+    message: 'Timeout has occurred',
+  },
 };

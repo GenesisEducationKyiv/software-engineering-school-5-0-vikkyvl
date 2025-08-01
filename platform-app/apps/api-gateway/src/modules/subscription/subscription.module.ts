@@ -6,20 +6,24 @@ import {
 } from '@nestjs/microservices';
 import { SubscriptionController } from './subscription.controller';
 import { SubscriptionService } from './subscription.service';
-import { apiConfigService } from '../../../../../common/config';
+import {
+  apiConfigService,
+  subscriptionConfigService,
+} from '../../../../../common/config';
+import { serviceTokens } from '../../common';
 
 @Module({
   controllers: [SubscriptionController],
   providers: [
     SubscriptionService,
     {
-      provide: 'SUBSCRIPTION_SERVICE',
+      provide: serviceTokens.SUBSCRIPTION_SERVICE,
       useFactory: () =>
         ClientProxyFactory.create({
           transport: Transport.RMQ,
           options: {
             urls: [apiConfigService.getBrokerUrl()],
-            queue: 'subscription-service',
+            queue: subscriptionConfigService.getQueueName(),
             queueOptions: { durable: false },
           },
         } as ClientOptions),

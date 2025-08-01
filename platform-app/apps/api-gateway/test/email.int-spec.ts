@@ -14,7 +14,7 @@ import {
 import { SubscriptionBuilder } from './mocks/subscription.builder';
 import { LinkService } from '../../subscription-service/src/modules/subscription/infrastructure/external/link/link.service';
 import { subscriptionHtml } from '../../subscription-service/src/modules/subscription/infrastructure/external/mail/email/templates/subscription-confirmation';
-import { MailhogMessage } from './utils/mailhog-message.interface';
+import { MailhogMessage } from './utils/mailhog/mailhog-message.interface';
 
 describe('EmailService Integration Tests', () => {
   let containers: TestContainers;

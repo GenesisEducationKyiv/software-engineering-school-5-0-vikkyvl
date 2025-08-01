@@ -1,7 +1,7 @@
 import { WeatherGeneralResponseDto } from '../../../weather-service/src/modules/weather/infrastructure/external/dto';
 
 export class WeatherBuilder {
-  private static readonly TEST_TEMP_C: number = 18.7;
+  private static readonly TEST_TEMP_C: number = 18;
   private static readonly TEST_HUMIDITY: number = 73;
   private static readonly TEST_CONDITION: string = 'Clear';
   private static readonly TEST_CITY: string = 'kyiv';
