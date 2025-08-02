@@ -8,7 +8,7 @@ spec:
 
   source:
     repoURL: https://github.com/GenesisEducationKyiv/software-engineering-school-5-0-vikkyvl
-    targetRevision: main
+    targetRevision: patuzhni-38
     path: deployment/kube/charts/platform
     helm:
       valueFiles:
