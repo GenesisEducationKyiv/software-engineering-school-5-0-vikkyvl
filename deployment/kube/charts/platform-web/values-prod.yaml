@@ -27,7 +27,7 @@ platformWeb:
 
 ingress:
   enabled: true
-  host: platform-web.ainp.valmark.dev
+  host: ragdoll.valmark.dev
   className: nginx
 
 secrets:

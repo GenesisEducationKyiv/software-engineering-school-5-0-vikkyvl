@@ -1,0 +1,114 @@
+# Дозволяємо використання конкретного EKS контексту
+kube_context = "arn:aws:eks:us-east-1:301235908824:cluster/ragdoll-eks"
+allow_k8s_contexts(kube_context)
+
+# Перевірка середовища виконання
+if os.getenv("ENV") != "production":
+    fail("Tiltfile запущено не в ENV=production — відмова!")
+if os.getenv("ALLOW_PROD") != "true":
+    fail("Додай ALLOW_PROD=true для запуску Tilt у продакшні.")
+
+# Конфігурація
+render_dir = "rendered"
+
+# Створюємо директорію для рендерених файлів
+local("mkdir -p %s" % render_dir)
+
+# Конфігурація додатків
+apps = {
+    "stateful": {
+        "values": "charts/stateful/values-prod.yaml",
+        "chart": "charts/stateful",
+        "watch": [
+            "charts/stateful/Chart.yaml",
+            "charts/stateful/templates/statefulset.yaml"
+        ],
+        "application_yaml": None
+    },
+    "platform": {
+        "values": "charts/platform/values-prod.yaml",
+        "chart": "charts/platform",
+        "watch": [
+            "charts/platform/Chart.yaml",
+            "charts/platform/templates/deployment.yaml"
+        ],
+        "application_yaml": "application/platform-application.yaml",
+    },
+    "platform-web": {
+        "values": "charts/platform/platform-web/values-prod.yaml",
+        "chart": "charts/platform/platform-web",
+        "watch": [
+            "charts/platform/platform-web/Chart.yaml",
+            "charts/platform/platform-web/templates/deployment.yaml"
+        ],
+        "application_yaml": "application/platform-web-application.yaml",
+    }
+}
+
+def deploy_helm_chart(name, chart, values, watch_files):
+    """Розгортання Helm чарту через template та k8s_yaml"""
+    output_file = "%s/%s.yaml" % (render_dir, name)
+
+    # Створюємо local_resource для рендерингу Helm темплейта
+    local_resource(
+        name + "-helm-render",
+        cmd="helm template %s %s -f %s --kube-context %s > %s" % (
+            name, chart, values, kube_context, output_file
+        ),
+        deps=[values] + watch_files,
+        ignore=['**/%s/**' % render_dir]
+    )
+
+    # Застосовуємо YAML
+    k8s_yaml(output_file)
+
+def trigger_argocd_sync(app_name):
+    """Тригер синхронізації ArgoCD додатку"""
+    print("🚀 ArgoCD sync triggered for %s" % app_name)
+    local("argocd app sync %s --grpc-web" % app_name)
+    local("argocd app wait %s --health --timeout 300" % app_name)
+
+# Розгортання додатків
+for name, cfg in apps.items():
+    chart = cfg["chart"]
+    values = cfg["values"]
+    watch_files = cfg["watch"]
+    app_yaml = cfg["application_yaml"]
+    
+    if app_yaml:
+        # Для ArgoCD додатків
+        k8s_yaml(app_yaml)
+        
+        # Відстежуємо зміни в ArgoCD Application YAML
+        def create_sync_handler(app_name):
+            def sync_handler():
+                trigger_argocd_sync(app_name)
+            return sync_handler
+        
+        # Додаємо тригер на зміни в application YAML
+        local_resource(
+            name + "-argocd-sync",
+            cmd="echo 'ArgoCD sync for %s'" % name,
+            deps=[app_yaml],
+            trigger_mode=TRIGGER_MODE_MANUAL
+        )
+        
+        # Додаємо кнопку для ручної синхронізації
+        local_resource(
+            name + "-manual-sync",
+            cmd="argocd app sync %s --grpc-web && argocd app wait %s --health --timeout 300" % (name, name),
+            trigger_mode=TRIGGER_MODE_MANUAL,
+            auto_init=False
+        )
+        
+    else:
+        # Для звичайних Helm чартів
+        deploy_helm_chart(name, chart, values, watch_files)
+
+# Додаткові корисні ресурси для моніторингу
+local_resource(
+    "argocd-status",
+    cmd="argocd app list --grpc-web",
+    trigger_mode=TRIGGER_MODE_MANUAL,
+    auto_init=False
+)

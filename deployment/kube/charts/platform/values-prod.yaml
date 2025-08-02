@@ -230,6 +230,6 @@ platformSubscriptionService:
 
 ingress:
   enabled: true
-  host: platform.ainp.valmark.dev
-  className: alb
-  path: /
+  host: ragdoll.valmark.dev
+  className: nginx
+  path: /api
