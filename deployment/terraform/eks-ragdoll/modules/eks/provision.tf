@@ -19,4 +19,9 @@ resource "null_resource" "wait_for_cluster" {
       exit 1
     EOT
   }
+
+  depends_on = [
+  aws_eks_cluster.main,
+    aws_eks_node_group.default
+  ]
 }

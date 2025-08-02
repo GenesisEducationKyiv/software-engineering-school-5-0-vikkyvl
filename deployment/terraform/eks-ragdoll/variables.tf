@@ -3,6 +3,11 @@ variable "public_access_cidrs" {
   type        = list(string)
 }
 
+variable "cloudflare_appropriate_email" {
+  description = "List of email domains allowed to access Cloudflare applications (e.g. ['mail.example.com'])"
+  type        = list(string)
+}
+
 # Platform
 variable "WEATHER_API_KEY" {
   description = "API key for WeatherAPI"

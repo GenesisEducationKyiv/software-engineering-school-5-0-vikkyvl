@@ -11,6 +11,7 @@ module "eks" {
 
   tags                    = local.tags
   public_access_cidrs = var.public_access_cidrs
+  cloudflare_appropriate_email = var.cloudflare_appropriate_email
   cloudflare_account_id = var.cloudflare_account_id
   cloudflare_zone_id     = var.cloudflare_zone_id
   cloudflare_tunnel_hostname = var.cloudflare_tunnel_hostname

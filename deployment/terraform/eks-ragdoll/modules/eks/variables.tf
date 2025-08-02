@@ -7,6 +7,11 @@ variable "public_access_cidrs" {
   type        = list(string)
 }
 
+variable "cloudflare_appropriate_email" {
+  description = "List of email domains allowed to access Cloudflare applications (e.g. ['mail.example.com'])"
+  type        = list(string)
+}
+
 variable "tags" {
   description = "Tags to apply to the ECR repositories"
   type        = map(string)
@@ -56,7 +61,7 @@ variable "cloudflare_zone_id" {
 }
 
 variable "cloudflare_tunnel_hostname" {
-  description = "FQDN to expose ingress through tunnel (e.g. myapp.ragdoll.dev)"
+  description = "FQDN to expose ingress through tunnel (e.g. myapp.dev)"
   type = string
 }
 

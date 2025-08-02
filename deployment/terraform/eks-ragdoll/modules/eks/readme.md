@@ -15,6 +15,7 @@ helm pull cloudflare/cloudflare-tunnel --version 0.3.2 --untar=false
 aws secretsmanager delete-secret --secret-id prod/platform --force-delete-without-recovery
 aws secretsmanager delete-secret --secret-id prod/rabbitmq --force-delete-without-recovery
 aws secretsmanager delete-secret --secret-id prod/postgres --force-delete-without-recovery
+aws secretsmanager delete-secret --secret-id prod/general --force-delete-without-recovery
 ```
 
 ```bash

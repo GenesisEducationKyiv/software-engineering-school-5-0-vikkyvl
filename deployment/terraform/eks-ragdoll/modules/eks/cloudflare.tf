@@ -56,4 +56,43 @@ resource "helm_release" "cloudflared" {
       value = "http://ingress-nginx-controller.ingress-nginx.svc.cluster.local:80"
     },
   ]
+
+    depends_on = [
+      cloudflare_zero_trust_tunnel_cloudflared.eks_tunnel,
+      null_resource.wait_for_cluster
+    ]
+}
+
+resource "cloudflare_zero_trust_access_application" "full" {
+  account_id       = var.cloudflare_account_id
+  name             = "Ragdoll EKS"
+  domain           = var.cloudflare_tunnel_hostname
+  type             = "self_hosted"
+  session_duration = "24h"
+  http_only_cookie_attribute = true
+  app_launcher_visible       = true
+}
+
+resource "cloudflare_access_policy" "email_restrict" {
+  application_id = cloudflare_zero_trust_access_application.full.id
+  account_id     = var.cloudflare_account_id
+  name           = "Allow users with appropriate email domain"
+  precedence     = 1
+  decision       = "allow"
+
+  include {
+    email_domain = var.cloudflare_appropriate_email
+  }
+}
+
+resource "cloudflare_access_policy" "deny_all" {
+  application_id = cloudflare_zero_trust_access_application.full.id
+  account_id     = var.cloudflare_account_id
+  name           = "Deny all"
+  precedence     = 2
+  decision       = "deny"
+
+  include {
+    everyone = true
+  }
 }
