@@ -16,12 +16,15 @@ import { redisConfig } from '../src/modules/weather/infrastructure/cache/config/
 import {
   ClientGrpc,
   ClientProxyFactory,
+  RpcException,
   Transport,
 } from '@nestjs/microservices';
 import { join } from 'path';
 import { WeatherServiceInterface } from '../../../common/proto/weather/weather';
 import { firstValueFrom } from 'rxjs';
 import { averageDuration } from './utils';
+import { weatherErrors } from '../src/common';
+import { WeatherServiceBuilder } from './mocks/weather.service.builder';
 
 describe('Weather Service (performance)', () => {
   let containers: TestContainers;
@@ -30,10 +33,20 @@ describe('Weather Service (performance)', () => {
   let clientGrpc: ClientGrpc;
   let weatherService: WeatherServiceInterface;
 
+  let city: ReturnType<typeof WeatherServiceBuilder.getCity>;
+  let invalidCity: ReturnType<typeof WeatherServiceBuilder.getInvalidCity>;
+  let weatherData: ReturnType<
+    typeof WeatherServiceBuilder.weatherGeneralResponse
+  >;
+
   jest.setTimeout(DEFAULT_TEST_TIMEOUT);
 
   beforeEach(async () => {
     containers = await setupTestContainers();
+
+    city = WeatherServiceBuilder.getCity();
+    invalidCity = WeatherServiceBuilder.getInvalidCity();
+    weatherData = WeatherServiceBuilder.weatherGeneralResponse();
 
     redisConfig.host = containers.redis.host;
     redisConfig.port = containers.redis.port;
@@ -52,7 +65,23 @@ describe('Weather Service (performance)', () => {
           synchronize: true,
         }),
       ],
-    }).compile();
+    })
+      .overrideProvider('WeatherServiceProxy')
+      .useValue({
+        fetchWeather: jest.fn().mockImplementation((city: string) => {
+          if (city === invalidCity) {
+            return Promise.reject(
+              new RpcException(weatherErrors.CITY_NOT_FOUND),
+            );
+          }
+
+          return Promise.resolve({
+            response: weatherData,
+            isRecordInCache: false,
+          });
+        }),
+      })
+      .compile();
 
     app = weatherServiceModule.createNestApplication();
 
@@ -96,14 +125,14 @@ describe('Weather Service (performance)', () => {
         () =>
           request(app.getHttpServer() as Server)
             .get('/weather')
-            .query({ city: 'Kyiv' }),
+            .query({ city: city }),
         'HTTP API',
       );
     });
 
     it('gRPC', async () => {
       await averageDuration(
-        () => firstValueFrom(weatherService.getWeather({ city: 'Kyiv' })),
+        () => firstValueFrom(weatherService.getWeather({ city: city })),
         'gRPC',
       );
     });

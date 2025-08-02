@@ -8,6 +8,10 @@ class NotificationConfigService
     return process.env.BROKER_URL ?? 'amqps://...';
   }
 
+  public getTTL() {
+    return Number(process.env.NOTIFICATION_TTL ?? 3600000);
+  }
+
   public getPort() {
     return process.env.PORT_SUBSCRIPTION_SERVICE ?? 3003;
   }

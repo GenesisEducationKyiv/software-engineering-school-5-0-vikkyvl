@@ -19,7 +19,12 @@ async function bootstrap() {
       options: {
         urls: [subscriptionConfigService.getBrokerUrl()],
         queue: subscriptionConfigService.getQueueName(),
-        queueOptions: { durable: false },
+        prefetchCount: 1,
+        persistent: true,
+        queueOptions: {
+          durable: true,
+          arguments: { 'x-message-ttl': subscriptionConfigService.getTTL() },
+        },
       },
     },
     { inheritAppConfig: true },
@@ -31,7 +36,13 @@ async function bootstrap() {
       options: {
         urls: [notificationConfigService.getBrokerUrl()],
         queue: notificationConfigService.getQueueName(),
-        queueOptions: { durable: false },
+        noAck: false,
+        prefetchCount: 1,
+        persistent: true,
+        queueOptions: {
+          durable: true,
+          arguments: { 'x-message-ttl': notificationConfigService.getTTL() },
+        },
       },
     },
     { inheritAppConfig: true },
