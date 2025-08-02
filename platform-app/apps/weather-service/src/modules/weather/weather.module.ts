@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { WeatherGrpcController } from './weather.grpc.controller';
 import { WeatherService } from './weather.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Weather } from '../../entities/weather.entity';
@@ -13,6 +12,8 @@ import { RedisService } from './infrastructure/cache/redis.service';
 import { redisClientFactory } from './infrastructure/cache/redis.client.factory';
 import { weatherTokens } from '../../common';
 import { WeatherHttpController } from './weather.http.controller';
+import { WeatherGrpcController } from './weather.grpc.controller';
+import { LoggerService } from '../../common';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Weather])],
@@ -21,6 +22,7 @@ import { WeatherHttpController } from './weather.http.controller';
     WeatherApiClientService,
     WeatherService,
     RedisService,
+    LoggerService,
     redisClientFactory,
     {
       provide: weatherTokens.WEATHER_REPOSITORY_INTERFACE,

@@ -1,8 +1,8 @@
-import { Logger } from '@nestjs/common';
 import { cachePrefixKey } from '../../../common';
 import { WeatherApiClientServiceInterface } from '../infrastructure/external/weather-api-client.service';
 import { WeatherFetchResult } from '../infrastructure/external/dto';
 import { WeatherGeneralResponseDto } from '../infrastructure/external/dto';
+import { LoggerService } from '../../../common';
 
 export interface CacheServiceInterface {
   get(key: string): Promise<string | null>;
@@ -10,7 +10,7 @@ export interface CacheServiceInterface {
 }
 
 export class WeatherServiceProxy implements WeatherApiClientServiceInterface {
-  private readonly logger = new Logger(WeatherServiceProxy.name);
+  private readonly logger = new LoggerService(WeatherServiceProxy.name);
 
   constructor(
     private readonly weatherApiClient: WeatherApiClientServiceInterface,
