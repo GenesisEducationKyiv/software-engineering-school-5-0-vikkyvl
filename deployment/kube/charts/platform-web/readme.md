@@ -13,9 +13,6 @@ helm template platform-web ./  -f values-local.yaml -n platform-web --kube-conte
 
 Production (AWS EKS):
 ```bash
-kubectl apply -f templates/platform-web-application.yaml
-```
-```bash
 helm install platform-web ./charts/platform-web -f charts/platform-web/values-prod.yaml \
   --kube-context arn:aws:eks:us-east-1:301235908824:cluster/ragdoll-eks
 ```

@@ -4,3 +4,4 @@
 .terraform.*
 *.tfvars
 .terraform/
+cloudflared-tunnel-credentials.json

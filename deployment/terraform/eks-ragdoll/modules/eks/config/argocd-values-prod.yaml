@@ -1,0 +1,45 @@
+namespace: argocd
+fullnameOverride: argocd
+
+repoServer:
+  serviceAccount:
+    create: true
+    name: argocd-repo-server
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::301235908824:role/argocd-ecr-access
+
+  extraArgs:
+    - --loglevel
+    - debug
+
+  env:
+    - name: AWS_REGION
+      value: us-east-1
+
+configs:
+  params:
+    server.insecure: "true"
+    server.rootpath: "/argo-cd"
+    server.basehref: "/argo-cd"
+
+server:
+  insecure: true
+  rootpath: /argo-cd
+  basehref: /argo-cd
+
+  service:
+    type: ClusterIP
+    servicePortHttp: 80
+
+  ingress:
+    enabled: true
+    ingressClassName: nginx
+    controller: generic
+    hostname: ragdoll.valmark.dev
+    path: /argo-cd
+    pathType: Prefix
+
+    annotations:
+      nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+#      nginx.ingress.kubernetes.io/rewrite-target: /$2
+      nginx.ingress.kubernetes.io/use-regex: "true"

@@ -61,3 +61,29 @@ variable "POSTGRES_DB" {
   type        = string
 }
 
+# Cloudflare
+variable "cloudflare_account_id" {
+  description = "Cloudflare account ID"
+  type = string
+}
+
+variable "cloudflare_zone_id" {
+  description = "Cloudflare zone ID"
+  type = string
+}
+
+variable "cloudflare_tunnel_hostname" {
+  description = "FQDN to expose ingress through tunnel (e.g. myapp.ragdoll.dev)"
+  type = string
+}
+
+variable "cloudflare_api_token" {
+  type        = string
+  description = "Cloudflare API token with permissions to manage tunnels and DNS"
+  sensitive   = true
+}
+
+variable "cloudflare_enable_tunnel" {
+  type    = bool
+  default = false
+}
