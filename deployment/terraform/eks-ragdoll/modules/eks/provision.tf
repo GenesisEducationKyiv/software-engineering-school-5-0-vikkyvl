@@ -8,6 +8,17 @@ resource "null_resource" "install_aws_provider" {
   ]
 }
 
+resource "null_resource" "update_kubeconfig" {
+  provisioner "local-exec" {
+    command = "aws eks update-kubeconfig --name ragdoll-eks --region us-east-1"
+
+    depends_on = [
+      aws_eks_cluster.main,
+      aws_eks_node_group.default,
+    ]
+  }
+}
+
 resource "null_resource" "wait_for_cluster" {
   provisioner "local-exec" {
     command = <<EOT
@@ -21,7 +32,6 @@ resource "null_resource" "wait_for_cluster" {
   }
 
   depends_on = [
-  aws_eks_cluster.main,
-    aws_eks_node_group.default
+    null_resource.update_kubeconfig
   ]
 }
