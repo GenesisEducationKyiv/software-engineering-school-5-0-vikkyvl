@@ -1,2 +1,2 @@
-export * from './interfaces/errors';
-export * from './constants/error-messages';
+export * from './interfaces';
+export * from './constants';

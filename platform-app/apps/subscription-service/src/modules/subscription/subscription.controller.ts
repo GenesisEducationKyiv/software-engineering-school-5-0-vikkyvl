@@ -4,8 +4,9 @@ import { ConfirmationService } from './confirmation.service';
 import { UnsubscriptionService } from './unsubscription.service';
 import { MessagePattern } from '@nestjs/microservices';
 import { SubscriptionRequestDto } from '../../../../../common/shared';
-import { patterns } from '../../../../../common/shared';
+import { patternsRMQ } from '../../../../../common/shared';
 import { MessageResponseDto } from '../../../../../common/shared';
+import { TokenRequestDto } from '../../../../../common/shared/dtos/subscription/token-request.dto';
 
 @Controller()
 export class SubscriptionController {
@@ -15,20 +16,24 @@ export class SubscriptionController {
     private readonly unsubscriptionService: UnsubscriptionService,
   ) {}
 
-  @MessagePattern(patterns.SUBSCRIPTION.CREATE_SUBSCRIPTION)
+  @MessagePattern(patternsRMQ.SUBSCRIPTION.CREATE_SUBSCRIPTION)
   async createSubscription(
-    data: SubscriptionRequestDto,
+    dto: SubscriptionRequestDto,
   ): Promise<MessageResponseDto> {
-    return await this.subscriptionService.formSubscription(data);
+    return await this.subscriptionService.formSubscription(dto);
   }
 
-  @MessagePattern(patterns.CONFIRMATION.GET_TOKEN)
-  async getTokenConfirmation(token: string): Promise<MessageResponseDto> {
-    return await this.confirmationService.confirmSubscription(token);
+  @MessagePattern(patternsRMQ.CONFIRMATION.GET_TOKEN)
+  async getTokenConfirmation(
+    dto: TokenRequestDto,
+  ): Promise<MessageResponseDto> {
+    return await this.confirmationService.confirmSubscription(dto.token);
   }
 
-  @MessagePattern(patterns.UNSUBSCRIPTION.GET_TOKEN)
-  async getTokenUnsubscription(token: string): Promise<MessageResponseDto> {
-    return await this.unsubscriptionService.unsubscribeSubscription(token);
+  @MessagePattern(patternsRMQ.UNSUBSCRIPTION.GET_TOKEN)
+  async getTokenUnsubscription(
+    dto: TokenRequestDto,
+  ): Promise<MessageResponseDto> {
+    return await this.unsubscriptionService.unsubscribeSubscription(dto.token);
   }
 }

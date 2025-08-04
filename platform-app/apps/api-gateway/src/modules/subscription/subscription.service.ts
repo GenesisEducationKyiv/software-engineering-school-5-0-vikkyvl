@@ -1,14 +1,16 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { SubscriptionRequestDto } from '../../../../../common/shared';
-import { patterns } from '../../../../../common/shared';
-import { MicroserviceClient } from '../../shared';
+import { patternsRMQ } from '../../../../../common/shared';
+import { MicroserviceClientMessageBroker } from '../../shared';
 import { MessageResponseDto } from '../../../../../common/shared';
+import { serviceTokens } from '../../common';
+import { TokenRequestDto } from '../../../../../common/shared/dtos/subscription/token-request.dto';
 
 @Injectable()
-export class SubscriptionService extends MicroserviceClient {
+export class SubscriptionService extends MicroserviceClientMessageBroker {
   constructor(
-    @Inject('SUBSCRIPTION_SERVICE')
+    @Inject(serviceTokens.SUBSCRIPTION_SERVICE)
     protected client: ClientProxy,
   ) {
     super(client);
@@ -17,14 +19,16 @@ export class SubscriptionService extends MicroserviceClient {
   async createSubscription(
     dto: SubscriptionRequestDto,
   ): Promise<MessageResponseDto> {
-    return this.send(patterns.SUBSCRIPTION.CREATE_SUBSCRIPTION, dto);
+    return this.send(patternsRMQ.SUBSCRIPTION.CREATE_SUBSCRIPTION, dto);
   }
 
-  async confirmSubscription(token: string): Promise<MessageResponseDto> {
-    return this.send(patterns.CONFIRMATION.GET_TOKEN, token);
+  async confirmSubscription(dto: TokenRequestDto): Promise<MessageResponseDto> {
+    return this.send(patternsRMQ.CONFIRMATION.GET_TOKEN, dto);
   }
 
-  async unsubscribeSubscription(token: string): Promise<MessageResponseDto> {
-    return this.send(patterns.UNSUBSCRIPTION.GET_TOKEN, token);
+  async unsubscribeSubscription(
+    dto: TokenRequestDto,
+  ): Promise<MessageResponseDto> {
+    return this.send(patternsRMQ.UNSUBSCRIPTION.GET_TOKEN, dto);
   }
 }

@@ -12,6 +12,6 @@ export class WeatherController {
   @Get()
   @UseFilters(new ErrorHandlerFilter(errorMessages.WEATHER.FAILED))
   async get(@Query() dto: WeatherRequestDto): Promise<WeatherResponseDto> {
-    return await this.weatherService.getWeather(dto.city);
+    return await this.weatherService.getWeather(dto);
   }
 }

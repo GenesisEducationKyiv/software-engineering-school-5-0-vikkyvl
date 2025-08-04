@@ -2,19 +2,18 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
 import { weatherConfigService } from '../../../common/config';
-import { ErrorHandlerFilter } from './common';
+import { join } from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.useGlobalFilters(new ErrorHandlerFilter());
 
   app.connectMicroservice(
     {
-      transport: Transport.RMQ,
+      transport: Transport.GRPC,
       options: {
-        urls: [weatherConfigService.getBrokerUrl()],
-        queue: weatherConfigService.getQueueName(),
-        queueOptions: { durable: false },
+        url: weatherConfigService.getGrpcUrl(),
+        package: weatherConfigService.getPackageName(),
+        protoPath: join(process.cwd(), 'common/proto/weather/weather.proto'),
       },
     },
     { inheritAppConfig: true },

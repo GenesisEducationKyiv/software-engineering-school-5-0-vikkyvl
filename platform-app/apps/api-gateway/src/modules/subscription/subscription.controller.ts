@@ -21,12 +21,12 @@ export class SubscriptionController {
   @Get('confirm/:token')
   @UseFilters(new ErrorHandlerFilter(errorMessages.CONFIRMATION.FAILED))
   async confirm(@Param() dto: TokenRequestDto): Promise<MessageResponseDto> {
-    return await this.subscriptionService.confirmSubscription(dto.token);
+    return await this.subscriptionService.confirmSubscription(dto);
   }
 
   @Get('unsubscribe/:token')
   @UseFilters(new ErrorHandlerFilter(errorMessages.UNSUBSCRIPTION.FAILED))
   async remove(@Param() dto: TokenRequestDto): Promise<MessageResponseDto> {
-    return await this.subscriptionService.unsubscribeSubscription(dto.token);
+    return await this.subscriptionService.unsubscribeSubscription(dto);
   }
 }

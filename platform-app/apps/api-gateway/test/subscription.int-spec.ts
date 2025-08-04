@@ -10,12 +10,12 @@ import {
 } from './utils';
 import { SubscriptionRepositoryInterface } from '../../subscription-service/src/modules/subscription/infrastructure/repository/interfaces/subscription.repository.interface';
 import { SubscriptionModule as ApiGatewayModule } from '../src/modules/subscription/subscription.module';
-import { ClientProxy } from '@nestjs/microservices';
+import { ClientProxy, Transport } from '@nestjs/microservices';
 import { Server } from 'http';
 import { SubscriptionBuilder } from './mocks/subscription.builder';
 import { subscriptionErrors } from '../../subscription-service/src/common';
 import { EmailSenderService } from '../../subscription-service/src/modules/subscription/infrastructure/external/mail/email/email-sender.service';
-import { throwError, TimeoutError } from 'rxjs';
+import { delay, of } from 'rxjs';
 import { messages } from '../../subscription-service/src/common';
 import { errorMessages } from '../src/common';
 
@@ -25,6 +25,8 @@ describe('Subscription Endpoints', () => {
   >;
 
   let containers: TestContainers;
+
+  const transport = Transport.RMQ;
 
   let apiGatewayApp: INestApplication;
   let subscriptionServiceApp: INestApplication;
@@ -44,6 +46,7 @@ describe('Subscription Endpoints', () => {
       'SUBSCRIPTION_SERVICE',
       'subscription-service',
       ApiGatewayModule,
+      transport,
     );
     subscriptionServiceApp = await createSubscriptionServiceApp(containers);
 
@@ -234,9 +237,11 @@ describe('Subscription Endpoints', () => {
     });
 
     it('should return 500 if the confirmation fails', async () => {
-      jest.spyOn(clientProxy, 'send').mockImplementation(() => {
-        return throwError(() => new TimeoutError());
-      });
+      jest
+        .spyOn(clientProxy, 'send')
+        .mockReturnValue(
+          of(invalidToken).pipe(delay(DEFAULT_TEST_TIMEOUT + 1000)),
+        );
 
       const response: Response = await request(
         apiGatewayApp.getHttpServer() as Server,
@@ -317,9 +322,11 @@ describe('Subscription Endpoints', () => {
     });
 
     it('should return 500 if the unsubscription fails ', async () => {
-      jest.spyOn(clientProxy, 'send').mockImplementation(() => {
-        return throwError(() => new TimeoutError());
-      });
+      jest
+        .spyOn(clientProxy, 'send')
+        .mockReturnValue(
+          of(tokenRecord).pipe(delay(DEFAULT_TEST_TIMEOUT + 1000)),
+        );
 
       const response: Response = await request(
         apiGatewayApp.getHttpServer() as Server,

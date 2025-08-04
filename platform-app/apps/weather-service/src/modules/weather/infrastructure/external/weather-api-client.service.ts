@@ -17,8 +17,14 @@ export class WeatherApiClientService
   ) {}
 
   async fetchWeather(city: string): Promise<WeatherFetchResult> {
+    const result = await this.handlers.handleRequest(city);
+
     return {
-      response: await this.handlers.handleRequest(city),
+      response: {
+        temperature: Number(result.temperature.toFixed()),
+        humidity: result.humidity,
+        description: result.description,
+      },
     };
   }
 }
