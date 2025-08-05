@@ -27,6 +27,15 @@ export async function createApiGatewayApp(
   module: Type<any>,
   transport: Transport,
 ): Promise<INestApplication> {
+  jest.mock('@willsoto/nestjs-prometheus', () => ({
+    PrometheusModule: {
+      register: jest.fn(() => ({
+        forRoot: jest.fn(),
+        forRootAsync: jest.fn(),
+      })),
+    },
+  }));
+
   const apiGatewayModule: TestingModule = await Test.createTestingModule({
     imports: [module],
   })
@@ -70,6 +79,15 @@ export async function createSubscriptionServiceApp(
   mailConfigService.setEmailSecure(false);
   mailConfigService.setEmailUser(configMail.TEST_USER);
   mailConfigService.setEmailPassword(configMail.TEST_PASSWORD);
+
+  jest.mock('@willsoto/nestjs-prometheus', () => ({
+    PrometheusModule: {
+      register: jest.fn(() => ({
+        forRoot: jest.fn(),
+        forRootAsync: jest.fn(),
+      })),
+    },
+  }));
 
   const subscriptionServiceModule = await Test.createTestingModule({
     imports: [
@@ -139,6 +157,15 @@ export async function createWeatherServiceApp(
 ): Promise<INestApplication> {
   const invalidCity = WeatherBuilder.getInvalidCity();
   const weatherGeneralResponse = WeatherBuilder.weatherGeneralResponse();
+
+  jest.mock('@willsoto/nestjs-prometheus', () => ({
+    PrometheusModule: {
+      register: jest.fn(() => ({
+        forRoot: jest.fn(),
+        forRootAsync: jest.fn(),
+      })),
+    },
+  }));
 
   const weatherServiceModule = await Test.createTestingModule({
     imports: [
