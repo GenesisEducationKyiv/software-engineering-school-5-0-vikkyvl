@@ -30,6 +30,10 @@ class ApiGatewayConfigService
   public getPackageName() {
     return process.env.GRPC_PACKAGE_NAME ?? 'weather';
   }
+
+  public getServiceName() {
+    return process.env.API_GATEWAY ?? 'api-gateway';
+  }
 }
 
 const apiConfigService = new ApiGatewayConfigService();

@@ -5,3 +5,4 @@ export * from './services/notification-config.service';
 export * from './infrastructure/postgres-config.service';
 export * from './infrastructure/redis-config.service';
 export * from './infrastructure/mail-config.service';
+export * from './infrastructure/observability-config.service';

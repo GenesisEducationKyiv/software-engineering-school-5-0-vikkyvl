@@ -6,15 +6,13 @@ import {
   firstValueFrom,
   Observable,
 } from 'rxjs';
-import { Logger, OnModuleInit } from '@nestjs/common';
+import { OnModuleInit } from '@nestjs/common';
 import { GrpcException } from '../../common/exceptions/grpc-exception';
 import { MessageBrokerException } from '../../common/exceptions/message-broker-exception';
 
 const DEFAULT_TIMEOUT = 5000;
 
 export abstract class MicroserviceClientMessageBroker {
-  private readonly logger = new Logger(this.constructor.name);
-
   protected constructor(protected readonly client: ClientProxy) {}
 
   protected send<T = any, R = any>(pattern: T, data: any): Promise<R> {
@@ -22,7 +20,6 @@ export abstract class MicroserviceClientMessageBroker {
       timeout(DEFAULT_TIMEOUT),
       catchError((e: unknown) => {
         const error = e as MessageBrokerException;
-        this.logger.error(error.message);
 
         return throwError(() => new MessageBrokerException(error));
       }),
@@ -35,7 +32,6 @@ export abstract class MicroserviceClientMessageBroker {
 export abstract class MicroserviceClientGrpc<T extends object>
   implements OnModuleInit
 {
-  protected readonly logger = new Logger(this.constructor.name);
   service: T;
 
   protected constructor(
@@ -53,7 +49,6 @@ export abstract class MicroserviceClientGrpc<T extends object>
         timeout(DEFAULT_TIMEOUT),
         catchError((e: unknown) => {
           const error = e as GrpcException;
-          this.logger.error(error.details);
 
           return throwError(() => new GrpcException(error));
         }),

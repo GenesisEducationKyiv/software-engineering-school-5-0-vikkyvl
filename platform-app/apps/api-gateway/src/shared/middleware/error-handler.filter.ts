@@ -3,15 +3,17 @@ import {
   ExceptionFilter,
   ArgumentsHost,
   HttpException,
+  Logger,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { errorMessages } from '../../common';
+import { errorMessages, exceptionTypes } from '../../common';
 import { GrpcCode, mapGrpcToHttp } from '../../../../../common/shared';
 import { GrpcException } from '../../common/exceptions/grpc-exception';
 import { MessageBrokerException } from '../../common/exceptions/message-broker-exception';
 
 @Catch()
 export class ErrorHandlerFilter implements ExceptionFilter {
+  private readonly logger = new Logger(this.constructor.name);
   private readonly defaultStatus = errorMessages.INTERNAL_SERVER_ERROR.status;
 
   constructor(
@@ -40,6 +42,11 @@ export class ErrorHandlerFilter implements ExceptionFilter {
         return;
 
       default:
+        this.logger.error({
+          type: exceptionTypes.UNHANDLED_EXCEPTION,
+          status: this.defaultStatus,
+          message: this.defaultMessage,
+        });
         this.sendResponse(response, this.defaultStatus, this.defaultMessage);
     }
   }
@@ -47,6 +54,12 @@ export class ErrorHandlerFilter implements ExceptionFilter {
   private handleHttpException(response: Response, error: HttpException): void {
     const status = error.getStatus();
     const message = (error.getResponse() as HttpException).message;
+
+    this.logger.error({
+      type: exceptionTypes.HTTP_EXCEPTION,
+      status: status,
+      message: message,
+    });
 
     this.sendResponse(response, status, message);
   }
@@ -59,6 +72,12 @@ export class ErrorHandlerFilter implements ExceptionFilter {
     if (error.code === GrpcCode.UNAVAILABLE) {
       message = this.defaultMessage;
     }
+
+    this.logger.error({
+      type: exceptionTypes.GRPC_EXCEPTION,
+      status: status,
+      message: message,
+    });
 
     this.sendResponse(response, status, message);
   }
@@ -73,6 +92,12 @@ export class ErrorHandlerFilter implements ExceptionFilter {
     if (error.message === errorMessages.TIMEOUT.message) {
       message = this.defaultMessage;
     }
+
+    this.logger.error({
+      type: exceptionTypes.MESSAGE_BROKER_EXCEPTION,
+      status: status,
+      message: message,
+    });
 
     this.sendResponse(response, status, message);
   }

@@ -25,6 +25,10 @@ class SubscriptionConfigService
   public getReactAppApiUrl() {
     return process.env.REACT_APP_API_URL;
   }
+
+  public getServiceName() {
+    return process.env.SUBSCRIPTION_SERVICE ?? 'subscription-service';
+  }
 }
 
 const subscriptionConfigService = new SubscriptionConfigService();

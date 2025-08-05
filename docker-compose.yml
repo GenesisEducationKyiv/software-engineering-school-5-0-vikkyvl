@@ -26,6 +26,29 @@ services:
     ports:
       - '6379:6379'
 
+  loki:
+    image: grafana/loki
+    ports:
+      - '3100:3100'
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./loki-config.yml:/etc/loki/loki-config.yml
+      - ./loki-data:/loki
+
+  grafana:
+    image: grafana/grafana
+    ports:
+      - "3500:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+
 #  weather-service:
 #    build: ./weather-service
 #    ports:
@@ -52,3 +75,4 @@ services:
 
 volumes:
   pg_data:
+  grafana-storage:

@@ -13,16 +13,16 @@ import { redisClientFactory } from './infrastructure/cache/redis.client.factory'
 import { weatherTokens } from '../../common';
 import { WeatherHttpController } from './weather.http.controller';
 import { WeatherGrpcController } from './weather.grpc.controller';
-import { LoggerService } from '../../common';
+import { ObservabilityModule } from '../observability/observability.module';
+import { MetricsService } from '../observability/metrics.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Weather])],
+  imports: [TypeOrmModule.forFeature([Weather]), ObservabilityModule],
   controllers: [WeatherGrpcController, WeatherHttpController],
   providers: [
     WeatherApiClientService,
     WeatherService,
     RedisService,
-    LoggerService,
     redisClientFactory,
     {
       provide: weatherTokens.WEATHER_REPOSITORY_INTERFACE,
@@ -34,12 +34,21 @@ import { LoggerService } from '../../common';
     },
     {
       provide: weatherTokens.WEATHER_SERVICE_PROXY,
-      inject: [WeatherApiClientService, RedisService],
+      inject: [
+        WeatherApiClientService,
+        RedisService,
+        weatherTokens.METRICS_SERVICE,
+      ],
       useFactory: (
         weatherService: WeatherApiClientService,
         redisService: RedisService,
+        observabilityService: MetricsService,
       ) => {
-        return new WeatherServiceProxy(weatherService, redisService);
+        return new WeatherServiceProxy(
+          weatherService,
+          redisService,
+          observabilityService,
+        );
       },
     },
     {
