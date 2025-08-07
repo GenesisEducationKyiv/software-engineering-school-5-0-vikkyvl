@@ -10,10 +10,10 @@ import {
 import {
   EmailSenderService,
   TransporterInterface,
-} from '../../subscription-service/src/modules/subscription/infrastructure/external/mail/email/email-sender.service';
+} from '../../subscription-service/src/modules/notification/infrastructure/external/mail/email/email-sender.service';
 import { SubscriptionBuilder } from './mocks/subscription.builder';
-import { LinkService } from '../../subscription-service/src/modules/subscription/infrastructure/external/link/link.service';
-import { subscriptionHtml } from '../../subscription-service/src/modules/subscription/infrastructure/external/mail/email/templates/subscription-confirmation';
+import { LinkService } from '../../subscription-service/src/modules/notification/infrastructure/external/link/link.service';
+import { subscriptionHtml } from '../../subscription-service/src/modules/notification/infrastructure/external/mail/email/templates/subscription-confirmation';
 import { MailhogMessage } from './utils/mailhog/mailhog-message.interface';
 
 describe('EmailService Integration Tests', () => {

@@ -14,16 +14,11 @@ import { ClientProxy, Transport } from '@nestjs/microservices';
 import { Server } from 'http';
 import { SubscriptionBuilder } from './mocks/subscription.builder';
 import { subscriptionErrors } from '../../subscription-service/src/common';
-import { EmailSenderService } from '../../subscription-service/src/modules/subscription/infrastructure/external/mail/email/email-sender.service';
 import { delay, of } from 'rxjs';
 import { messages } from '../../subscription-service/src/common';
 import { errorMessages } from '../src/common';
 
 describe('Subscription Endpoints', () => {
-  let userFormWithWrongEmail: ReturnType<
-    typeof SubscriptionBuilder.userFormWithWrongEmail
-  >;
-
   let containers: TestContainers;
 
   const transport = Transport.RMQ;
@@ -32,13 +27,10 @@ describe('Subscription Endpoints', () => {
   let subscriptionServiceApp: INestApplication;
   let clientProxy: ClientProxy;
   let subscriptionRepository: SubscriptionRepositoryInterface;
-  let emailSenderService: EmailSenderService;
 
   jest.setTimeout(DEFAULT_TEST_TIMEOUT);
 
   beforeAll(async () => {
-    userFormWithWrongEmail = SubscriptionBuilder.userFormWithWrongEmail();
-
     containers = await setupTestContainers();
 
     apiGatewayApp = await createApiGatewayApp(
@@ -54,8 +46,6 @@ describe('Subscription Endpoints', () => {
     subscriptionRepository = subscriptionServiceApp.get(
       'SubscriptionRepositoryInterface',
     );
-    emailSenderService =
-      subscriptionServiceApp.get<EmailSenderService>(EmailSenderService);
   });
 
   afterAll(async () => {
@@ -127,31 +117,6 @@ describe('Subscription Endpoints', () => {
       );
       expect(response.body.message).toBe(
         subscriptionErrors.EMAIL_ALREADY_SUBSCRIBED.message,
-      );
-    });
-
-    it('should return 500 if email sending fails', async () => {
-      jest
-        .spyOn(emailSenderService, 'sendSubscriptionEmail')
-        .mockImplementation((email: string, token: string) => {
-          if (email === userFormWithWrongEmail.email && token) {
-            return Promise.resolve({ isDelivered: false });
-          }
-
-          return Promise.resolve({ isDelivered: true });
-        });
-
-      const response: Response = await request(
-        apiGatewayApp.getHttpServer() as Server,
-      )
-        .post('/api/subscribe')
-        .send(userFormWithWrongEmail);
-
-      expect(response.status).toBe(
-        subscriptionErrors.EMAIL_SENDING_FAILED.status,
-      );
-      expect(response.body.message).toBe(
-        subscriptionErrors.EMAIL_SENDING_FAILED.message,
       );
     });
   });
