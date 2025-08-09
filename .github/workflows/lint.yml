@@ -4,7 +4,13 @@ on:
     push:
         branches: [main]
     pull_request:
-        branches: ["**"]
+        types: [opened, synchronize, reopened]
+        branches: ["**", "!feedback"]
+
+concurrency:
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
 jobs:
     lint:
         runs-on: ubuntu-latest
@@ -31,7 +37,11 @@ jobs:
               with:
                   node-version: 18
             - run: npm ci
-            - run: npm run test:unit
+            - run: npm run test:unit-cov
+            - uses: codecov/codecov-action@v5
+              with:
+                  flags: unit-test
+                  token: ${{ secrets.CODECOV_TOKEN }}
 
     integration-test:
         runs-on: ubuntu-latest
@@ -46,6 +56,11 @@ jobs:
                   node-version: 18
             - run: npm ci
             - run: npm run test:int
+            - run: npm run test:int-cov
+            - uses: codecov/codecov-action@v5
+              with:
+                  flags: integration-test
+                  token: ${{ secrets.CODECOV_TOKEN }}
 
     architecture-test:
         runs-on: ubuntu-latest
@@ -60,6 +75,8 @@ jobs:
                   node-version: 18
             - run: npm ci
             - run: npm run test:arch
+           
+                  
 #  api-gateway-lint:
 #      runs-on: ubuntu-latest
 #      defaults:
