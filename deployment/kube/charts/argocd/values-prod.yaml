@@ -1,0 +1,22 @@
+namespace: argocd
+
+fullnameOverride: argocd
+
+#serviceAccount:
+#  create: true
+#  name: argocd-repo-server
+#  roleArn: arn:aws:iam::301235908824:role/argocd-ecr-access
+
+repoServer:
+  serviceAccount:
+    create: true
+    name: argocd-repo-server
+    roleArn: arn:aws:iam::301235908824:role/argocd-ecr-access
+    annotations:
+      eks.amazonaws.com/role-arn: arn:aws:iam::301235908824:role/argocd-ecr-access
+  extraArgs:
+    - --loglevel
+    - debug
+  env:
+    - name: AWS_REGION
+      value: us-east-1

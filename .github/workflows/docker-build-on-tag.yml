@@ -1,0 +1,59 @@
+name: build & push docker image to ECR
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+#  pull_request:
+#    types: [ opened, synchronize, reopened ]
+#    branches: [ "**", "!feedback" ]
+
+env:
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+  ECR_ACCOUNT_ID: ${{ secrets.ECR_ACCOUNT_ID }}
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract tag
+        if: github.event_name == 'push'
+        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_ENV
+
+      - name: Generate TAG from PR
+        if: github.event_name == 'pull_request'
+        run: |
+          TAG="pr-${{ github.event.number }}"
+          echo "TAG=$TAG" >> $GITHUB_ENV
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build & Push platform-app
+        working-directory: ./platform-app
+        run: |
+          IMAGE=$ECR_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/platform
+          docker build -t $IMAGE:$TAG -t $IMAGE:latest .
+          echo "Will push tag: $TAG"
+          docker push $IMAGE:$TAG
+          docker push $IMAGE:latest
+
+      - name: Build & Push platform-web
+        working-directory: ./web-app
+        run: |
+          IMAGE=$ECR_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/platform-web
+          docker build -t $IMAGE:$TAG -t $IMAGE:latest .
+          echo "Will push tag: $TAG"
+          docker push $IMAGE:$TAG
+          docker push $IMAGE:latest
