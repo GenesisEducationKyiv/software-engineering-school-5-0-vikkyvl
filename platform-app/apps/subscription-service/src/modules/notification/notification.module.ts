@@ -5,8 +5,10 @@ import { EmailSenderService } from './infrastructure/external/mail/email/email-s
 import { subscriptionTokens } from '../../common';
 import { LinkService } from './infrastructure/external/link/link.service';
 import { Transporter } from './infrastructure/external/mail/email/utils/transporter';
+import { ObservabilityModule } from '../observability/observability.module';
 
 @Module({
+  imports: [ObservabilityModule],
   providers: [
     NotificationService,
     EmailSenderService,

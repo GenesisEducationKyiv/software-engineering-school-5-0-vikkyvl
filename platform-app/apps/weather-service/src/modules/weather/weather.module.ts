@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { WeatherGrpcController } from './weather.grpc.controller';
 import { WeatherService } from './weather.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Weather } from '../../entities/weather.entity';
@@ -13,9 +12,12 @@ import { RedisService } from './infrastructure/cache/redis.service';
 import { redisClientFactory } from './infrastructure/cache/redis.client.factory';
 import { weatherTokens } from '../../common';
 import { WeatherHttpController } from './weather.http.controller';
+import { WeatherGrpcController } from './weather.grpc.controller';
+import { ObservabilityModule } from '../observability/observability.module';
+import { MetricsService } from '../observability/metrics.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Weather])],
+  imports: [TypeOrmModule.forFeature([Weather]), ObservabilityModule],
   controllers: [WeatherGrpcController, WeatherHttpController],
   providers: [
     WeatherApiClientService,
@@ -32,12 +34,21 @@ import { WeatherHttpController } from './weather.http.controller';
     },
     {
       provide: weatherTokens.WEATHER_SERVICE_PROXY,
-      inject: [WeatherApiClientService, RedisService],
+      inject: [
+        WeatherApiClientService,
+        RedisService,
+        weatherTokens.METRICS_SERVICE,
+      ],
       useFactory: (
         weatherService: WeatherApiClientService,
         redisService: RedisService,
+        observabilityService: MetricsService,
       ) => {
-        return new WeatherServiceProxy(weatherService, redisService);
+        return new WeatherServiceProxy(
+          weatherService,
+          redisService,
+          observabilityService,
+        );
       },
     },
     {

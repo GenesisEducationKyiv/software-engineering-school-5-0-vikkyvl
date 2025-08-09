@@ -3,9 +3,17 @@ import { AppModule } from './app.module';
 import { Transport } from '@nestjs/microservices';
 import { weatherConfigService } from '../../../common/config';
 import { join } from 'path';
+import { ValidationPipe } from '@nestjs/common';
+import { LoggerProxy } from '../../../common/observability';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+
+  const logger = app.get(LoggerProxy);
+  logger.setServiceName(weatherConfigService.getServiceName());
+  app.useLogger(logger);
+
+  app.useGlobalPipes(new ValidationPipe());
 
   app.connectMicroservice(
     {

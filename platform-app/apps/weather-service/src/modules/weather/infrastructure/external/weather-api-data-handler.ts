@@ -5,6 +5,7 @@ import { logProviderResponse } from './logger/provider-logger';
 import { WeatherProvidersFailed } from '../../../../common';
 import { CityNotFound } from '../../../../common';
 import { DomainException } from '../../../../common';
+import { Logger } from '@nestjs/common';
 
 export interface WeatherApiDataHandlerInterface {
   setNextHandler(
@@ -16,6 +17,8 @@ export interface WeatherApiDataHandlerInterface {
 export abstract class AbstractWeatherApiDataHandler
   implements WeatherApiDataHandlerInterface
 {
+  private readonly logger = new Logger(this.constructor.name);
+
   protected nextHandler: WeatherApiDataHandlerInterface | null = null;
   protected abstract provider: string;
 
@@ -36,6 +39,8 @@ export abstract class AbstractWeatherApiDataHandler
 
       return response;
     } catch (error) {
+      this.logger.warn(`Provider "${this.provider}" failed to handle request`);
+
       this.handleError(error);
 
       if (this.nextHandler) {

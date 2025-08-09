@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ModulesModule } from './modules/modules.module';
 import { ConfigModule } from '@nestjs/config';
+import { LoggerModule } from '../../../common/observability/logger/logger.module';
 
 @Module({
   imports: [
@@ -9,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
       envFilePath: ['.env'],
     }),
     ModulesModule,
+    LoggerModule,
   ],
 })
 export class AppModule {}

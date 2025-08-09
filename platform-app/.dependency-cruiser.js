@@ -122,6 +122,7 @@ module.exports = {
       to: {
         pathNot: [
           ".*/src/modules/[^/]+/[^/]*\\.module\\.ts$",
+          ".*/src/shared",
           "node_modules"
         ]
       }

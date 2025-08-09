@@ -12,6 +12,7 @@ import { WeatherRequestHttpDto } from './dtos/weather/http/weather-request.http.
 
 import { Frequency } from './enums/frequency.enum';
 import { GrpcCode } from './enums/code.enum';
+import { LogLevel } from './enums/log-level.enum';
 
 import { mapGrpcToHttp } from './mappers/code-to-status.mapper';
 
@@ -28,5 +29,6 @@ export {
   WeatherRequestHttpDto,
   Frequency,
   GrpcCode,
+  LogLevel,
   mapGrpcToHttp,
 };

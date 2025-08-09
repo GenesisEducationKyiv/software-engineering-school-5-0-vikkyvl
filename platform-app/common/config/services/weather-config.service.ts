@@ -14,6 +14,10 @@ class WeatherConfigService implements GrpcConfigInterface {
   public getPackageName() {
     return process.env.GRPC_PACKAGE_NAME ?? 'weather';
   }
+
+  public getServiceName() {
+    return process.env.WEATHER_SERVICE ?? 'weather-service';
+  }
 }
 
 const weatherConfigService = new WeatherConfigService();
