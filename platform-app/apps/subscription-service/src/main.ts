@@ -7,12 +7,14 @@ import {
 } from '../../../common/config';
 import { ValidationPipe } from '@nestjs/common';
 import { ErrorHandlerFilter } from './common';
-import { LoggerService } from '../../../common/observability';
+import { LoggerProxy } from '../../../common/observability';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: new LoggerService(subscriptionConfigService.getServiceName()),
-  });
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+
+  const logger = app.get(LoggerProxy);
+  logger.setServiceName(subscriptionConfigService.getServiceName());
+  app.useLogger(logger);
 
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalFilters(new ErrorHandlerFilter());

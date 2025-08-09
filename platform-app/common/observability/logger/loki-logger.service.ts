@@ -1,65 +1,35 @@
-import { ConsoleLogger, Injectable } from '@nestjs/common';
-import { observabilityConfigService } from '../../config';
-import axios, { AxiosError } from 'axios';
-import { LogLevel } from '../../shared';
 import { LoggerInterface } from './interface';
+import { observabilityConfigService } from '../../config';
+import { LogLevel } from '../../shared';
+import axios, { AxiosError } from 'axios';
 
 const MILLISECOND_TO_NANOSECOND = 1000000;
-const LOG_TO_CONSOLE = observabilityConfigService.getLogToConsole();
 
-@Injectable()
-export class LoggerService extends ConsoleLogger implements LoggerInterface {
+export class LokiLoggerService implements LoggerInterface {
   private lokiUrl: string = observabilityConfigService.getLokiUrl();
+  private serviceName: string;
 
-  constructor(private readonly serviceName: string) {
-    super({
-      json: true,
-    });
+  constructor() {}
+
+  setServiceName(serviceName: string): void {
+    this.serviceName = serviceName;
   }
 
-  public setContext(context: string) {
-    super.setContext(context);
-  }
-
-  public log(message: string, context?: string) {
-    const ctx = context ?? this.context;
-
-    if (LOG_TO_CONSOLE) {
-      super.log(message, ctx);
-    }
-
+  log(message: string, ctx?: string): void {
     if (this.shouldSampleLog()) {
       this.sendToObservabilityService(message, LogLevel.INFO, ctx);
     }
   }
 
-  public warn(message: string, context?: string) {
-    const ctx = context ?? this.context;
-
-    if (LOG_TO_CONSOLE) {
-      super.warn(message, ctx);
-    }
-
+  warn(message: string, ctx?: string): void {
     this.sendToObservabilityService(message, LogLevel.WARN, ctx);
   }
 
-  public error(message: string, stack?: string, context?: string) {
-    const ctx = context ?? this.context;
-
-    if (LOG_TO_CONSOLE) {
-      super.error(message, stack, ctx);
-    }
-
+  error(message: string, stack?: string, ctx?: string): void {
     this.sendToObservabilityService(message, LogLevel.ERROR, ctx, stack);
   }
 
-  public debug(message: string, context?: string) {
-    const ctx = context ?? this.context;
-
-    if (LOG_TO_CONSOLE) {
-      super.debug(message, ctx);
-    }
-
+  debug(message: string, ctx?: string): void {
     this.sendToObservabilityService(message, LogLevel.DEBUG, ctx);
   }
 

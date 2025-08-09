@@ -8,109 +8,55 @@ import {
 
 @Injectable()
 export class MetricsService {
-  private readonly weatherRequestCounter: Counter;
-  private readonly weatherErrorCounter: Counter;
-  private readonly weatherDurationHistogram: Histogram;
-
-  private readonly subscriptionRequestCounter: Counter;
-  private readonly subscriptionErrorCounter: Counter;
-  private readonly subscriptionDurationHistogram: Histogram;
+  private readonly httpRequestCounter: Counter;
+  private readonly httpErrorCounter: Counter;
+  private readonly httpDurationHistogram: Histogram;
 
   constructor() {
     register.clear();
 
-    this.weatherRequestCounter = new Counter({
-      name: METRIC_DESCRIPTION.NAME.WEATHER_REQUEST_TOTAL,
-      help: METRIC_DESCRIPTION.HELP.WEATHER_REQUEST_TOTAL,
+    this.httpRequestCounter = new Counter({
+      name: METRIC_DESCRIPTION.NAME.HTTP_REQUEST_TOTAL,
+      help: METRIC_DESCRIPTION.HELP.HTTP_REQUEST_TOTAL,
       labelNames: COMMON_LABELS,
     });
 
-    this.weatherErrorCounter = new Counter({
-      name: METRIC_DESCRIPTION.NAME.WEATHER_ERROR_TOTAL,
-      help: METRIC_DESCRIPTION.HELP.WEATHER_ERROR_TOTAL,
+    this.httpErrorCounter = new Counter({
+      name: METRIC_DESCRIPTION.NAME.HTTP_ERROR_TOTAL,
+      help: METRIC_DESCRIPTION.HELP.HTTP_ERROR_TOTAL,
       labelNames: COMMON_LABELS,
     });
 
-    this.weatherDurationHistogram = new Histogram({
-      name: METRIC_DESCRIPTION.NAME.WEATHER_DURATION_SECONDS,
-      help: METRIC_DESCRIPTION.HELP.WEATHER_DURATION_SECONDS,
-      labelNames: COMMON_LABELS,
-      buckets: COMMON_BUCKETS,
-    });
-
-    this.subscriptionRequestCounter = new Counter({
-      name: METRIC_DESCRIPTION.NAME.SUBSCRIPTION_REQUEST_TOTAL,
-      help: METRIC_DESCRIPTION.HELP.SUBSCRIPTION_REQUEST_TOTAL,
-      labelNames: COMMON_LABELS,
-    });
-
-    this.subscriptionErrorCounter = new Counter({
-      name: METRIC_DESCRIPTION.NAME.SUBSCRIPTION_ERROR_TOTAL,
-      help: METRIC_DESCRIPTION.HELP.SUBSCRIPTION_ERROR_TOTAL,
-      labelNames: COMMON_LABELS,
-    });
-
-    this.subscriptionDurationHistogram = new Histogram({
-      name: METRIC_DESCRIPTION.NAME.SUBSCRIPTION_DURATION_SECONDS,
-      help: METRIC_DESCRIPTION.HELP.SUBSCRIPTION_DURATION_SECONDS,
+    this.httpDurationHistogram = new Histogram({
+      name: METRIC_DESCRIPTION.NAME.HTTP_DURATION_SECONDS,
+      help: METRIC_DESCRIPTION.HELP.HTTP_DURATION_SECONDS,
       labelNames: COMMON_LABELS,
       buckets: COMMON_BUCKETS,
     });
   }
 
-  incrementWeatherRequestCounter(
+  incrementHttpRequestCounter(
     method: string,
     endpoint: string,
     status: string,
   ): void {
-    this.weatherRequestCounter.inc({ method, endpoint, status });
+    this.httpRequestCounter.inc({ method, endpoint, status });
   }
 
-  incrementSubscriptionRequestCounter(
+  incrementHttpErrorCounter(
     method: string,
     endpoint: string,
     status: string,
   ): void {
-    this.subscriptionRequestCounter.inc({ method, endpoint, status });
+    this.httpErrorCounter.inc({ method, endpoint, status });
   }
 
-  incrementWeatherErrorCounter(
-    method: string,
-    endpoint: string,
-    status: string,
-  ): void {
-    this.weatherErrorCounter.inc({ method, endpoint, status });
-  }
-
-  incrementSubscriptionErrorCounter(
-    method: string,
-    endpoint: string,
-    status: string,
-  ): void {
-    this.subscriptionErrorCounter.inc({ method, endpoint, status });
-  }
-
-  observeWeatherDuration(
+  observeHttpDuration(
     method: string,
     endpoint: string,
     status: string,
     duration: number,
   ): void {
-    this.weatherDurationHistogram.observe(
-      { method, endpoint, status },
-      duration,
-    );
-  }
-
-  observeSubscriptionDuration(
-    method: string,
-    endpoint: string,
-    status: string,
-    duration: number,
-  ): void {
-    this.subscriptionDurationHistogram.observe(
-      { method, endpoint, status },
-      duration,
-    );
+    this.httpDurationHistogram.observe({ method, endpoint, status }, duration);
   }
 }

@@ -2,12 +2,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { apiConfigService } from '../../../common/config';
 import { ValidationPipe } from '@nestjs/common';
-import { LoggerService } from '../../../common/observability';
+import { LoggerProxy } from '../../../common/observability';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: new LoggerService(apiConfigService.getServiceName()),
-  });
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+
+  const logger = app.get(LoggerProxy);
+  logger.setServiceName(apiConfigService.getServiceName());
+  app.useLogger(logger);
 
   app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix('api', { exclude: ['/metrics'] });

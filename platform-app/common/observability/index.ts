@@ -1,2 +1,2 @@
 export * from './logger/interface';
-export * from './logger/logger.service';
+export * from './logger/logger.proxy';
