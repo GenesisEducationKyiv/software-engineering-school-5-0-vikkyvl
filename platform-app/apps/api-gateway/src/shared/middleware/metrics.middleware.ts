@@ -17,7 +17,7 @@ export class MetricsMiddleware implements NestMiddleware {
 
     const start: number = Date.now();
     const method = req.method as Method;
-    const endpoint = req.url;
+    const endpoint = req.baseUrl.split('/').slice(0, 3).join('/');
 
     res.on('finish', () => {
       const duration = (Date.now() - start) / MS_TO_SEC;
@@ -25,9 +25,13 @@ export class MetricsMiddleware implements NestMiddleware {
       const statusCode = res.statusCode;
       const status = statusCode.toString();
 
-      this.metricsService.incrementHttpRequestCounter(method, endpoint, status);
-
-      if (statusCode >= STATUS_CODE) {
+      if (statusCode < STATUS_CODE) {
+        this.metricsService.incrementHttpRequestCounter(
+          method,
+          endpoint,
+          status,
+        );
+      } else {
         this.metricsService.incrementHttpErrorCounter(method, endpoint, status);
       }
 
